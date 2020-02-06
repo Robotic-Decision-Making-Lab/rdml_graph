@@ -23,6 +23,28 @@ class Node(State.State):
     def getEdges(self):
         return self.e
 
+    ############### operator overloading
+
+    # == operator
+    # Only looks at the id's to check if it is the same node.
+    def __eq__(self, other):
+        return self.id == other.id
+
+    # != operator
+    # returns inverse of equals sign.
+    def __ne__(self, other):
+        return not (self == other)
+
+    # str(self) operator
+    # Returns a quick human readable string
+    def __str__(self):
+        result = 'node(id='+ str(id) + ', edges={'
+        for edge in e:
+            result += str(edge)+','
+        result += '})'
+        return result
+
+
 class GeometricNode(Node):
     # Constructor
     # @param id - the integer that is the 'index' of the node.
@@ -30,3 +52,12 @@ class GeometricNode(Node):
     def __init__(self, id, pt):
         super(GeometricNode, self).__init__(id)
         self.pt = pt
+
+    # str(self) operator
+    # Returns a quick human readable string
+    def __str__(self):
+        result = 'node(id='+ str(id) + ', pt='+ str(self.pt) +' edges={'
+        for edge in e:
+            result += str(edge)+','
+        result += '})'
+        return result
