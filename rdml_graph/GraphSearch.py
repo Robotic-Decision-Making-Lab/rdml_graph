@@ -12,7 +12,7 @@ import heapq
 # it should work for any type of state, but when using the algorithm degrades
 # to simply Dijkstra's algorithm rather than A*.
 # @param x - the graph input path.
-def default_h(x):
+def default_h(x, data = None):
     return 0.0
 
 # AStar
@@ -21,4 +21,9 @@ def default_h(x):
 # @param start - the start state of the search
 # @param g - a goal function to determine if the passed, state is in the goal set.
 def AStar(start, g, h = default_h, data = None):
+    pass
+
+
+
+def BFS(start):
     pass
