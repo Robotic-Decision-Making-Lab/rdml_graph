@@ -4,13 +4,13 @@
 # A basic state for search functions
 # Should be extended for new functionality
 
-from State import State
+from rdml_graph import State
 
 class SearchState(object):
     # Constructor
     # @param state - should be of class State
     def __init__(self, state, rCost=0, hCost=0, parent=None):
-        if not isinstance(State, state):
+        if not isinstance(State.State, state):
             raise TypeError("Search state given argument state not of type 'State', instead is type: " + str(type(state)))
         self.rCost = rCost # real cost
         self.hCost = hCost # estimated cost

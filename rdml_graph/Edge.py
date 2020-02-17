@@ -31,4 +31,4 @@ class Edge(object):
                 and self.cost() == other.cost()
 
    def __str__(self):
-      return 'e(p.id='+str(self.p.id)+',c.id='+str(self.c.id)+',cost='+str(self.cost)')'    
+      return 'e(p.id='+str(self.p.id)+',c.id='+str(self.c.id)+',cost='+str(self.cost)+')'    

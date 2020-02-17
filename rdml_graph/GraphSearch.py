@@ -3,8 +3,8 @@
 #
 # The AStar algorithm written using the SearchState class
 
-import SearchState
-import State
+from rdml_graph import SearchState
+from rdml_graph import State
 import heapq
 
 

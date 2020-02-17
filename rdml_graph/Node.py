@@ -4,10 +4,10 @@
 # A generic node structure for a graph. Can be extended to include more
 # information about the node.
 
-import State
-import Edge
+from rdml_graph import State
+from rdml_graph import Edge
 
-class Node(State.State):
+class Node(State):
     # constructor
     # @param id - the integer the Node repersents.
     def __init__(self, id):
@@ -34,6 +34,9 @@ class Node(State.State):
     # returns inverse of equals sign.
     def __ne__(self, other):
         return not (self == other)
+
+    def __hash__(self):
+        return hash(self.id)
 
     # str(self) operator
     # Returns a quick human readable string
