@@ -23,6 +23,9 @@ class Node(State):
     def getEdges(self):
         return self.e
 
+    def getLabel(self):
+        return self.id
+
     ############### operator overloading
 
     # == operator

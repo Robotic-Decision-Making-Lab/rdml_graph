@@ -23,4 +23,4 @@ n.addEdge(gr.Edge(n,n3))
 n2.addEdge(gr.Edge(n2,n4))
 n1.addEdge(gr.Edge(n1,n5))
 
-gr.plotTree(n)
+gr.plotTree(n, show_labels=True)

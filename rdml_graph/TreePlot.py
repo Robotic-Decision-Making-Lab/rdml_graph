@@ -79,8 +79,13 @@ def plotTree(root, max_levels=-1, show_labels=False, show_weights=False):
                 edges = np.append(edges, appendArray, axis=0)
 
     # perform plotting.
-    plt.scatter(pts[:,0], pts[:,1])
-    plt.plot(edges[:,0], edges[:,1])
+    plt.plot(edges[:,0], edges[:,1],zorder=1)
+    plt.scatter(pts[:,0], pts[:,1], s=2000.0, facecolors='white', edgecolors='red', zorder=2) #marker=plt.markers.MarkerStyle('o', fillstyles='none'))
+
+    if show_labels:
+        for n in nodesToIdx:
+            idx = nodesToIdx[n]
+            plt.text(pts[idx,0], pts[idx,1], str(n.getLabel()), zorder=3)
     plt.show()
 
 
