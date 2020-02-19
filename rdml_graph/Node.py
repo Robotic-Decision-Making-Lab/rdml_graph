@@ -44,8 +44,8 @@ class Node(State):
     # str(self) operator
     # Returns a quick human readable string
     def __str__(self):
-        result = 'node(id='+ str(id) + ', edges={'
-        for edge in e:
+        result = 'node(id='+ str(self.id) + ', edges={'
+        for edge in self.e:
             result += str(edge)+','
         result += '})'
         return result

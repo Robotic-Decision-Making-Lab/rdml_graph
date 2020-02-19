@@ -10,7 +10,7 @@ class SearchState(object):
     # Constructor
     # @param state - should be of class State
     def __init__(self, state, rCost=0, hCost=0, parent=None):
-        if not isinstance(State.State, state):
+        if not isinstance(state, State):
             raise TypeError("Search state given argument state not of type 'State', instead is type: " + str(type(state)))
         self.rCost = rCost # real cost
         self.hCost = hCost # estimated cost
@@ -38,9 +38,9 @@ class SearchState(object):
     # to return the list of all states in path.
     def getPath(self):
         if self.parent is None:
-            return []
+            return [self.state]
 
-        return getPath(self.parent) + [self.state]
+        return self.parent.getPath() + [self.state]
 
     ################################ Operator overloads
 
