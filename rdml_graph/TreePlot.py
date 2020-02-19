@@ -15,7 +15,7 @@ from collections import deque
 # @param root - the top of the tree given as a Node
 # @param max_levels - the max number of levels of the tree to plot.
 # @param show_labels - shows the labels the nodes using the id of node.
-def plotTree(root, max_levels=-1, show_labels=False, show_weights=False):
+def plotTree(root, max_levels=-1, show_labels=False):
     frontier = deque()
     frontier.append((root, 0))
     explored = set()
@@ -51,14 +51,12 @@ def plotTree(root, max_levels=-1, show_labels=False, show_weights=False):
 
     nodesToIdx = {}
     idx = 0
-    print(num_levels)
 
     # Generate node locations
     for l in range(num_levels):
         level = nodesLevels[l]
         for i in range(len(level)):
             nodesToIdx[level[i]] = idx
-            print(l)
             pts[idx][1] = float(-l)
             pts[idx][0] = float(i)
 
@@ -85,7 +83,8 @@ def plotTree(root, max_levels=-1, show_labels=False, show_weights=False):
     if show_labels:
         for n in nodesToIdx:
             idx = nodesToIdx[n]
-            plt.text(pts[idx,0], pts[idx,1], str(n.getLabel()), zorder=3)
+            plt.text(pts[idx,0], pts[idx,1], str(n.getLabel()), \
+                horizontalalignment='center', verticalalignment='center', fontsize=8, zorder=3)
     plt.show()
 
 

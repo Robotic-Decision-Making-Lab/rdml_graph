@@ -27,8 +27,8 @@ class Edge(object):
    # checks if connecting id's are the same and cost is the same (could potentially)
    # have two different edges to the same two nodes.
    def __eq__(self, other):
-      return self.c.id == other.c.id and self.p.id == other.p.id \
+      return isinstance(other, Edge) and self.c.id == other.c.id and self.p.id == other.p.id \
                 and self.cost() == other.cost()
 
    def __str__(self):
-      return 'e(p.id='+str(self.p.id)+',c.id='+str(self.c.id)+',cost='+str(self.cost)+')'    
+      return 'e(p.id='+str(self.p.id)+',c.id='+str(self.c.id)+',cost='+str(self.cost)+')'
