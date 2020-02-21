@@ -14,15 +14,21 @@ class Node(State):
         self.e = []
         self.id = id
 
+    # @overide
+    # successor function for State
     def successor(self):
         return [(edge.c, edge.getCost()) for edge in self.e]
 
+    # a function to allow adding an edge to the node.
     def addEdge(self, edge):
         self.e.append(edge)
 
+    # returns a list of edges
     def getEdges(self):
         return self.e
 
+    # returns a short description of the label of the node.
+    # shorter than the description described by str(self)
     def getLabel(self):
         return self.id
 
@@ -50,7 +56,9 @@ class Node(State):
         result += '})'
         return result
 
-
+#######################################################
+# GeometricNode that includes a geometric point as part of the
+# node as well as the graph structure.
 class GeometricNode(Node):
     # Constructor
     # @param id - the integer that is the 'index' of the node.
@@ -63,7 +71,7 @@ class GeometricNode(Node):
     # Returns a quick human readable string
     def __str__(self):
         result = 'node(id='+ str(id) + ', pt='+ str(self.pt) +' edges={'
-        for edge in e:
+        for edge in self.e:
             result += str(edge)+','
         result += '})'
         return result
