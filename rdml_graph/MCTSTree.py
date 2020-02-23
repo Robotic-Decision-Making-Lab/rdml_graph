@@ -13,7 +13,7 @@ import numpy as np
 class MCTSTree(SearchState):
     # Constructor
 
-    def __init__(self, state, rCost, parent, ):
+    def __init__(self, state, rCost, parent):
         super(MCTSTree, self).__init__(state, rCost=rCost, hCost=0, parent=parent)
 
         self.unpicked_children = []

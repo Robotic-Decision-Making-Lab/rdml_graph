@@ -44,9 +44,11 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
                 break
             else:
                 ######## Selection.
-                current = selection(current, budget, data)
+                if len(current.children) <= 0:
+                    # reached planning horizon, perform rollout on this node.
+                    break
 
-                break
+                current = selection(current, budget, data)
         # end selection expansion while loop.
 
         ######## ROLLOUT
@@ -69,6 +71,24 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
 
 ########################### Common functions for MCTS
 
+############## Selection functions
+
+# UCBSelection
+# Upper confidence bound selection.
+# @param current - the current tree node
+# @param budget - the budget of the algorithm, if needed.
+# @param data - generic data, if needed.
+def UCBSelection(current, budget, data):
+    bestScore = -np.inf
+    bestChild = None
+
+    for child in current.children:
+        score = child.reward() + np.sqrt((2 * np.log(child.num_updates)) / child.num_updates)
+
+        if score > bestScore:
+            bestScore = score
+            bestChild = child
+    return child
 ############## rollout functions
 
 # randomRollout
@@ -88,6 +108,7 @@ def randomRollout(treeState, budget, data=None):
     else:
         self.children.append(succ[childIdx])
         return randomRollout(succ[childIdx])
+
 
 ############### solution functions
 
