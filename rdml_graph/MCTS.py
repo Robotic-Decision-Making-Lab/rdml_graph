@@ -18,7 +18,7 @@ from rdml_graph import MCTSTree
 # @param max_iterations - maximum number of iterations the MCTS algorithm runs.
 # @oaram budget - the total budget of
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
-            rolloutFunc=randomRollout, solutionFunc=bestReward, data=None):
+            rolloutFunc=randomRollout, solutionFunc=bestReward, data=None, actor_number=0):
     # Set the root of the search tree.
     root = MCTSTree(start, 0, None)
     root.unpicked_children = root.successor()
@@ -54,13 +54,15 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
         ######## ROLLOUT
         # perform rollout to the end of a possible sequence.
         leaf = rolloutFunc(current, budget, data)
-        rolloutReward = rewardFunc(leaf.getPath(), budget, data)
+        rolloutReward, rewardActorNum = rewardFunc(leaf.getPath(), budget, data)
 
         # Keep track of best reward
-        if rolloutReward > bestReward
+        if rolloutReward > bestReward and actor_number == rewardActorNum:
+            bestReward = rolloutReward
+            bestLeaf = leaf
 
         ######## BACK-PROPOGATE
-        leaf.backpropReward()
+        leaf.backpropReward(rolloutReward, rewardActorNum)
 
     # end main for loop
 
@@ -68,6 +70,8 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
     solutionLeaf = solutionFunc(root, bestLeaf, bestReward, data)
     return solutionLeaf.getPath()
 # End MCTS
+
+
 
 ########################### Common functions for MCTS
 

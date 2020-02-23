@@ -20,6 +20,7 @@ class MCTSTree(SearchState):
         self.children = []
         self.sum_reward = 0
         self.num_updates = 0
+        self.actor_number = 0
 
     # reward
     # reward is an average of all total rewards propagated through the tree.
@@ -27,12 +28,17 @@ class MCTSTree(SearchState):
     def reward(self):
         return self.sum_reward / self.num_updates
 
-    def backpropReward(self, reward):
-        self.sum_reward  += reward
+    # backpropReward
+    # This function back-propogates reward up tree.
+    # @param reward - the amount of the reward.
+    # @param actor_number - the actor being rewarded.
+    def backpropReward(self, reward, actor_number):
+        if actor_number == self.actor_number:
+            self.sum_reward  += reward
         self.num_updates += 1
 
         if self.parent is not None:
-            self.parent.backpropReward(reward)
+            self.parent.backpropReward(reward, actor_number)
 
     # expandNode
     # expands the current node at the given index.
@@ -61,4 +67,6 @@ class MCTSTree(SearchState):
             cost = self.rCost + s[1]
             if cost <= budget:
                 result.append(MCTSTree(s[0], cost, self))
+                if len(s) == 3:
+                    result[-1].actor_number = s[2]
         return result
