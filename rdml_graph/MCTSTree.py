@@ -7,6 +7,7 @@
 
 from rdml_graph import State
 from rdml_graph import SearchState
+import pdb
 
 import numpy as np
 
@@ -63,7 +64,7 @@ class MCTSTree(SearchState):
     # @return - list of MCTSTree objects.
     def successor(self, budget=np.inf):
         result = []
-        for s in self.state.succesor():
+        for s in self.state.successor():
             cost = self.rCost + s[1]
             if cost <= budget:
                 result.append(MCTSTree(s[0], cost, self))

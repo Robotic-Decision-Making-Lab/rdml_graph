@@ -9,7 +9,9 @@
 import tqdm
 import numpy as np
 from rdml_graph import MCTSTree
+from rdml_graph import UCBSelection, randomRollout, bestReward
 
+import pdb
 
 
 # MCTS
@@ -20,7 +22,7 @@ from rdml_graph import MCTSTree
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
             rolloutFunc=randomRollout, solutionFunc=bestReward, data=None, actor_number=0):
     # Set the root of the search tree.
-    root = MCTSTree(start, 0, None)
+    root = MCTSTree.MCTSTree(start, 0, None)
     root.unpicked_children = root.successor()
 
     bestReward = -np.inf
@@ -65,62 +67,9 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
         leaf.backpropReward(rolloutReward, rewardActorNum)
 
     # end main for loop
+    pdb.set_trace()
 
     ######## SOLUTION
     solutionLeaf = solutionFunc(root, bestLeaf, bestReward, data)
     return solutionLeaf.getPath()
 # End MCTS
-
-
-
-########################### Common functions for MCTS
-
-############## Selection functions
-
-# UCBSelection
-# Upper confidence bound selection.
-# @param current - the current tree node
-# @param budget - the budget of the algorithm, if needed.
-# @param data - generic data, if needed.
-def UCBSelection(current, budget, data):
-    bestScore = -np.inf
-    bestChild = None
-
-    for child in current.children:
-        score = child.reward() + np.sqrt((2 * np.log(child.num_updates)) / child.num_updates)
-
-        if score > bestScore:
-            bestScore = score
-            bestChild = child
-    return child
-############## rollout functions
-
-# randomRollout
-# This function performs rollout using random child selection.
-# @param treeState - the current state of the rollout function
-# @param budget - the budget of the sequence
-# @param data - a generic structure to store data for a rollout.
-def randomRollout(treeState, budget, data=None):
-    succ = treeState.successor()
-    if len(succ) == 0:
-        return self
-
-    childIdx = np.random.randint(0, len(succ))
-
-    if succ[childIdx].cost() > budget:
-        return self
-    else:
-        self.children.append(succ[childIdx])
-        return randomRollout(succ[childIdx])
-
-
-############### solution functions
-
-# bestReward
-# This function performs rollout using random child selection.
-# @param root - the current state of the rollout function
-# @param bestLeaf - the best possible leaf
-# @param bestR - the best seen reward
-# @param data - generic data possibly useful for the best reward.
-def bestReward(root, bestLeaf, bestR, data=None):
-    return bestLeaf
