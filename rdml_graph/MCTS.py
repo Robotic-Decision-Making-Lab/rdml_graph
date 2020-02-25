@@ -27,39 +27,42 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
 
     # Main loop of MCTS
     for i in tqdm.tqdm(range(max_iterations)):
-        current = root
+        try: # Allow keyboard input to interupt MCTS
+            current = root
 
-        ######### SELECTION and Expansion
-        # Check all possibilties of selection.
-        while True:
-            if len(current.unpicked_children) > 0:
-                ######## Expansion
-                child = current.expandNode(budget)
-                child.unpicked_children = child.successor()
+            ######### SELECTION and Expansion
+            # Check all possibilties of selection.
 
-                current = child
+            while True:
+                if len(current.unpicked_children) > 0:
+                    ######## Expansion
+                    child = current.expandNode(budget)
+                    child.unpicked_children = child.successor()
 
-                # once a node has been successfully expanded break out of selection loop.
-                break
-            else:
-                ######## Selection.
-                if len(current.children) <= 0:
-                    # reached planning horizon, perform rollout on this node.
+                    current = child
+
+                    # once a node has been successfully expanded break out of selection loop.
                     break
+                else:
+                    ######## Selection.
+                    if len(current.children) <= 0:
+                        # reached planning horizon, perform rollout on this node.
+                        break
 
-                current = selection(current, budget, data)
-        # end selection expansion while loop.
+                    current = selection(current, budget, data)
+            # end selection expansion while loop.
 
-        ######## ROLLOUT
-        # perform rollout to the end of a possible sequence.
-        sequence = rolloutFunc(current, budget, data)
-        rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
+            ######## ROLLOUT
+            # perform rollout to the end of a possible sequence.
+            sequence = rolloutFunc(current, budget, data)
+            rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
 
-        #pdb.set_trace()
+            #pdb.set_trace()
 
-        ######## BACK-PROPOGATE
-        current.backpropReward(rolloutReward, rewardActorNum)
-
+            ######## BACK-PROPOGATE
+            current.backpropReward(rolloutReward, rewardActorNum)
+        except KeyboardInterrupt:
+            break
     # end main for loop
 
     ######## SOLUTION
