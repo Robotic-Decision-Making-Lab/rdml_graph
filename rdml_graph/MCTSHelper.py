@@ -7,6 +7,8 @@ import tqdm
 import numpy as np
 from rdml_graph import MCTSTree
 
+import pdb
+
 ########################### Common functions for MCTS
 
 ############## Selection functions
@@ -34,8 +36,33 @@ def UCBSelection(current, budget, data):
 # @param treeState - the current state of the rollout function
 # @param budget - the budget of the sequence
 # @param data - a generic structure to store data for a rollout.
+#
+# @return sequence of states. of roll out.
 def randomRollout(treeState, budget, data=None):
-    succ = treeState.successor()
+    sequence = treeState.getPath()
+
+    current = treeState.state
+    remainingBudget = budget - treeState.rCost
+
+    while remainingBudget > 0:
+        succ = current.successor()
+        #pdb.set_trace()
+        if len(succ) <= 0:
+            break
+        childIdx = np.random.randint(0, len(succ))
+        child = succ[childIdx][0]
+        edgeCost = succ[childIdx][1]
+
+        if remainingBudget > edgeCost:
+            sequence += [child]
+            remainingBudget -= edgeCost
+            current = child
+        else:
+            break
+    return sequence
+
+
+    '''succ = treeState.successor()
     if len(succ) == 0:
         return treeState
 
@@ -46,15 +73,71 @@ def randomRollout(treeState, budget, data=None):
     else:
         treeState.children.append(succ[childIdx])
         return randomRollout(succ[childIdx], budget, data)
-
+    '''
 
 ############### solution functions
 
-# bestReward
-# This function performs rollout using random child selection.
+
+
+# bestAvgNext
+# This function selects the next action which optimizes the best average reward.
 # @param root - the current state of the rollout function
 # @param bestLeaf - the best possible leaf
 # @param bestR - the best seen reward
 # @param data - generic data possibly useful for the best reward.
-def bestReward(root, bestLeaf, bestR, data=None):
-    return bestLeaf
+def bestAvgNext(root, data=None):
+    best = -np.inf
+    bestIdx = -1
+
+    for i in range(len(root.children)):
+        child = root.children[i]
+        if child.reward() > best:
+            best = child.reward()
+            bestIdx = i
+
+    if bestIdx != -1:
+        return root.children[bestIdx]
+    else:
+        return root
+
+def mostSimulations(root, data=None):
+    best = -np.inf
+    bestIdx = -1
+    for i in range(len(root.children)):
+        child = root.children[i]
+        if child.num_updates > best:
+            best = child.num_updates
+            bestIdx = i
+
+    if bestIdx != -1:
+        return root.children[bestIdx]
+    else:
+        return root
+
+# bestReward
+# This function selects the best seen leaf
+# @param root - the current state of the rollout function
+# @param bestLeaf - the best possible leaf
+# @param bestR - the best seen reward
+# @param data - generic data possibly useful for the best reward.
+def bestAvgReward(root, data=None):
+    best = -np.inf
+    bestIdx = -1
+
+    for i in range(len(root.children)):
+        child = root.children[i]
+        if child.reward() > best:
+            best = child.reward()
+            bestIdx = i
+
+    if bestIdx != -1:
+        return bestAvgReward(root.children[bestIdx], data)
+    else:
+        return root
+
+
+
+
+
+
+#

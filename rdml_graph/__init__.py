@@ -7,5 +7,5 @@ from .TreePlot import plotTree
 from .GraphSearch import AStar, BFS
 from .HomotopyNode import HomotopyNode
 from .HomotopyEdge import HomotopyEdge, rayIntersection
-from .MCTSHelper import UCBSelection, randomRollout, bestReward
+from .MCTSHelper import UCBSelection, randomRollout, bestAvgReward, bestAvgNext, mostSimulations
 from .MCTS import MCTS

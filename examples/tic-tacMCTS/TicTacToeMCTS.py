@@ -32,8 +32,8 @@ class TicTacToeState(gr.State):
                     nextState.board[x][y] = token
                     if nextState.winState() != -1:
                         # state, cost, agent
-                        result.append((nextState, 1, nextTurn))
-                    result.append((nextState, 0, nextTurn))
+                        result.append((nextState, 1, self.agentTurn))
+                    result.append((nextState, 0, self.agentTurn))
         return result
 
     # winState
@@ -114,11 +114,13 @@ def ticTacToeReward(listOfStates, budget, data):
         return 0, 0 # reward = 0, doesn't matter which agent gets reward of 0
 
 
-start = TicTacToeState()
+start = TicTacToeState(agentTurn=1)
+start.board[1][1] = 1.0
 
-solution = gr.MCTS(start, 200, ticTacToeReward, actor_number=0)
+solution, reward = gr.MCTS(start, 2000, ticTacToeReward, actor_number=0)#, solutionFunc=gr.mostSimulations)
 
+print('Solution reward = ' + str(reward))
 for state in solution:
     print(state.board)
 
-print(solution)
+#print(solution)

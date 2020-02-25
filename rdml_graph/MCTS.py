@@ -9,7 +9,7 @@
 import tqdm
 import numpy as np
 from rdml_graph import MCTSTree
-from rdml_graph import UCBSelection, randomRollout, bestReward
+from rdml_graph import UCBSelection, randomRollout, bestAvgReward
 
 import pdb
 
@@ -20,13 +20,10 @@ import pdb
 # @param max_iterations - maximum number of iterations the MCTS algorithm runs.
 # @oaram budget - the total budget of
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
-            rolloutFunc=randomRollout, solutionFunc=bestReward, data=None, actor_number=0):
+            rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, actor_number=0):
     # Set the root of the search tree.
     root = MCTSTree.MCTSTree(start, 0, None)
     root.unpicked_children = root.successor()
-
-    bestReward = -np.inf
-    bestLeaf = None
 
     # Main loop of MCTS
     for i in tqdm.tqdm(range(max_iterations)):
@@ -55,21 +52,17 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
 
         ######## ROLLOUT
         # perform rollout to the end of a possible sequence.
-        leaf = rolloutFunc(current, budget, data)
-        rolloutReward, rewardActorNum = rewardFunc(leaf.getPath(), budget, data)
+        sequence = rolloutFunc(current, budget, data)
+        rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
 
-        # Keep track of best reward
-        if rolloutReward > bestReward and actor_number == rewardActorNum:
-            bestReward = rolloutReward
-            bestLeaf = leaf
+        #pdb.set_trace()
 
         ######## BACK-PROPOGATE
-        leaf.backpropReward(rolloutReward, rewardActorNum)
+        current.backpropReward(rolloutReward, rewardActorNum)
 
     # end main for loop
-    pdb.set_trace()
 
     ######## SOLUTION
-    solutionLeaf = solutionFunc(root, bestLeaf, bestReward, data)
-    return solutionLeaf.getPath()
+    solutionLeaf = solutionFunc(root, data)
+    return solutionLeaf.getPath(), solutionLeaf.reward()
 # End MCTS
