@@ -4,7 +4,7 @@
 # A basic state for search functions
 # Should be extended for new functionality
 
-from rdml_graph import State
+from . import State
 
 class SearchState(object):
     # Constructor

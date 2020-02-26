@@ -4,8 +4,8 @@
 # A generic node structure for a graph. Can be extended to include more
 # information about the node.
 
-from rdml_graph import State
-from rdml_graph import Edge
+from . import State
+from . import Edge
 
 class Node(State):
     # constructor

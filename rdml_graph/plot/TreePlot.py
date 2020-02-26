@@ -6,7 +6,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from rdml_graph import Node
+from ..core import Node
 from collections import deque
 
 # plotTree

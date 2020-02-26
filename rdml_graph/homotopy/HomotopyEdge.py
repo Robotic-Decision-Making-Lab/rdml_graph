@@ -14,9 +14,9 @@
 #       search-based robot path planning
 #
 
-from rdml_graph import Edge
+from ..core import Edge
 import numpy as np
-from rdml_graph import HSignature
+from . import HSignature
 
 # rayIntersection
 # Given a line segment an origin and an angle from the ray, return 0 for

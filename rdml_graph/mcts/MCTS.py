@@ -8,8 +8,8 @@
 
 import tqdm
 import numpy as np
-from rdml_graph import MCTSTree
-from rdml_graph import UCBSelection, randomRollout, bestAvgReward
+from . import MCTSTree
+from . import UCBSelection, randomRollout, bestAvgReward
 
 import pdb
 

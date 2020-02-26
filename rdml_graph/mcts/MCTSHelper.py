@@ -5,7 +5,7 @@
 
 import tqdm
 import numpy as np
-from rdml_graph import MCTSTree
+from . import MCTSTree
 
 import pdb
 
