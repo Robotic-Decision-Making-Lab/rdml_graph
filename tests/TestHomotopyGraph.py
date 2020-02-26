@@ -35,6 +35,12 @@ n4.addEdge(gr.HomotopyEdge(n4,n2, features=features))
 n1.addEdge(gr.HomotopyEdge(n1,n5, features=features))
 n5.addEdge(gr.HomotopyEdge(n5,n1, features=features))
 
+n3.addEdge(gr.HomotopyEdge(n3,n5, features=features))
+n5.addEdge(gr.HomotopyEdge(n5,n3, features=features))
+
+n.addEdge(gr.HomotopyEdge(n,n5, features=features))
+n5.addEdge(gr.HomotopyEdge(n5,n, features=features))
+
 print(features.shape)
 
 start = gr.HomotopyNode(n, gr.HSignature(1), root=n)
@@ -49,6 +55,20 @@ print(goal)
 
 path, cost = gr.AStar(start, goal=goal)
 
+print('Cost = ' + str(cost))
+print('Path executed')
+for i in range(len(path)):
+    n = path[i]
+    print(n)
+
+################## test path with partial H-sign goal
+hSignGoal = gr.HSignatureGoal(1)
+hSignGoal.mask[0] = 0
+hSignGoal.sign[0] = 1
+
+path, cost = gr.AStar(start, g=gr.partial_homotopy_goal_check, goal=(n5, hSignGoal))
+
+print('HSignatureGoal used instead')
 print('Cost = ' + str(cost))
 print('Path executed')
 for i in range(len(path)):

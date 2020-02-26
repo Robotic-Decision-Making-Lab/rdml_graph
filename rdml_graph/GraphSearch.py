@@ -5,6 +5,7 @@
 
 from rdml_graph import SearchState
 from rdml_graph import State
+from rdml_graph import HSignatureGoal
 # For the priority queue used by the AStar algorith.
 import heapq
 # For queue
@@ -23,6 +24,21 @@ def default_h(x, data = None, goal=None):
 # @param data - some set of input data
 def graph_goal_check(n, data, goal):
     return n == goal
+
+# partial_homotopy_goal_check
+# Checks if the nodes are the same, and checks if the h-signatures fit the
+# constraints in HSignatureGoal, which allows partial h-signature matches.
+# @param n - the input node (Should be a HomotopyNode)
+# @param data - generic (not used)
+# @param goal - the input goal data to the search funcion.
+#               MUST match (Node, HSignatureGoal type)
+def partial_homotopy_goal_check(n, data, goal):
+    goalNode = goal[0]
+    goalH = goal[1]
+    if not isinstance(goalH, HSignatureGoal):
+        raise TypeError("partial_homotopy_goal_check given goal which should be (Node, HSignatureGoal)")
+
+    return goalH.checkSign(n.h_sign) and goalNode == n.node
 
 # AStar
 # A generic implementation of the AStar algorithm.
@@ -47,7 +63,7 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
     while len(frontier) > 0:
         # get current state to explore
         cur = heapq.heappop(frontier)
-        
+
         if cur.state not in explored:
             # check if the current state is in the goal state.
             if g(cur.state, data, goal):

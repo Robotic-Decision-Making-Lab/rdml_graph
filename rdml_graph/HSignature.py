@@ -61,6 +61,14 @@ class HSignature(object):
                 raise IndexError('H-signature access idx: ' + str(id) + '  with length ' + str(len(self)))
             return self.sign[id]
 
+    def __setitem__(self, key, item):
+        if item > 1:
+            raise ValueError('HSignature['+str(key)+'] passed value: '+str(item)+' larger than 1')
+        elif item < -1:
+            raise ValueError('HSignature['+str(key)+'] passed value: '+str(item)+' smaller than -1')
+
+        self.sign[key] = item
+
     # str(self) operator overload
     # Human readable print output
     def __str__(self):
@@ -90,7 +98,24 @@ class HSignature(object):
 
 class HSignatureGoal(object):
     def __init__(self, num_objects):
-        self.mask = np.zeros(num_objects)
+        self.mask = np.zeros(num_objects, dtype=np.bool)
         self.sign = HSignature(num_objects)
 
+    # checkSign
+    # A function to check if the given H signature goal matches the
     def checkSign(self, other):
+        return np.all(np.logical_or(np.logical_not(self.mask),\
+                                    np.equal(other.sign, self.sign.sign)))
+
+
+
+
+
+
+
+
+
+
+
+
+#
