@@ -47,6 +47,7 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
     while len(frontier) > 0:
         # get current state to explore
         cur = heapq.heappop(frontier)
+        
         if cur.state not in explored:
             # check if the current state is in the goal state.
             if g(cur.state, data, goal):

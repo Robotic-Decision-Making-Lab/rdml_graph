@@ -14,15 +14,16 @@ from rdml_graph import Node
 from rdml_graph import Edge
 from rdml_graph import HSignature
 
+import pdb
 
 class HomotopyNode(State):
     # constructor
-    # @param n - the input Node for homotopy graph.
+    # @param node - the input Node for homotopy graph.
     # @param h_sign - the input H signature.
     # @param parent - [optional] the edge from the parent HomotopyNode
     # @param root - [optional] the root node of the homotopy graph.
     def __init__(self, n, h_sign, parentEdge=None, root=None):
-        self.node = node
+        self.node = n
         self.h_sign = h_sign
         self.parentEdge = parentEdge
         self.root = root
@@ -33,10 +34,12 @@ class HomotopyNode(State):
         for edge in self.node.e:
             newHSign = self.h_sign.copy()
             goodHSign = newHSign.edgeCross(edge)
+
             if goodHSign:
                 succ = HomotopyNode(n=edge.c, h_sign=newHSign,\
                                 parentEdge=edge, root=self.root)
                 result += [(succ, edge.getCost())]
+        #pdb.set_trace()
         return result
 
     ################## operator overloading
@@ -47,12 +50,18 @@ class HomotopyNode(State):
     def __eq__(self, other):
         if not isinstance(other, HomotopyNode):
             return False
-        return self.node == other.node and self.h_sign == other.h_sign and self.root == other.root
+        return self.node == other.node and self.h_sign == other.h_sign and \
+                (self.root is None or other.root is None or self.root == other.root)
 
     # !=
     # opposite of equals
     def __ne__(self, other):
         return not self == other
+
+    # str()
+    # prints out info about the currnet Homotopy Node
+    def __str__(self):
+        return 'HomotopyNode(h-sign='+ str(self.h_sign) +', n=' + str(self.node) + ')'
 
     # hash function overload
     # This hash takes into account both the node hash (should be defined),

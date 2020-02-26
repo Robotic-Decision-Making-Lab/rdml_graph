@@ -40,6 +40,15 @@ print(x)
 x.cross(5, -1)
 print(x)
 
+
+print('x = ' + str(x))
+t = x.copy()
+print('t = ' + str(t))
+print('CHANGE')
+t.cross(3,-1)
+print('x = ' + str(x))
+print('t = ' + str(t))
+
 try:
     print(x[11])
 except IndexError as err:

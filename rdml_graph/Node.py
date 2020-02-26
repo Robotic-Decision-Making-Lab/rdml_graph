@@ -70,7 +70,7 @@ class GeometricNode(Node):
     # str(self) operator
     # Returns a quick human readable string
     def __str__(self):
-        result = 'node(id='+ str(id) + ', pt='+ str(self.pt) +' edges={'
+        result = 'node(id='+ str(self.id) + ', pt='+ str(self.pt) +' edges={'
         for edge in self.e:
             result += str(edge)+','
         result += '})'

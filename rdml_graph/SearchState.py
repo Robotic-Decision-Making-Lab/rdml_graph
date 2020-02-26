@@ -75,7 +75,7 @@ class SearchState(object):
         hasStr = True
 
 
-        result = 'Node{rCost='+str(self.rCost)+',hCost='+str(self.hCost)+',invCmp='+ \
+        result = 'SearchState{rCost='+str(self.rCost)+',hCost='+str(self.hCost)+',invCmp='+ \
             str(self.invertCmp)+',hasPar='+str(self.parent != None)
         try:
             self.state.__str__

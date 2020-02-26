@@ -30,7 +30,7 @@ from rdml_graph import HSignature
 #
 # @return - 0 = no intersection, 1 = intersection in positive direction,
 #            -1 for negative direction
-def rayIntersection(pt1, pt2, origin, angle=0):
+def rayIntersection(pt1, pt2, origin, angle=np.pi/2):
     rayDir = np.array([np.cos(angle), np.sin(angle)])
 
     # Create helper vectors
@@ -70,14 +70,14 @@ class HomotopyEdge(Edge):
     # @param child - the child node of the edge.
     # @param num_objects - the total number of topological objects.
     # @param cost - the cost of the edge - defaults to 1
-    def __init__(self, parent, child, num_objects=0, cost=1, features=None,ray_angle=0):
+    def __init__(self, parent, child, num_objects=0, cost=1, features=None,ray_angle=np.pi/2):
         super(HomotopyEdge, self).__init__(parent, child, cost)
         # H-signature fragment (only shows crossing that can occur)
 
         if features is not None:
             num_objects = features.shape[0]
 
-        self.HSignFrag = np.zeros(num_objects)
+        self.HSignFrag = np.zeros(num_objects, dtype=np.byte)
 
         if features is not None:
             self.geo2DHSignCheck(features, ray_angle)
@@ -90,3 +90,7 @@ class HomotopyEdge(Edge):
         for i in range(num_features):
             self.HSignFrag[i] = rayIntersection(self.p.pt, self.c.pt, \
                                                 features[i], ray_angle)
+
+
+    def __str__(self):
+        return 'e(p.id='+str(self.p.id)+',c.id='+str(self.c.id)+',hFrag='+str(self.HSignFrag)+',cost='+str(self.cost)+')'

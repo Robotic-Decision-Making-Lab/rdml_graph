@@ -7,7 +7,9 @@
 import rdml_graph as gr
 import numpy as np
 
-features = np.array([[0],[0]])
+import pdb
+
+features = np.array([[0,0]])
 angle = np.pi / 2.0
 
 n = gr.GeometricNode(0,np.array([-3,-3]))
@@ -33,7 +35,19 @@ n4.addEdge(gr.HomotopyEdge(n4,n2, features=features))
 n1.addEdge(gr.HomotopyEdge(n1,n5, features=features))
 n5.addEdge(gr.HomotopyEdge(n5,n1, features=features))
 
-path, cost = gr.AStar(n, goal=n5)
+print(features.shape)
+
+start = gr.HomotopyNode(n, gr.HSignature(1), root=n)
+goalH = gr.HSignature(1)
+goalH.cross(0,1)
+goal = gr.HomotopyNode(n5, goalH, root=n)
+
+print(start)
+print(goal)
+
+#pdb.set_trace()
+
+path, cost = gr.AStar(start, goal=goal)
 
 print('Cost = ' + str(cost))
 print('Path executed')

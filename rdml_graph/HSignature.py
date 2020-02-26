@@ -8,12 +8,30 @@
 import numpy as np
 import copy
 
+# for checking python version (required for hashing function)
+import sys
+
 class HSignature(object):
     # Constuctor
     # @param numHazards - this is the total number of obstcales the h-signature
     #           needs to keep track of.
     def __init__(self, numHazards):
-        self.sign = np.zeros(numHazards)
+        self.sign = np.zeros(numHazards, dtype=np.byte)
+        self.pythonVer = sys.version_info[0]
+
+    # edgeCross
+    # This function takes the HSignature and the HSign fragment contained in a
+    # Homotopy Edge, and adds the edge crossings to the current HSignature.
+    # @param edge - a crossing homotopy edge.
+    #
+    # @return - true if valid edge crossing, false if the crossing is invalid (loop)
+    # @post - this objects sign is updated with the given
+    def edgeCross(self, edge):
+        self.sign += edge.HSignFrag
+        if np.amax(self.sign) > 1 or np.amin(self.sign) < -1:
+            return False
+        return True
+
 
     # cross
     # A function to add a crossing to the HSignature
@@ -26,7 +44,7 @@ class HSignature(object):
         self.sign[id] = max(-1, min(value + self.sign[id], 1))
 
     def copy(self):
-        return copy.copy(self)
+        return copy.deepcopy(self)
 
     ############################## Operator overloading
 
@@ -48,6 +66,11 @@ class HSignature(object):
     def __str__(self):
         return str(self.sign)
 
+    def __hash__(self):
+        if self.pythonVer < 3:
+            return hash(self.sign.data)
+        else:
+            return hash(self.sign.tobytes())
 
     # len(self) operator overload
     def __len__(self):
@@ -63,3 +86,11 @@ class HSignature(object):
     # != operator overload
     def __ne__(self, other):
         return not (self == other)
+
+
+class HSignatureGoal(object):
+    def __init__(self, num_objects):
+        self.mask = np.zeros(num_objects)
+        self.sign = HSignature(num_objects)
+
+    def checkSign(self, other):
