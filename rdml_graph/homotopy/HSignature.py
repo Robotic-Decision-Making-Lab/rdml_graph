@@ -8,6 +8,8 @@
 import numpy as np
 import copy
 
+from .HomotopyEdge import HomotopyEdge
+
 # for checking python version (required for hashing function)
 import sys
 
@@ -27,6 +29,8 @@ class HSignature(object):
     # @return - true if valid edge crossing, false if the crossing is invalid (loop)
     # @post - this objects sign is updated with the given
     def edgeCross(self, edge):
+        if not isinstance(edge, HomotopyEdge):
+            raise TypeError('edgeCross passed an edge which is not of type HomotopyEdge')
         self.sign += edge.HSignFrag
         if np.amax(self.sign) > 1 or np.amin(self.sign) < -1:
             return False

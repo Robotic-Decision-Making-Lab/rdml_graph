@@ -83,7 +83,7 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
                     succ.hCost = h(succ.state, data, goal)
                     heapq.heappush(frontier, succ)
     # End of while, no solution found.
-    return [], 0
+    return [], float('inf')
 
 
 

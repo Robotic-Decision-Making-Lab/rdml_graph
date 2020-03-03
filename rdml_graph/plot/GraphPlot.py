@@ -24,6 +24,8 @@ def plot2DGeoGraph(G, color='blue'):
 # @param path - a list of GeometricNode(s) in order.
 # @param color - the color of the path when plotted.
 def plot2DGeoPath(path, color='red'):
+    if len(path) <= 0:
+        return
     points = np.empty((len(path), path[0].pt.shape[0]))
 
     for i in range(len(path)):
@@ -31,6 +33,24 @@ def plot2DGeoPath(path, color='red'):
 
     plt.plot(points[:,0], points[:,1], color=color)
 
+# plotHomotopyPath
+# plot a geometric path given as a list of geometric nodes
+# @param path - a list of GeometricNode(s) in order.
+# @param color - the color of the path when plotted.
+def plotHomotopyPath(path, color='red'):
+    if len(path) <= 0:
+        return
+    points = np.empty((len(path), path[0].node.pt.shape[0]))
+
+    for i in range(len(path)):
+        points[i] = path[i].node.pt
+
+    plt.plot(points[:,0], points[:,1], color=color)
+
+# plotEdgesFromNode
+# This function is given a node and plots edges coming from that node.
+# @param n - the node
+# @param color - the color of the edges.
 def plotEdgesFromNode(n, color='blue'):
     i = 0
     x = np.zeros(len(n.e)*2)
