@@ -3,8 +3,8 @@
 #
 # This file contains code to plot different paths, and plot them.
 
-import Node
-import Path
+from ..core import Node
+from ..core import Edge
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -19,6 +19,17 @@ def plot2DGeoGraph(G, color='blue'):
     for n in G:
         plotEdgesFromNode(n, color)
 
+# plot2DGeoPath
+# plot a geometric path given as a list of geometric nodes
+# @param path - a list of GeometricNode(s) in order.
+# @param color - the color of the path when plotted.
+def plot2DGeoPath(path, color='red'):
+    points = np.empty((len(path), path[0].pt.shape[0]))
+
+    for i in range(len(path)):
+        points[i] = path[i].pt
+
+    plt.plot(points[:,0], points[:,1], color=color)
 
 def plotEdgesFromNode(n, color='blue'):
     i = 0

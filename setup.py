@@ -13,6 +13,6 @@ setup(name='rdml_graph',
       author_email='rankini@oregonstate.edu',
       license='None',
       packages=['rdml_graph'],
-      install_requires=['numpy>=1.14.0','matplotlib>=2.1.2'],
+      install_requires=['numpy>=1.14.0','matplotlib>=2.1.2', 'scipy>=1.2.3'],
       python_requires='>=2.7',
       zip_safe=False)

@@ -9,3 +9,6 @@ from .mcts import *
 
 from . import plot
 from .plot import *
+
+from . import graph_generators
+from .graph_generators import *
