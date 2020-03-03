@@ -11,9 +11,9 @@ from ..homotopy import HomotopyEdge
 
 ########################## Sampling functions for PRM's
 
-def sample2DUniform(map, num_samples):
+def sample2DUniform(map, num_samples, idStart=0):
     samples = np.random.random((num_samples, 2))  * map['size']
-    nodes = [GeometricNode(i, samples[i]) for i in range(samples.shape[0])]
+    nodes = [GeometricNode(i + idStart, samples[i]) for i in range(samples.shape[0])]
     return nodes, samples
 
 
@@ -59,5 +59,5 @@ def EdgeConnection(parent, child, map, cost = None):
 def HomotopyEdgeConn(parent, child, map, cost = None):
     if cost is None:
         cost = np.linalg.norm(parent.pt - child.pt, ord=2)
-    parent.addEdge(HomotopyEdge(parent, child, cost=cost, features=map['features']))
+    parent.addEdge(HomotopyEdge(parent, child, cost=cost, features=map['hazards']))
     return cost

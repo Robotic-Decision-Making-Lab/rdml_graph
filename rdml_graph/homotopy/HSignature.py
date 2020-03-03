@@ -105,6 +105,18 @@ class HSignatureGoal(object):
         self.mask = np.zeros(num_objects, dtype=np.bool)
         self.sign = HSignature(num_objects)
 
+    def addConstraint(self, id, value):
+        if id >= len(self.mask) or id < 0:
+            raise IndexError('H-signature goal access idx: ' + str(id) + '  with length ' + str(len(self.mask)))
+        self.mask[id] = 1
+        self.sign.cross(id, value)
+
+    def removeConstraint(self, id):
+        if id >= len(self.mask) or id < 0:
+            raise IndexError('H-signature goal access idx: ' + str(id) + '  with length ' + str(len(self.mask)))
+        self.mask[id] = 0
+        self.sign.sign[id] = 0
+
     # checkSign
     # A function to check if the given H signature goal matches the
     def checkSign(self, other):

@@ -9,6 +9,7 @@ from ..core import GeometricNode
 from ..core import Edge
 import scipy.spatial as spa
 
+import numpy as np
 from .BasicSamplingFunctions import sample2DUniform, noCollision, EdgeConnection
 
 # PRM
@@ -18,6 +19,8 @@ from .BasicSamplingFunctions import sample2DUniform, noCollision, EdgeConnection
 # @param map - a dictionary of map values (by default should have map['size'] defined)
 # @param num_points - the number of points to generate using the PRM
 # @param r - the radius to check connections between.
+# @param initialNodes - a list of initial nodes that need to be added to the PRM
+#                       added at the front of the PRM map. (Assumes nodes have .pt variable)
 # @param sampleF - the sampling function for the PRM
 #               sampleF(map, num_samples)
 # @param collision - the collision function to check for connection between nodes:
@@ -28,9 +31,19 @@ from .BasicSamplingFunctions import sample2DUniform, noCollision, EdgeConnection
 #                if bidirectional collisions and costs need to be checked.
 #
 # @return - list of nodes
-def PRM(map, num_points, r, sampleF=sample2DUniform, collision=noCollision, \
-        connection=EdgeConnection, bidirectional=True):
-    nodes, pts = sampleF(map, num_points)
+def PRM(map, num_points, r, initialNodes=[], sampleF=sample2DUniform, \
+        collision=noCollision, connection=EdgeConnection, bidirectional=True):
+
+    # sample all points
+    nodes, pts = sampleF(map, num_points, idStart=len(initialNodes))
+
+    if len(initialNodes) > 0:
+        initPts =  np.empty((len(initialNodes),) + initialNodes[0].pt.shape)
+        for i in range(len(initialNodes)):
+            initPts[i] = initialNodes[i].pt
+
+        pts = np.append(initPts, pts, axis=0)
+        nodes = initialNodes + nodes
 
     # connect points using kdtree for graph.
     # generate kd-tree from data.
