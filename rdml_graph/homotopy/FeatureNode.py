@@ -33,6 +33,9 @@ class FeatureNode(GeometricNode):
         result += '})'
         return result
 
+
+
+
 # A state that incapsulates the set of states of Homotopy and features
 class HomotopyFeatureState(HomotopyNode):
     # constructor
@@ -42,8 +45,8 @@ class HomotopyFeatureState(HomotopyNode):
     # @param root - [optional] the root node of the homotopy graph.
     # @param names - a set of names along path
     # @param keywords - a set of keywords along path.
-    def __init__(self, node, h_sign, parentEdge=None, root=None, names={}, keywords={}):
-        super(HomotopyEdge, self).__init__(node, h_sign, parentEdge, root)
+    def __init__(self, n, h_sign, parentEdge=None, root=None, names=frozenset(), keywords=frozenset()):
+        super(HomotopyFeatureState, self).__init__(n, h_sign, parentEdge, root)
 
         self.names = names
         self.keywords = keywords
@@ -56,12 +59,14 @@ class HomotopyFeatureState(HomotopyNode):
             goodHSign = newHSign.edgeCross(edge)
 
             if goodHSign:
-                newNames = copy.copy(self.names)
-                newKeywords = copy.copy(self.keywords)
-
+                newNames = None
+                newKeywords = None
                 if isinstance(edge.c, FeatureNode):
-                    newNames |= edge.c.name
-                    newKeywords |= edge.c.keywords
+                    newNames = frozenset(self.names | {edge.c.name})
+                    newKeywords = frozenset(self.keywords | edge.c.keywords)
+                else:
+                    newNames = frozenset(self.names)
+                    newKeywords = frozenset(self.keywords)
 
                 succ = HomotopyFeatureState(n=edge.c, h_sign=newHSign,\
                             names=newNames, keywords=newKeywords, parentEdge=edge,\
@@ -69,8 +74,6 @@ class HomotopyFeatureState(HomotopyNode):
                 result += [(succ, edge.getCost())]
         #pdb.set_trace()
         return result
-
-
 
     # hash function overload
     # This hash takes into account both the node hash (should be defined),
