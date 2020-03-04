@@ -3,3 +3,4 @@
 from .HSignature import HSignature, HSignatureGoal
 from .HomotopyNode import HomotopyNode
 from .HomotopyEdge import HomotopyEdge, rayIntersection
+from .FeatureNode import FeatureNode, HomotopyFeatureState
