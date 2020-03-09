@@ -40,6 +40,8 @@ goalPartialHSign.addConstraint(1, 0)
 names = set(['shaw island'])
 keywords = {'upwelling front'}
 
+# A simple euclidean distance huerestic for the AStar algorithm
+# I doubt this does particulary much to speed on computation if any at all.
 def h_euclidean_tuple(n, data, goal):
     return np.linalg.norm(n.node.pt - goal[0].pt)
 
