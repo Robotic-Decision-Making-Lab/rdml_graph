@@ -18,7 +18,13 @@ import pdb
 # The main entry function to the MCTS algorithm.
 # @param start - the entry state of the MCTS algorithm
 # @param max_iterations - maximum number of iterations the MCTS algorithm runs.
+# @param rewardFunc - the reward function for an end state (sequence, budget, data)
 # @oaram budget - the total budget of
+# @param selection - selection function (current, budget, data)
+# @param rolloutFunc - rollout function (treeState, budget, data)
+# @param solutionFunction - (root, data)
+# @param data - persistent data across the MCTS.
+# @param actor_number - the starting actor number.
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
             rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, actor_number=0):
     # Set the root of the search tree.
