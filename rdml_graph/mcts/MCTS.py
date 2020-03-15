@@ -25,6 +25,10 @@ import pdb
 # @param solutionFunction - (root, data)
 # @param data - persistent data across the MCTS.
 # @param actor_number - the starting actor number.
+#
+# @return - solution, reward
+#           solution - list of states of best path (including start state)
+#           reward - float value of best reward.
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
             rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, actor_number=0):
     # Set the root of the search tree.
