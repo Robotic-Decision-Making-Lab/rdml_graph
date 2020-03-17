@@ -19,6 +19,17 @@ def plot2DGeoGraph(G, color='blue'):
     for n in G:
         plotEdgesFromNode(n, color)
 
+# plot2DPath
+# This function plots a 2D path with arrows showing directionality
+# @param pts - a list of 2D points along the path
+# @param color - the color of the path when plotted.
+# @param head_width - the width of the arrow head
+def plot2DPath(path, color='red', head_width=0.5):
+    for i in range(1, len(path)):
+        diff = path[i] - path[i-1]
+        plt.arrow(path[i-1][0], path[i-1][1], diff[0], diff[1], \
+                length_includes_head=True, head_width=head_width, color=color)
+
 # plot2DGeoPath
 # plot a geometric path given as a list of geometric nodes
 # @param path - a list of GeometricNode(s) in order.
