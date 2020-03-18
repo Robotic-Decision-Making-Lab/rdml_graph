@@ -35,6 +35,9 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
     root = MCTSTree(start, 0, None)
     root.unpicked_children = root.successor()
 
+    bestReward = -np.inf
+    bestSeq = None
+
     # Main loop of MCTS
     for i in tqdm.tqdm(range(max_iterations)):
         try: # Allow keyboard input to interupt MCTS
@@ -46,8 +49,8 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
             while True:
                 if len(current.unpicked_children) > 0:
                     ######## Expansion
-                    child = current.expandNode(budget)
-                    child.unpicked_children = child.successor()
+                    child = current.expandNode()
+                    child.unpicked_children = child.successor(budget)
 
                     current = child
 
@@ -67,6 +70,9 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
             sequence = rolloutFunc(current, budget, data)
             rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
 
+            if rolloutReward > bestReward:
+                bestReward = rolloutReward
+                bestSeq = sequence
             #pdb.set_trace()
 
             ######## BACK-PROPOGATE
@@ -76,6 +82,6 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
     # end main for loop
 
     ######## SOLUTION
-    solutionLeaf = solutionFunc(root, data)
-    return solutionLeaf.getPath(), solutionLeaf.reward()
+    solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
+    return solutionSeq, solutionReward
 # End MCTS

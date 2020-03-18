@@ -85,7 +85,7 @@ def randomRollout(treeState, budget, data=None):
 # @param bestLeaf - the best possible leaf
 # @param bestR - the best seen reward
 # @param data - generic data possibly useful for the best reward.
-def bestAvgNext(root, data=None):
+def bestAvgNext(root, bestSeq, bestR, data=None):
     best = -np.inf
     bestIdx = -1
 
@@ -96,11 +96,11 @@ def bestAvgNext(root, data=None):
             bestIdx = i
 
     if bestIdx != -1:
-        return root.children[bestIdx]
+        return root.children[bestIdx].getPath(), root.children[bestIdx].reward()
     else:
-        return root
+        return root, -np.inf
 
-def mostSimulations(root, data=None):
+def mostSimulations(root, bestSeq, bestR, data=None):
     best = -np.inf
     bestIdx = -1
     for i in range(len(root.children)):
@@ -110,9 +110,9 @@ def mostSimulations(root, data=None):
             bestIdx = i
 
     if bestIdx != -1:
-        return root.children[bestIdx]
+        return root.children[bestIdx].getPath(), root.children[bestIdx].reward()
     else:
-        return root
+        return root, -np.inf
 
 # bestReward
 # This function selects the best seen leaf
@@ -120,7 +120,7 @@ def mostSimulations(root, data=None):
 # @param bestLeaf - the best possible leaf
 # @param bestR - the best seen reward
 # @param data - generic data possibly useful for the best reward.
-def bestAvgReward(root, data=None):
+def bestAvgReward(root, bestSeq, bestR, data=None):
     best = -np.inf
     bestIdx = -1
 
@@ -131,10 +131,18 @@ def bestAvgReward(root, data=None):
             bestIdx = i
 
     if bestIdx != -1:
-        return bestAvgReward(root.children[bestIdx], data)
+        return bestAvgReward(root.children[bestIdx].getPath(), data)
     else:
-        return root
+        return root, -np.inf
 
+# highestReward
+# This function selects the best seen leaf
+# @param root - the current state of the rollout function
+# @param bestLeaf - the best possible leaf
+# @param bestR - the best seen reward
+# @param data - generic data possibly useful for the best reward.
+def highestReward(root, bestSeq, bestR, data=None):
+    return bestSeq, bestR
 
 
 

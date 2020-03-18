@@ -19,6 +19,7 @@ class MCTSTree(SearchState):
 
         self.unpicked_children = []
         self.children = []
+        self.best_reward = -np.inf
         self.sum_reward = 0
         self.num_updates = 0
         self.actor_number = 0
@@ -36,8 +37,12 @@ class MCTSTree(SearchState):
     def backpropReward(self, reward, actor_number):
         if actor_number == self.actor_number:
             self.sum_reward  += reward
+            if reward > self.best_reward:
+                self.best_reward = reward
         else:
             self.sum_reward -= reward
+            if -reward > self.best_reward:
+                self.best_reward = -reward
         self.num_updates += 1
 
         if self.parent is not None:
@@ -51,7 +56,11 @@ class MCTSTree(SearchState):
     # @return - the MCTSTree to expand
     # @post - unpicked children has child removed, added to children
     def expandNode(self, idx = None):
-        childIdx = np.random.randint(0, len(self.unpicked_children))
+        childIdx = None
+        if idx is None:
+            childIdx = np.random.randint(0, len(self.unpicked_children))
+        else:
+            childIdx = idx
         child = self.unpicked_children[childIdx]
         del self.unpicked_children[childIdx]
         self.children.append(child)
