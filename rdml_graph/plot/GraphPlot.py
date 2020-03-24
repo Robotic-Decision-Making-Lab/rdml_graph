@@ -25,10 +25,12 @@ def plot2DGeoGraph(G, color='blue'):
 # @param color - the color of the path when plotted.
 # @param head_width - the width of the arrow head
 def plot2DPath(path, color='red', head_width=0.5):
+    line = None
     for i in range(1, len(path)):
         diff = path[i] - path[i-1]
-        plt.arrow(path[i-1][0], path[i-1][1], diff[0], diff[1], \
+        line = plt.arrow(path[i-1][0], path[i-1][1], diff[0], diff[1], \
                 length_includes_head=True, head_width=head_width, color=color)
+    return line
 
 # plot2DGeoPath
 # plot a geometric path given as a list of geometric nodes
