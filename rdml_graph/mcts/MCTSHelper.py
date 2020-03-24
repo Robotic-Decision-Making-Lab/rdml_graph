@@ -82,7 +82,7 @@ def randomRollout(treeState, budget, data=None):
 # bestAvgNext
 # This function selects the next action which optimizes the best average reward.
 # @param root - the current state of the rollout function
-# @param bestLeaf - the best possible leaf
+# @param bestSeq - the sequence with highest reward
 # @param bestR - the best seen reward
 # @param data - generic data possibly useful for the best reward.
 def bestAvgNext(root, bestSeq, bestR, data=None):
@@ -98,7 +98,7 @@ def bestAvgNext(root, bestSeq, bestR, data=None):
     if bestIdx != -1:
         return root.children[bestIdx].getPath(), root.children[bestIdx].reward()
     else:
-        return root, -np.inf
+        return root.getPath(), root.reward()
 
 def mostSimulations(root, bestSeq, bestR, data=None):
     best = -np.inf
@@ -112,12 +112,12 @@ def mostSimulations(root, bestSeq, bestR, data=None):
     if bestIdx != -1:
         return root.children[bestIdx].getPath(), root.children[bestIdx].reward()
     else:
-        return root, -np.inf
+        return root.getPath(), root.reward()
 
 # bestReward
 # This function selects the best seen leaf
 # @param root - the current state of the rollout function
-# @param bestLeaf - the best possible leaf
+# @param bestSeq - the sequence with highest reward
 # @param bestR - the best seen reward
 # @param data - generic data possibly useful for the best reward.
 def bestAvgReward(root, bestSeq, bestR, data=None):
@@ -131,14 +131,16 @@ def bestAvgReward(root, bestSeq, bestR, data=None):
             bestIdx = i
 
     if bestIdx != -1:
-        return bestAvgReward(root.children[bestIdx].getPath(), data)
+        return bestAvgReward(root.children[bestIdx], bestSeq, bestR, data)
     else:
-        return root, -np.inf
+        return root.getPath(), root.reward()
 
 # highestReward
-# This function selects the best seen leaf
+# This function selects the best seen leaf. (Should not be selected for multiple agents)
+# The best sequence passed is the best reward returned regardless of the agent
+# receiving that reward.
 # @param root - the current state of the rollout function
-# @param bestLeaf - the best possible leaf
+# @param bestSeq - the sequence with highest reward
 # @param bestR - the best seen reward
 # @param data - generic data possibly useful for the best reward.
 def highestReward(root, bestSeq, bestR, data=None):
