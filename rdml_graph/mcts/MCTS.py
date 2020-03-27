@@ -33,7 +33,7 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
             rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, actor_number=0):
     # Set the root of the search tree.
     root = MCTSTree(start, 0, None)
-    root.unpicked_children = root.successor()
+    root.unpicked_children = root.successor(budget)
 
     bestReward = -np.inf
     bestSeq = None
