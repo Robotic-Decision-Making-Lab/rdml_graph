@@ -32,7 +32,9 @@ class HSignature(object):
         if not isinstance(edge, HomotopyEdge):
             raise TypeError('edgeCross passed an edge which is not of type HomotopyEdge')
         self.sign += edge.HSignFrag
-        if np.amax(self.sign) > 1 or np.amin(self.sign) < -1:
+        if len(self.sign) < 1:
+            return True
+        elif np.amax(self.sign) > 1 or np.amin(self.sign) < -1:
             return False
         return True
 

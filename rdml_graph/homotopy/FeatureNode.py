@@ -13,6 +13,7 @@ from ..core import GeometricNode
 from . import HomotopyNode
 import copy
 
+
 class FeatureNode(GeometricNode):
     # constructor
     # @param id - an integer which describes the node.

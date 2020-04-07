@@ -85,7 +85,6 @@ def plotTree(root, max_levels=-1, show_labels=False):
             idx = nodesToIdx[n]
             plt.text(pts[idx,0], pts[idx,1], str(n.getLabel()), \
                 horizontalalignment='center', verticalalignment='center', fontsize=8, zorder=3)
-    plt.show()
 
 
 

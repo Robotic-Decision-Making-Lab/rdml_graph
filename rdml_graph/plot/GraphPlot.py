@@ -51,7 +51,7 @@ def plot2DGeoPath(path, color='red'):
 # @param path - a list of GeometricNode(s) in order.
 # @param color - the color of the path when plotted.
 def plotHomotopyPath(path, color='red'):
-    if len(path) <= 0:
+    if path is None or len(path) <= 0:
         return
     points = np.empty((len(path), path[0].node.pt.shape[0]))
 

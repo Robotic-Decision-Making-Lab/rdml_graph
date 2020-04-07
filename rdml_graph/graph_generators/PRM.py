@@ -34,8 +34,13 @@ from .BasicSamplingFunctions import sample2DUniform, noCollision, EdgeConnection
 def PRM(map, num_points, r, initialNodes=[], sampleF=sample2DUniform, \
         collision=noCollision, connection=EdgeConnection, bidirectional=True):
 
+    maxId = -1
+    for n in initialNodes:
+        if n.id > maxId:
+            maxId = n.id
+
     # sample all points
-    nodes, pts = sampleF(map, num_points, idStart=len(initialNodes))
+    nodes, pts = sampleF(map, num_points, idStart=maxId)
 
     if len(initialNodes) > 0:
         initPts =  np.empty((len(initialNodes),) + initialNodes[0].pt.shape)

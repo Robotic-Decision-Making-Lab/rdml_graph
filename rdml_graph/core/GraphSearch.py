@@ -10,6 +10,7 @@ from ..homotopy import HSignatureGoal
 import heapq
 # For queue
 from collections import deque
+import numpy as np
 
 # defualt huerestic function for AStar.
 # it should work for any type of state, but when using the algorithm degrades
@@ -17,6 +18,11 @@ from collections import deque
 # @param x - the graph input path.
 def default_h(x, data = None, goal=None):
     return 0.0
+
+# A simple euclidean distance huerestic for the AStar algorithm
+# I doubt this does particulary much to speed on computation if any at all.
+def h_euclidean(n, data, goal):
+    return np.linalg.norm(n.node.pt - goal[0].pt)
 
 # graphGoalCheck
 # A basic graph checker looking for a particular node to be the same.
