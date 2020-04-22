@@ -16,12 +16,14 @@ def plotFeatureNodes(nodes, dashlength = 40):
     xPts = []
     yPts = []
     for n in nodes:
-        plt.text(n.pt[0], n.pt[1], n.name, withdash=True, \
-                dashdirection = 0, \
-                dashlength = dashlength,\
-                rotation = 0, \
-                dashrotation = 0,
-                dashpush = 10)
+        #plt.text(n.pt[0], n.pt[1], n.name, withdash=True, \
+        #        dashdirection = 0, \
+        #        dashlength = dashlength,\
+        #        rotation = 0, \
+        #        dashrotation = 0,
+        #        dashpush = 10)
+        plt.annotate(n.name, (n.pt[0], n.pt[1]), xytext=(n.pt[0] - 0.25, n.pt[1] + 0.35))
+
         xPts.append(n.pt[0])
         yPts.append(n.pt[1])
 
