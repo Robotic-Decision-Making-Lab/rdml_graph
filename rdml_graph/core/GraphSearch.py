@@ -7,7 +7,7 @@ from . import SearchState
 from . import State
 from ..homotopy import HSignatureGoal
 # For the priority queue used by the AStar algorith.
-import heapq
+import heapq, queue
 # For queue
 from collections import deque
 import numpy as np
@@ -30,6 +30,11 @@ def h_euclidean(n, data, goal):
 # @param data - some set of input data
 def graph_goal_check(n, data, goal):
     return n == goal
+
+# pass_all
+# goal check that allows all through
+def pass_all(n, data, goal):
+    return True
 
 # partial_homotopy_goal_check
 # Checks if the nodes are the same, and checks if the h-signatures fit the
@@ -113,6 +118,62 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
     return [], float('inf')
 
 
-
-def BFS(start):
+# DFS
+# Depth first search
+# A depth first search which has a budget which acts as a dynamic iterative
+# deepening search (IDS). This is a generic function for performing a search
+# of a tree structure.
+def DFS():
     pass
+    # Not implemented
+
+
+
+
+
+# BFS
+# Breadth First Search algorithm. This has an optional budget which restricts
+# expansion beyond the budget given the cost of the state function returned
+# REQUIRED
+# @param start - the starting
+# OPTIONAL
+# @param budget - the budget of the search, if ignored, no cost budget is given.
+# @param g - a goal condition that must be met in order to be in the returned states.
+#                 g(n, data, goal)
+# @param data - input data for the goal function if required.
+# @param goal - any goal data required by g function.
+#
+# @return - list of structs of [(path, cost),...] or [([n1,n2,n3,...], cost), ...]
+def BFS(start, budget=float('inf'), g=pass_all, data=None, goal=None):
+    startState = SearchState(start)
+    #frontier = queue.Queue()
+    #frontier.put(startState)
+    frontier = [startState]
+    explored = set()
+
+    endStates = []
+
+    while len(frontier) > 0:
+        cur = frontier.pop(0)
+
+        if cur.state not in explored:
+            # add state to set of explored states
+            explored.add(cur.state)
+
+            # check for end cases
+            if cur.cost() >= budget and g(cur.state, data, goal):
+                endStates.append(cur)
+            else:
+                # get list of successors
+                successors = cur.successor()
+                if len(successors) == 0:
+                    if g(cur.state, data, goal):
+                        endStates.append(cur)
+                else:
+                    # add all successors to frontier
+                    for succ in successors:
+                        # check to make sure state hasn't already been explored.
+                        if succ.state not in explored:
+                            # run heuristic function.
+                            frontier.append(succ)
+    return [(s.getPath(), s.rCost) for s in endStates]

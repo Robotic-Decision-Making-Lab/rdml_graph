@@ -12,7 +12,10 @@ from ..homotopy import HomotopyEdge
 ########################## Sampling functions for PRM's
 
 def sample2DUniform(map, num_samples, idStart=0):
-    samples = np.random.random((num_samples, 2))  * map['size']
+    height = map['height']
+    width = map['width']
+
+    samples = np.random.random((num_samples, 2))  * np.array([width, height]) - np.array([width/2, height/2])
     nodes = [GeometricNode(i + idStart, samples[i]) for i in range(samples.shape[0])]
     return nodes, samples
 

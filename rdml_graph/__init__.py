@@ -12,3 +12,6 @@ from .plot import *
 
 from . import graph_generators
 from .graph_generators import *
+
+from . import information_gathering
+from .information_gathering import *
