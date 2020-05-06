@@ -37,7 +37,7 @@ class Node(State):
     # == operator
     # Only looks at the id's to check if it is the same node.
     def __eq__(self, other):
-        return self.id == other.id
+        return isinstance(other, Node) and self.id == other.id
 
     # != operator
     # returns inverse of equals sign.

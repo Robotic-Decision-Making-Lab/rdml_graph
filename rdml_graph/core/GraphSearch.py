@@ -166,14 +166,14 @@ def BFS(start, budget=float('inf'), g=pass_all, data=None, goal=None):
             else:
                 # get list of successors
                 successors = cur.successor()
-                if len(successors) == 0:
-                    if g(cur.state, data, goal):
-                        endStates.append(cur)
-                else:
-                    # add all successors to frontier
-                    for succ in successors:
-                        # check to make sure state hasn't already been explored.
-                        if succ.state not in explored:
-                            # run heuristic function.
-                            frontier.append(succ)
+                # add all successors to frontier that have not been explored
+                anyExplored = False
+                for succ in successors:
+                    # check to make sure state hasn't already been explored.
+                    if succ.state not in explored:
+                        anyExplored = True
+                        frontier.append(succ)
+                if anyExplored == True and g(cur.state, data, goal):
+                    endStates.append(cur)
+
     return [(s.getPath(), s.rCost) for s in endStates]

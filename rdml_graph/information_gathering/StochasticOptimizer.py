@@ -5,7 +5,7 @@
 # Gradients caluclated by perturbating the path and approximating based on pertubations.
 
 import numpy as np
-import random
+import random, tqdm
 import pdb
 
 from scipy.interpolate import RegularGridInterpolator
@@ -44,7 +44,7 @@ class StochasticOptimizer(object):
         np_path = path#np.vstack([x.npArray() for x in path])
         p_length = len(path)
 
-        for ii in range(self.num_its):
+        for ii in tqdm.tqdm(range(self.num_its)):
 
             if self.verbose:
                 print("Percent done: %.2f" % ((float(ii) / float(self.num_its)) * 100))

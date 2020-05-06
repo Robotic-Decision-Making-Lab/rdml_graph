@@ -12,6 +12,8 @@ import scipy.spatial as spa
 import numpy as np
 from .BasicSamplingFunctions import sample2DUniform, noCollision, EdgeConnection
 
+import pdb
+
 # PRM
 # Generates a Probabilistic RoadMap (PRM) of the sample space.
 # The exact sample space can be determined by setting different sample functions,
@@ -38,6 +40,9 @@ def PRM(map, num_points, r, initialNodes=[], sampleF=sample2DUniform, \
     for n in initialNodes:
         if n.id > maxId:
             maxId = n.id
+
+    #pdb.set_trace()
+    maxId += 1
 
     # sample all points
     nodes, pts = sampleF(map, num_points, idStart=maxId)
