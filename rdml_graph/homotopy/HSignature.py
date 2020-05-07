@@ -75,6 +75,19 @@ class HSignature(object):
 
         self.sign[key] = item
 
+    def __neg__(self):
+        sign = self.copy()
+        sign.sign = -sign.sign
+        return sign
+
+    def __add__(self, other):
+        newSign = self.copy()
+        newSign.sign += other.sign
+        return newSign
+
+    def __sub__(self, other):
+        return self + (-other)
+
     # str(self) operator overload
     # Human readable print output
     def __str__(self):
@@ -124,6 +137,8 @@ class HSignatureGoal(object):
     def checkSign(self, other):
         return np.all(np.logical_or(np.logical_not(self.mask),\
                                     np.equal(other.sign, self.sign.sign)))
+
+        
 
 
 

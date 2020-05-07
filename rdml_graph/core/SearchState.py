@@ -33,6 +33,16 @@ class SearchState(object):
     def cost(self):
         return self.rCost + self.hCost
 
+    # getRevPath
+    # This function works its way to up the search tree to the root node
+    # to return the list of all states in path.
+    def getRevPath(self):
+        if self.parent is None:
+            return [self.state]
+
+        return [self.state] + self.parent.getPath()
+
+
     # getPath
     # This function works its way to up the search tree to the root node
     # to return the list of all states in path.

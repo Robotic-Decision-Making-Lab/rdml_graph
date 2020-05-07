@@ -84,4 +84,4 @@ class HomotopyNode(State):
     ###### THIS is actually important for SEARCHES as it defines what is considered
     # already explored.
     def __hash__(self):
-        return hash((self.node, self.h_sign, self.root))
+        return hash((self.node, self.h_sign))

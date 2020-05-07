@@ -75,6 +75,7 @@ def partial_homotopy_feature_goal(n, data, goal):
 # AStar
 # A generic implementation of the AStar algorithm.
 # An optimal graph search algorithm.
+# If looking for shortest path to all nodes, see Dijkstra's algorithm.
 # REQUIRED
 # @param start - the start state of the search
 # OPTIONAL
@@ -116,6 +117,43 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
                     heapq.heappush(frontier, succ)
     # End of while, no solution found.
     return [], float('inf')
+
+
+
+# dijkstra's algorithm (All nodes)
+# This is dijkstra's algorithm ran to find the shortest path to all reachable
+# nodes of a graph from the start location.
+# See any algorithms book for description of dijkstra's algorithm.
+# Very similar to the above AStar algorithm without being single query, and
+# without a huerestic function.
+# @param start - the start location for dijkstra's algorithm (must be a State class)
+#
+# @return - a dictionary of every SearchState in the tree. (key is state)
+def dijkstra(start, data = None):
+    startState = SearchState(start, hCost=h(start, data, goal))
+    frontier = [startState]
+    explored = {}
+
+    while len(frontier) > 0:
+        # get current state to explore
+        cur = heapq.heappop(frontier)
+
+        if cur.state not in explored:
+
+            # add state to dict of explored states
+            explored[cur.state] = cur
+
+            # get list of successors
+            successors = cur.successor()
+
+            # add all successors to frontier
+            for succ in successors:
+                # check to make sure state hasn't already been explored.
+                if succ.state not in explored:
+                    heapq.heappush(frontier, succ)
+
+    # End of while, return all found paths.
+    return explored
 
 
 # DFS
