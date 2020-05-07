@@ -69,7 +69,7 @@ def partial_homotopy_feature_goal(n, data, goal):
         raise TypeError("partial_homotopy_feature_goal given goal which should be (Node, HSignatureGoal, set(string), set(string))")
 
     return goalH.checkSign(n.h_sign) and goalNode == n.node and \
-            goalNames <= n.names and goalKeywords <= n.keywords
+            goalNames <= n.names
 
 
 # AStar

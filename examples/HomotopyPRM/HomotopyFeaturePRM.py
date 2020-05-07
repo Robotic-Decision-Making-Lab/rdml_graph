@@ -12,7 +12,7 @@ import numpy as np
 
 
 ############### Create PRM
-map = {'size': np.array([10,10]), 'hazards': np.array([[5.0, 5.0], [7.5, 3.0]])}
+map = {'width': 20, 'height': 20, 'hazards': np.array([[5.0, 5.0], [7.5, 3.0]])}
 
 startN = gr.GeometricNode(0, np.array([6, 7]))
 endN = gr.GeometricNode(1, np.array([8.5, 7]))
@@ -23,13 +23,14 @@ feat2 = gr.FeatureNode(3, "uf-1", pt=np.array([3.0, 3.0]), keywords={'upwelling 
 
 initialNodes = [startN, endN, feat1, feat2]
 
-G = gr.PRM(map, 100, 3.0, connection=gr.HomotopyEdgeConn, initialNodes=initialNodes)
+G = gr.PRM(map, 100, 6.0, connection=gr.HomotopyEdgeConn, initialNodes=initialNodes)
 
 
 ############### Setup and run AStar
 num_features = map['hazards'].shape[0]
 # Create the start homotopy node over the PRM graph.
-start = gr.HomotopyFeatureState(G[0], gr.HSignature(num_features), root=G[0])
+names = frozenset(['shaw island'])
+start = gr.HomotopyFeatureState(G[0], gr.HSignature(num_features), root=G[0], neededNames=names)
 
 
 # Create the goal h signature.
@@ -37,7 +38,6 @@ goalPartialHSign = gr.HSignatureGoal(num_features)
 goalPartialHSign.addConstraint(0, -1) # add constraints to goal hsign
 goalPartialHSign.addConstraint(1, 0)
 
-names = set(['shaw island'])
 keywords = {'upwelling front'}
 
 # A simple euclidean distance huerestic for the AStar algorithm
@@ -57,5 +57,6 @@ print('cost = ' + str(cost))
 # plot the geometric 2d graph
 gr.plot2DGeoGraph(G, 'green')
 gr.plotHomotopyPath(path, 'red')
+gr.plotFeatureNodes([feat1, feat2])
 plt.scatter(map['hazards'][:,0], map['hazards'][:,1], color='blue', zorder=5)
 plt.show()
