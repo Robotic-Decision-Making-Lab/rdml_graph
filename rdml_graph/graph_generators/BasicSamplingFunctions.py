@@ -62,5 +62,10 @@ def EdgeConnection(parent, child, map, cost = None):
 def HomotopyEdgeConn(parent, child, map, cost = None):
     if cost is None:
         cost = np.linalg.norm(parent.pt - child.pt, ord=2)
-    parent.addEdge(HomotopyEdge(parent, child, cost=cost, features=map['hazards']))
+    if 'ray_angle' in map:
+        parent.addEdge(HomotopyEdge(parent, child, cost=cost,  \
+                        features=map['hazards'], ray_angle=map['ray_angle']))
+    else:
+        parent.addEdge(HomotopyEdge(parent, child, cost=cost, features=map['hazards']))
+
     return cost

@@ -59,7 +59,6 @@ def PRM(map, num_points, r, initialNodes=[], sampleF=sample2DUniform, \
     # generate kd-tree from data.
     nn = spa.cKDTree(pts) # nn = nearest neighbors search.
 
-
     # go through every point and check for connections.
     for i in range(len(nodes)):
         n = nodes[i] # current node.

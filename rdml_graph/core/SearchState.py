@@ -40,7 +40,7 @@ class SearchState(object):
         if self.parent is None:
             return [self.state]
 
-        return [self.state] + self.parent.getPath()
+        return [self.state] + self.parent.getRevPath()
 
 
     # getPath

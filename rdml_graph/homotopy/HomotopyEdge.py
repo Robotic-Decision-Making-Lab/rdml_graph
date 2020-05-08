@@ -84,7 +84,7 @@ class HomotopyEdge(Edge):
 
 
     # geo2DHSignCheck
-    def geo2DHSignCheck(self, features, ray_angle=0):
+    def geo2DHSignCheck(self, features, ray_angle=np.pi/2):
         num_features = len(self.HSignFrag)
 
         for i in range(num_features):

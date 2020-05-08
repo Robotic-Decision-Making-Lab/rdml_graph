@@ -86,7 +86,9 @@ class HSignature(object):
         return newSign
 
     def __sub__(self, other):
-        return self + (-other)
+        newSign = self.copy()
+        newSign.sign -= other.sign
+        return newSign
 
     # str(self) operator overload
     # Human readable print output
@@ -138,7 +140,7 @@ class HSignatureGoal(object):
         return np.all(np.logical_or(np.logical_not(self.mask),\
                                     np.equal(other.sign, self.sign.sign)))
 
-        
+
 
 
 

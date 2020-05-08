@@ -129,8 +129,8 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
 # @param start - the start location for dijkstra's algorithm (must be a State class)
 #
 # @return - a dictionary of every SearchState in the tree. (key is state)
-def dijkstra(start, data = None):
-    startState = SearchState(start, hCost=h(start, data, goal))
+def dijkstra(start):
+    startState = SearchState(start)
     frontier = [startState]
     explored = {}
 
