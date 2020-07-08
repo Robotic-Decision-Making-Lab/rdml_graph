@@ -13,6 +13,7 @@ from ..core import GeometricNode
 from . import HomotopyNode
 import copy
 
+import pdb
 
 class FeatureNode(GeometricNode):
     # constructor
@@ -60,8 +61,8 @@ class HomotopyFeatureState(HomotopyNode):
             if goodHSign:
                 newNames = None
                 newKeywords = None
-                if isinstance(edge.c, FeatureNode) and edge.c.name in self.neededNames:
-                    newNames = frozenset(self.names | {edge.c.name})
+                if isinstance(edge.c, FeatureNode) and edge.c.name.lower() in self.neededNames:
+                    newNames = frozenset(self.names | {edge.c.name.lower()})
                 else:
                     newNames = frozenset(self.names)
 
