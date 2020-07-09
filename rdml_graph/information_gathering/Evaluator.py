@@ -25,7 +25,7 @@
 import pdb, itertools, time, sys
 from scipy.interpolate import RegularGridInterpolator
 import numpy as np
-from rdml_utils import locationArange, Location, euclideanDist, HSignature
+#from rdml_utils import locationArange, Location, euclideanDist, HSignature
 
 from shapely.geometry import Point, LineString
 
@@ -53,7 +53,7 @@ class PathEvaluatorWithRadius(PathEvaluator):
   """docstring for PathEvaluatorWithRadius"""
   def __init__(self, info_field, cost_field, x_ticks, y_ticks, yaml_eval):
     # self.rep_pts = rep_pts
-    self.reference_h_sig = HSignature(())
+    #self.reference_h_sig = HSignature(())
     self.info_field = info_field
     self.cost_field = cost_field
     self.radius = yaml_eval['radius']
@@ -70,9 +70,10 @@ class PathEvaluatorWithRadius(PathEvaluator):
     mask = np.zeros(self.info_field.shape)
 
     if isinstance(budgeted_path, np.ndarray):
-      shapely_path = [Location(xlon=pt[0], ylat=pt[1]).shapelyPoint() for pt in budgeted_path]
-    else:
-      shapely_path = [pt.shapelyPoint() for pt in budgeted_path]
+      #shapely_path = [Location(xlon=pt[0], ylat=pt[1]).shapelyPoint() for pt in budgeted_path]
+      shapely_path = [Point((pt[0], pt[1])) for pt in budgeted_path]
+    # else:
+    #   shapely_path = [pt.shapelyPoint() for pt in budgeted_path]
 
     ls = LineString(shapely_path)
 
@@ -99,9 +100,10 @@ class PathEvaluatorWithRadius(PathEvaluator):
       return 0.0, 0.0
 
     if isinstance(budgeted_path, np.ndarray):
-      shapely_path = [Location(xlon=pt[0], ylat=pt[1]).shapelyPoint() for pt in budgeted_path]
-    else:
-      shapely_path = [pt.shapelyPoint() for pt in budgeted_path]
+      #shapely_path = [Location(xlon=pt[0], ylat=pt[1]).shapelyPoint() for pt in budgeted_path]
+      shapely_path = [Point((pt[0], pt[1])) for pt in budgeted_path]
+    # else:
+    #   shapely_path = [pt.shapelyPoint() for pt in budgeted_path]
 
     ls = LineString(shapely_path)
 
@@ -164,11 +166,12 @@ class PathEvaluatorWithRadius(PathEvaluator):
 
 
     else:
-      query_pts = []
-      for p1, p2 in zip(budgeted_path[:-1], budgeted_path[1:]):
-        query_pts += locationArange(p1, p2, self.step_size)
-      query_pts = [pt.asTuple() for pt in query_pts]
-      query_pts.append(p2.asTuple())
+      # query_pts = []
+      # for p1, p2 in zip(budgeted_path[:-1], budgeted_path[1:]):
+      #   query_pts += locationArange(p1, p2, self.step_size)
+      # query_pts = [pt.asTuple() for pt in query_pts]
+      # query_pts.append(p2.asTuple())
+      print('functionality not defined, needs an ndarray of points')
 
     for pt in query_pts:
       z = np.sqrt((self.xx-pt[0])**2 + (self.yy-pt[1])**2)
@@ -222,11 +225,12 @@ class PathEvaluatorWithRadius(PathEvaluator):
 
 
     else:
-      query_pts = []
-      for p1, p2 in zip(budgeted_path[:-1], budgeted_path[1:]):
-        query_pts += locationArange(p1, p2, self.step_size)
-      query_pts = [pt.asTuple() for pt in query_pts]
-      query_pts.append(p2.asTuple())
+      print('functionality not defined, needs an ndarray of points')
+      # query_pts = []
+      # for p1, p2 in zip(budgeted_path[:-1], budgeted_path[1:]):
+      #   query_pts += locationArange(p1, p2, self.step_size)
+      # query_pts = [pt.asTuple() for pt in query_pts]
+      # query_pts.append(p2.asTuple())
 
     for pt in query_pts:
       z = np.sqrt((self.xx-pt[0])**2 + (self.yy-pt[1])**2)
@@ -250,14 +254,14 @@ class PathEvaluatorWithRadius(PathEvaluator):
 
     return np.sum(mask*self.info_field), 1.0
 
-  def getHomotopyScore(self, query_path):
-
-    query_h_sig = HSignature.fromPath(query_path, self.rep_pts)
-
-    if query_h_sig.contains(self.reference_h_sig) or self.reference_h_sig.contains(query_h_sig):
-      return 0.
-    else:
-      return -1.
+  # def getHomotopyScore(self, query_path):
+  #
+  #   query_h_sig = HSignature.fromPath(query_path, self.rep_pts)
+  #
+  #   if query_h_sig.contains(self.reference_h_sig) or self.reference_h_sig.contains(query_h_sig):
+  #     return 0.
+  #   else:
+  #     return -1.
 
 
 class PathEvaluatorAlongPath(PathEvaluator):
@@ -269,7 +273,7 @@ class PathEvaluatorAlongPath(PathEvaluator):
     self.step_size = yaml_eval['step_size']
     self.rep_pts = rep_pts
 
-    self.reference_h_sig = HSignature(())
+    #self.reference_h_sig = HSignature(())
 
 
   def getScore(self, path, budget=float('inf')):
@@ -308,13 +312,13 @@ class PathEvaluatorAlongPath(PathEvaluator):
 
 
     else:
-      query_pts = []
-      for p1, p2 in zip(budgeted_path[:-1], budgeted_path[1:]):
-        query_pts += locationArange(p1, p2, self.step_size)
+      # query_pts = []
+      # for p1, p2 in zip(budgeted_path[:-1], budgeted_path[1:]):
+      #   query_pts += locationArange(p1, p2, self.step_size)
+      print('functionality not defined, needs an ndarray of points')
 
-
-      query_pts = [pt.asTuple() for pt in query_pts]
-      query_pts.append(p2.asTuple())
+      # query_pts = [pt.asTuple() for pt in query_pts]
+      # query_pts.append(p2.asTuple())
 
     info_scores = self.infoInterpFn(query_pts)
     # cost_scores = self.costInterpFn(query_pts)
@@ -322,25 +326,25 @@ class PathEvaluatorAlongPath(PathEvaluator):
     np.nan_to_num(info_scores, copy=False)
     return (np.nanmean(info_scores) / self.step_size) * budgeted_path_len, 0.0 # (np.mean(cost_scores) / self.step_size) * budgeted_path_len
 
-  def getHomotopyScore(self, query_path):
-
-    query_h_sig = HSignature.fromPath(query_path, self.rep_pts)
-
-    if query_h_sig.contains(self.reference_h_sig) or self.reference_h_sig.contains(query_h_sig):
-      return 0.
-    else:
-      return -1.
+  # def getHomotopyScore(self, query_path):
+  #
+  #   query_h_sig = HSignature.fromPath(query_path, self.rep_pts)
+  #
+  #   if query_h_sig.contains(self.reference_h_sig) or self.reference_h_sig.contains(query_h_sig):
+  #     return 0.
+  #   else:
+  #     return -1.
 
 
 def applyBudget(path, budget, verbose=False):
-  distances = [euclideanDist(path[pt_idx-1], path[pt_idx]) if pt_idx > 0 else 0 for pt_idx in range(len(path))]
+  distances = [np.linalg.norm(path[pt_idx-1] - path[pt_idx]) if pt_idx > 0 else 0 for pt_idx in range(len(path))]
   cumulative_distances = np.cumsum(distances)
   budgeted_path = [path[pt_idx] for pt_idx in range(len(path)) if cumulative_distances[pt_idx] <= budget]
 
   if len(budgeted_path) < len(path):
     budget_diff = budget - cumulative_distances[len(budgeted_path)-1]
     assert budget_diff > 0
-    unit_vec = (path[len(budgeted_path)] - budgeted_path[-1]) / euclideanDist(budgeted_path[-1], path[len(budgeted_path)])
+    unit_vec = (path[len(budgeted_path)] - budgeted_path[-1]) / np.linalg.norm(budgeted_path[-1] - path[len(budgeted_path)])
     budgeted_path.append(budgeted_path[-1] + unit_vec*budget_diff)
 
   else:
@@ -358,53 +362,53 @@ def applyBudget(path, budget, verbose=False):
 
 
 
-if __name__ == '__main__':
-  n_ticks = 51
-
-  x_ticks = np.linspace(-25., 25., n_ticks)
-  y_ticks = np.linspace(-25., 25., n_ticks)
-
-  info_field = np.random.random((len(x_ticks), len(y_ticks)))
-  cost_field = np.random.random((len(x_ticks), len(y_ticks)))
-
-  infoInterpFn = RegularGridInterpolator([x_ticks, y_ticks], info_field)
-  costInterpFn = RegularGridInterpolator([x_ticks, y_ticks], cost_field)
-
-
-
-
-  path = [Location(xlon=-10.,ylat=-10.),
-          Location(xlon=10.,ylat=-10.),
-          Location(xlon=0., ylat=0.0)]
-
-  rep_pts = []
-
-  yaml_eval = {'radius':20, 'method':'linear'}
-  evaluator_radius = PathEvaluatorWithRadius(info_field, cost_field, x_ticks, y_ticks, yaml_eval)
-
-  yaml_eval = {'step_size':.2}
-  evaluator_linear = PathEvaluator(infoInterpFn, infoInterpFn, yaml_eval)
-
-  paths = np.random.random((1000, 5 ,2))*50 - 25
-
-
-  exact_scores = []
-  tick = time.time()
-  for path in paths:
-    score, _ = evaluator_radius.getExactScore(path, budget=100)
-    exact_scores.append(score)
-  print("With Exact Distance: %.3f, %.3f" % (time.time() - tick, np.mean(exact_scores)))
-
-  appx_scores = []
-  tick = time.time()
-  for path in paths:
-    score, _ = evaluator_radius.getScore(path, budget=100, plot=True)
-    appx_scores.append(score)
-  print("With Appx Distance: %.3f, %.3f" % (time.time() - tick, np.mean(appx_scores)))
-
-  linear_scores = []
-  tick = time.time()
-  for path in paths:
-    score, _ = evaluator_linear.getScore(path, budget=100)
-    linear_scores.append(score)
-  print("Linear: %.3f, %.3f" % (time.time() - tick, np.mean(linear_scores)))
+# if __name__ == '__main__':
+#   n_ticks = 51
+#
+#   x_ticks = np.linspace(-25., 25., n_ticks)
+#   y_ticks = np.linspace(-25., 25., n_ticks)
+#
+#   info_field = np.random.random((len(x_ticks), len(y_ticks)))
+#   cost_field = np.random.random((len(x_ticks), len(y_ticks)))
+#
+#   infoInterpFn = RegularGridInterpolator([x_ticks, y_ticks], info_field)
+#   costInterpFn = RegularGridInterpolator([x_ticks, y_ticks], cost_field)
+#
+#
+#
+#
+#   path = [Location(xlon=-10.,ylat=-10.),
+#           Location(xlon=10.,ylat=-10.),
+#           Location(xlon=0., ylat=0.0)]
+#
+#   rep_pts = []
+#
+#   yaml_eval = {'radius':20, 'method':'linear'}
+#   evaluator_radius = PathEvaluatorWithRadius(info_field, cost_field, x_ticks, y_ticks, yaml_eval)
+#
+#   yaml_eval = {'step_size':.2}
+#   evaluator_linear = PathEvaluator(infoInterpFn, infoInterpFn, yaml_eval)
+#
+#   paths = np.random.random((1000, 5 ,2))*50 - 25
+#
+#
+#   exact_scores = []
+#   tick = time.time()
+#   for path in paths:
+#     score, _ = evaluator_radius.getExactScore(path, budget=100)
+#     exact_scores.append(score)
+#   print("With Exact Distance: %.3f, %.3f" % (time.time() - tick, np.mean(exact_scores)))
+#
+#   appx_scores = []
+#   tick = time.time()
+#   for path in paths:
+#     score, _ = evaluator_radius.getScore(path, budget=100, plot=True)
+#     appx_scores.append(score)
+#   print("With Appx Distance: %.3f, %.3f" % (time.time() - tick, np.mean(appx_scores)))
+#
+#   linear_scores = []
+#   tick = time.time()
+#   for path in paths:
+#     score, _ = evaluator_linear.getScore(path, budget=100)
+#     linear_scores.append(score)
+#   print("Linear: %.3f, %.3f" % (time.time() - tick, np.mean(linear_scores)))
