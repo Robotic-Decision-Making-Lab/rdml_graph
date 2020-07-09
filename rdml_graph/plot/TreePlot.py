@@ -24,7 +24,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from ..core import Node
+from rdml_graph.core import Node
 from collections import deque
 
 # plotTree

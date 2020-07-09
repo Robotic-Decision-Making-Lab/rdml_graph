@@ -22,7 +22,7 @@
 # A basic state for search functions
 # Should be extended for new functionality
 
-from . import State
+from rdml_graph.core import State
 
 class SearchState(object):
     # Constructor

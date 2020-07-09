@@ -27,10 +27,10 @@
 #       search-based robot path planning
 #
 
-from ..core import State
-from ..core import Node
-from ..core import Edge
-from . import HSignature
+from rdml_graph.core import State
+from rdml_graph.core import Node
+from rdml_graph.core import Edge
+from rdml_graph.homotopy import HSignature
 
 import numpy as np
 

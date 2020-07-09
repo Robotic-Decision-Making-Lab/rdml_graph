@@ -23,8 +23,8 @@
 # A state of the MCTS tree which contains various helper functions for
 # the tree search.
 
-from ..core import State
-from ..core import SearchState
+from rdml_graph.core import State
+from rdml_graph.core import SearchState
 import pdb
 
 import numpy as np

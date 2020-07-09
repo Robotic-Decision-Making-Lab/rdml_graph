@@ -27,8 +27,8 @@
 #
 #
 
-from ..core import GeometricNode
-from . import HomotopyNode
+from rdml_graph.core import GeometricNode
+from rdml_graph.homotopy import HomotopyNode
 import copy
 
 import pdb

@@ -28,8 +28,8 @@ import pdb
 
 from scipy.interpolate import RegularGridInterpolator
 
-from rdml_utils import LocDelta, Location, HSignature
-from . import PathEvaluator
+from rdml_utils import Location
+from rdml_graph.information_gathering import PathEvaluator
 
 # Class for using stocastic optimization for updating a path
 #   - pert_size:    [x_size, y_size] is the standard deviation for pertubation in the x and y

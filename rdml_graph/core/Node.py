@@ -22,8 +22,8 @@
 # A generic node structure for a graph. Can be extended to include more
 # information about the node.
 
-from . import State
-from . import Edge
+from rdml_graph.core import State
+from rdml_graph.core import Edge
 
 class Node(State):
     # constructor

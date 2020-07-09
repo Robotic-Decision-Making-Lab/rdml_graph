@@ -21,8 +21,8 @@
 #
 # This file contains code to plot different paths, and plot them.
 
-from ..core import Node
-from ..core import Edge
+from rdml_graph.core import Node
+from rdml_graph.core import Edge
 import numpy as np
 import matplotlib.pyplot as plt
 

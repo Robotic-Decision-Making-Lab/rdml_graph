@@ -26,8 +26,8 @@
 
 import tqdm
 import numpy as np
-from . import MCTSTree
-from . import UCBSelection, randomRollout, bestAvgReward
+from rdml_graph.mcts import MCTSTree
+from rdml_graph.mcts import UCBSelection, randomRollout, bestAvgReward
 
 import pdb
 

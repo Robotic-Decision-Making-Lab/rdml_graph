@@ -32,9 +32,19 @@
 #       search-based robot path planning
 #
 
-from ..core import Edge
+from __future__ import absolute_import
+
+from rdml_graph.core import Edge
 import numpy as np
-from . import HSignature
+import sys
+
+# if sys.version_info[0] > 2:
+#     #from . import HSignature
+#     from rdml_graph.homotopy import HSignature
+# else:
+#     #from rdml_graph.homotopy import HSignature
+#     import rdml_graph.homotopy
+import rdml_graph.homotopy
 
 # rayIntersection
 # Given a line segment an origin and an angle from the ray, return 0 for

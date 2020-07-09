@@ -23,7 +23,7 @@
 
 import tqdm
 import numpy as np
-from . import MCTSTree
+from rdml_graph.mcts import MCTSTree
 
 import pdb
 

@@ -21,9 +21,10 @@
 #
 # The AStar algorithm written using the SearchState class
 
-from . import SearchState
-from . import State
-from ..homotopy import HSignatureGoal
+from rdml_graph.core import SearchState
+from rdml_graph.core import State
+import sys
+from rdml_graph.homotopy import HSignatureGoal
 # For the priority queue used by the AStar algorith.
 import heapq, queue
 # For queue
