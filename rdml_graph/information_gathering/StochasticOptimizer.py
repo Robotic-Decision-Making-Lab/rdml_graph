@@ -31,6 +31,9 @@ from scipy.interpolate import RegularGridInterpolator
 from rdml_utils import Location
 from rdml_graph.information_gathering import PathEvaluator
 
+import shapely.geometry as geo
+import shapely.ops as ops
+
 # Class for using stocastic optimization for updating a path
 #   - pert_size:    [x_size, y_size] is the standard deviation for pertubation in the x and y
 #   - num_perts:    number of pertubation to use when calculating the gradient
@@ -38,7 +41,9 @@ from rdml_graph.information_gathering import PathEvaluator
 #   - h:            controls the size of the gradient update, larger mean bigger steps
 class StochasticOptimizer(object):
 
-    def __init__(self, world_est, yaml_optimizer):
+    # @param yaml_optimizer - a dictionary of parameters for the Stoachastic Optimizer
+    # @param bounds - TBD
+    def __init__(self, yaml_optimizer, bounds):
         # pert_size=[1,1], num_perts=25, num_its=100, h=1):
         self.pert_size = [yaml_optimizer['perturbation_variance_x'], yaml_optimizer['perturbation_variance_y']]
         self.num_perts = yaml_optimizer['number_perturbations']
@@ -49,12 +54,17 @@ class StochasticOptimizer(object):
         self.verbose = yaml_optimizer['verbose']
 
 
-        self.world_est = world_est
+        self.bounds = bounds
 
     # Main function call, given a path and an environment it optimizes the path
     # Expects that the environment is a class supporting a getScore(path) call
     # with path as a numpy array [[x1, y1] ... [xn, yn]]
-    def optimize(self, path, env, budget):
+    # @param path - numpy array [[x1,y1], ... [nx, yn]]
+    # @param reward_func, a reward function of the type (sequence, budget, data)
+    #                   the reward function is the same format as MCTS.
+    # @param budget the required budget of the optimizer
+    # @param data - any required data for the optimization process.
+    def optimize(self, path, reward_func, budget, data=None):
         self.reference_path = path
 
         # env.reference_h_sig = HSignature.fromPath(path, env.rep_pts)
@@ -74,7 +84,7 @@ class StochasticOptimizer(object):
             for index in pert_order:
                 perts = self.genPerts(p_length)
                 perts[0] = np.array([0,0])
-                scores = self.scorePerts(np_path, index, perts, env, budget)
+                scores = self.scorePerts(np_path, index, perts, rewardFunc, budget, data)
                 grad = self.calGrad(scores, perts)
                 np_path[index] = np_path[index] + grad * (self.cooling_rate ** ii)
                 if np.isnan(np_path).any():
@@ -84,34 +94,34 @@ class StochasticOptimizer(object):
 
         return np_path
 
-    # Main function call, given a path and an environment it optimizes the path
-    # Expects that the environment is a class supporting a getScore(path) call with path as a numpy array [[x1, y1] ... [xn, yn]]
-    def optimizeEndpointConstrained(self, path, env, budget):
-        self.reference_path = path
-
-        # env.reference_h_sig = HSignature.fromPath(path, env.rep_pts)
-
-        np_path = np.vstack([x.npArray() for x in path])
-        p_length = len(path)
-
-        for ii in range(self.num_its):
-            pert_order = range(1,p_length-1)
-            random.shuffle(pert_order)
-
-            for index in pert_order:
-                perts = self.genPerts(p_length)
-                perts[0] = np.array([0,0])
-                scores = self.scorePerts(np_path, index, perts, env, budget)
-                grad = self.calGrad(scores, perts)
-                np_path[index] = np_path[index] + grad * (self.cooling_rate ** ii)
-                if np.isnan(np_path).any():
-                    pdb.set_trace()
-
-        out_path = [Location(xlon=x[0], ylat=x[1]) for x in np_path]
-
-        assert path[-1] == out_path[-1]
-
-        return out_path
+    # # Main function call, given a path and an environment it optimizes the path
+    # # Expects that the environment is a class supporting a getScore(path) call with path as a numpy array [[x1, y1] ... [xn, yn]]
+    # def optimizeEndpointConstrained(self, path, env, budget):
+    #     self.reference_path = path
+    #
+    #     # env.reference_h_sig = HSignature.fromPath(path, env.rep_pts)
+    #
+    #     np_path = np.vstack([x.npArray() for x in path])
+    #     p_length = len(path)
+    #
+    #     for ii in range(self.num_its):
+    #         pert_order = range(1,p_length-1)
+    #         random.shuffle(pert_order)
+    #
+    #         for index in pert_order:
+    #             perts = self.genPerts(p_length)
+    #             perts[0] = np.array([0,0])
+    #             scores = self.scorePerts(np_path, index, perts, env, budget)
+    #             grad = self.calGrad(scores, perts)
+    #             np_path[index] = np_path[index] + grad * (self.cooling_rate ** ii)
+    #             if np.isnan(np_path).any():
+    #                 pdb.set_trace()
+    #
+    #     out_path = [Location(xlon=x[0], ylat=x[1]) for x in np_path]
+    #
+    #     assert path[-1] == out_path[-1]
+    #
+    #     return out_path
 
 
     # Function to generate the pertubations based on the given pertubation size
@@ -120,17 +130,19 @@ class StochasticOptimizer(object):
         return perts
 
     # Function to calculate a score for each of the pertubations
-    def scorePerts(self, path, index, perts, env, budget):
+    def scorePerts(self, path, index, perts, reward_func, budget, data):
         scores = []
 
         for pert_idx, pert in enumerate(perts):
             pert_path = np.copy(path)
             a = pert_path[index] + pert
 
-            if not self.world_est.withinBounds(Location(xlon=a[0], ylat=a[1])):
+            shapelyPt = geo.Point(a)
+            if not self.bounds.contains(shapelyPt):
                 # pdb.set_trace()
-                modified_pert = self.world_est.getClosestInBounds(Location(xlon=a[0], ylat=a[1])) - Location(xlon=pert_path[index][0], ylat=pert_path[index][1])
-                modified_pert = modified_pert.npArray()
+                #modified_pert = self.world_est.getClosestInBounds(Location(xlon=a[0], ylat=a[1])) - Location(xlon=pert_path[index][0], ylat=pert_path[index][1])
+                modified_pert, _ = ops.nearest_points(self.bounds, shapelyPt)
+                modified_pert = np.array([modified_pert.x, modified_pert.y])
                 a = pert_path[index] + modified_pert
                 perts[pert_idx,:] = modified_pert
 
@@ -139,7 +151,7 @@ class StochasticOptimizer(object):
             if np.isnan(pert_path).any():
                 pdb.set_trace()
 
-            scores.append(self.rewardFun(pert_path, env, budget))
+            scores.append(reward_func(pert_path, budget, data))
 
         return scores
 
@@ -163,8 +175,8 @@ class StochasticOptimizer(object):
         return grad
 
     # Function to get the reward for a path from an environment
-    def rewardFun(self, sub_path, env, budget):
-        return env.getScore(sub_path, budget)[0]  #+ self.homotopy_alpha*env.getHomotopyScore(query_loc_path)
+    # def rewardFun(self, sub_path, env, budget):
+    #     return env.getScore(sub_path, budget)[0]  #+ self.homotopy_alpha*env.getHomotopyScore(query_loc_path)
 
 
     def setPertSize(self, pert_size):
@@ -180,33 +192,33 @@ class StochasticOptimizer(object):
         self.h = h
 
 
-
-def main():
-    opt = StochasticOptimizer(num_its=10, num_perts=5)
-
-    n_ticks = 51
-
-    x_ticks = np.linspace(-25., 25., n_ticks)
-    y_ticks = np.linspace(-25., 25., n_ticks)
-    info_field = np.random.random((len(x_ticks), len(y_ticks)))
-    cost_field = np.random.random((len(x_ticks), len(y_ticks)))
-    infoInterpFn = RegularGridInterpolator([x_ticks, y_ticks], info_field)
-    costInterpFn = RegularGridInterpolator([x_ticks, y_ticks], cost_field)
-    yaml_eval = {'step_size':.2}
-    path = [Location(0, 0),
-            Location(1, 1),
-            Location(0, 1)]
-
-
-    evaluator = PathEvaluator(infoInterpFn, costInterpFn, yaml_eval)
-
-    for item in path:
-        print(item)
-
-    p_out = opt.optimize(path,evaluator)
-
-    for item in p_out:
-        print(item)
-
-if __name__ == '__main__':
-    main()
+#
+# def main():
+#     opt = StochasticOptimizer(num_its=10, num_perts=5)
+#
+#     n_ticks = 51
+#
+#     x_ticks = np.linspace(-25., 25., n_ticks)
+#     y_ticks = np.linspace(-25., 25., n_ticks)
+#     info_field = np.random.random((len(x_ticks), len(y_ticks)))
+#     cost_field = np.random.random((len(x_ticks), len(y_ticks)))
+#     infoInterpFn = RegularGridInterpolator([x_ticks, y_ticks], info_field)
+#     costInterpFn = RegularGridInterpolator([x_ticks, y_ticks], cost_field)
+#     yaml_eval = {'step_size':.2}
+#     path = [Location(0, 0),
+#             Location(1, 1),
+#             Location(0, 1)]
+#
+#
+#     evaluator = PathEvaluator(infoInterpFn, costInterpFn, yaml_eval)
+#
+#     for item in path:
+#         print(item)
+#
+#     p_out = opt.optimize(path,evaluator)
+#
+#     for item in p_out:
+#         print(item)
+#
+# if __name__ == '__main__':
+#     main()
