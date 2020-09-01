@@ -45,6 +45,12 @@ class Node(State):
     def getEdges(self):
         return self.e
 
+    def checkConnection(self, otherID):
+        for edge in self.e:
+            if edge.c.id == otherID:
+                return edge
+        return None
+
     # returns a short description of the label of the node.
     # shorter than the description described by str(self)
     def getLabel(self):

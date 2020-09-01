@@ -26,9 +26,8 @@ from rdml_graph.core import State
 import sys
 from rdml_graph.homotopy import HSignatureGoal
 # For the priority queue used by the AStar algorith.
-import heapq, queue
+import heapq
 # For queue
-from collections import deque
 import numpy as np
 
 # defualt huerestic function for AStar.
