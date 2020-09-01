@@ -118,7 +118,7 @@ def bestAvgNext(root, bestSeq, bestR, data=None):
     else:
         return root.getPath(), root.reward()
 
-def mostSimulations(root, bestSeq, bestR, data=None):
+def mostSimulationsSingle(root, bestSeq, bestR, data=None):
     best = -np.inf
     bestIdx = -1
     for i in range(len(root.children)):
@@ -129,6 +129,26 @@ def mostSimulations(root, bestSeq, bestR, data=None):
 
     if bestIdx != -1:
         return root.children[bestIdx].getPath(), root.children[bestIdx].reward()
+    else:
+        return root.getPath(), root.reward()
+
+
+def mostSimulations(root, bestSeq, bestR, data=None):
+    # base case
+    if len(root.children) < 1:
+        return root.getPath(), root.reward()
+
+    best = -np.inf
+    bestIdx = -1
+    for i in range(len(root.children)):
+        child = root.children[i]
+        if child.num_updates > best:
+            best = child.num_updates
+            bestIdx = i
+
+    if bestIdx != -1:
+        #return root.children[bestIdx].getPath(), root.children[bestIdx].reward()
+        return mostSimulations(root.children[bestIdx], bestSeq, bestR, data)
     else:
         return root.getPath(), root.reward()
 
