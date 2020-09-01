@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 
 
 
-map = {'size': np.array([10,10])}
+map = {'height': 10, 'width': 10}
 
 G = gr.PRM(map, 100, 3.0)
 
