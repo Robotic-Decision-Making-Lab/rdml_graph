@@ -28,7 +28,6 @@ import pdb
 
 from scipy.interpolate import RegularGridInterpolator
 
-from rdml_utils import Location
 from rdml_graph.information_gathering import PathEvaluator
 
 import shapely.geometry as geo
