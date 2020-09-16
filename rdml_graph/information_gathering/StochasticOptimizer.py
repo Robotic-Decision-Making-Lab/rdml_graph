@@ -49,7 +49,7 @@ class StochasticOptimizer(object):
         self.num_its = yaml_optimizer['number_iterations']
         self.h = yaml_optimizer['gradient_step_weight']
         self.cooling_rate = yaml_optimizer['cooling_rate']
-        self.homotopy_alpha = yaml_optimizer['homotopy_alpha']
+        #self.homotopy_alpha = yaml_optimizer['homotopy_alpha']
         self.verbose = yaml_optimizer['verbose']
 
 
@@ -63,7 +63,7 @@ class StochasticOptimizer(object):
     #                   the reward function is the same format as MCTS.
     # @param budget the required budget of the optimizer
     # @param data - any required data for the optimization process.
-    def optimize(self, path, reward_func, budget, data=None):
+    def optimize(self, path, rewardFunc, budget, data=None):
         self.reference_path = path
 
         # env.reference_h_sig = HSignature.fromPath(path, env.rep_pts)
@@ -129,7 +129,7 @@ class StochasticOptimizer(object):
         return perts
 
     # Function to calculate a score for each of the pertubations
-    def scorePerts(self, path, index, perts, reward_func, budget, data):
+    def scorePerts(self, path, index, perts, rewardFunc, budget, data):
         scores = []
 
         for pert_idx, pert in enumerate(perts):
@@ -138,11 +138,12 @@ class StochasticOptimizer(object):
 
             shapelyPt = geo.Point(a)
             if not self.bounds.contains(shapelyPt):
-                # pdb.set_trace()
                 #modified_pert = self.world_est.getClosestInBounds(Location(xlon=a[0], ylat=a[1])) - Location(xlon=pert_path[index][0], ylat=pert_path[index][1])
+                #pdb.set_trace()
                 modified_pert, _ = ops.nearest_points(self.bounds, shapelyPt)
-                modified_pert = np.array([modified_pert.x, modified_pert.y])
+                modified_pert = np.array([modified_pert.x, modified_pert.y]) - pert_path[index]
                 a = pert_path[index] + modified_pert
+                #a = modified_pert
                 perts[pert_idx,:] = modified_pert
 
             pert_path[index] = a
@@ -150,7 +151,7 @@ class StochasticOptimizer(object):
             if np.isnan(pert_path).any():
                 pdb.set_trace()
 
-            scores.append(reward_func(pert_path, budget, data))
+            scores.append(rewardFunc(pert_path, budget, data))
 
         return scores
 
