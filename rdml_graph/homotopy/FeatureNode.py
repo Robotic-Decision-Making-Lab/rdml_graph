@@ -74,7 +74,7 @@ class HomotopyFeatureState(HomotopyNode):
         result = []
         for edge in self.node.e:
             newHSign = self.h_sign.copy()
-            goodHSign = newHSign.edgeCross(edge)
+            goodHSign = newHSign.edge_cross(edge)
 
             if goodHSign:
                 newNames = None
@@ -123,7 +123,7 @@ class HomotopyFeatureState(HomotopyNode):
 #         result = []
 #         for edge in self.node.e:
 #             newHSign = self.h_sign.copy()
-#             goodHSign = newHSign.edgeCross(edge)
+#             goodHSign = newHSign.edge_cross(edge)
 #
 #             if goodHSign:
 #                 newNames = None

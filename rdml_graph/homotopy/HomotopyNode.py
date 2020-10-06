@@ -65,7 +65,7 @@ class HomotopyNode(State):
         result = []
         for edge in self.node.e:
             newHSign = self.h_sign.copy()
-            goodHSign = newHSign.edgeCross(edge)
+            goodHSign = newHSign.edge_cross(edge)
 
             if goodHSign:
                 succ = HomotopyNode(n=edge.c, h_sign=newHSign,\
