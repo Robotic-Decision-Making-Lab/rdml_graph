@@ -26,15 +26,62 @@
 #
 # Note these are homotopy invariants instead of homology. This implies order
 # matters.
+# IMPORTANT: Feature numbers must start at 1 and not 0.
+# Yes this is weird, but makes computation and storage signicantly faster.
 
 import numpy as np
 import copy
 import sys
 #from rdml_graph.homotopy.HomotopyEdge import HomotopyEdge
-
+from rdml_graph.core import Edge
 
 # for checking python version (required for hashing function)
 import sys
+
+import pdb
+
+# rayIntersection
+# Given a line segment an origin and an angle from the ray, return 0 for
+# no intersection, and postive to a crossing in the positive direction, and
+# negative for a crossing in the negative direction.
+# This code is ported from rdml_utils (Seth McCammon)
+# @param pt1 - first point of line segment (numpy 2d)
+# @param pt2 - second point of the line segment (numpy 2d)
+# @param origin - the origin of the array (numpy 2d)
+# @param angle - the angle of the ray. (scalar)
+#
+# @return - 0 = no intersection, 1 = intersection in positive direction,
+#            -1 for negative direction
+def rayIntersection(pt1, pt2, origin, angle=np.pi/2):
+    rayDir = np.array([np.cos(angle), np.sin(angle)])
+
+    # Create helper vectors
+    v1 = origin - pt1
+    v2 = pt2 - pt1
+    v3 = np.array([-rayDir[1], rayDir[0]]) # perpendicular to rayDir
+
+    # check for parallel lines segment to ray
+    if np.dot(v2, v3) == 0:
+        return 0 # no intersection
+
+    t1 = np.cross(v2, v1) / np.dot(v2, v3)
+    t2 = np.dot(v1, v3) / np.dot(v2, v3)
+
+    if t1 >= 0.0 and t2 >= 0.0 and t2 <= 1.0:
+        # there is an intersection decide direction.
+        vPt1 = -v1
+        #vPt2 = pt2 - origin
+
+        # x coordinate of a transformed point frame.
+        xTran1 = -np.dot(vPt1, v3)
+        #xTran2 = np.dot(vPt2, v3)
+        if xTran1 < 0:
+            return 1 # line segment goes left to right across ray.
+        else:
+            return -1 # line segment goes right to left across ray.
+    else:
+        # no intersection
+        return 0
 
 ####################################################################### Need to test Homotopy Edge code.
 class HomotopyEdge(Edge):
@@ -43,14 +90,11 @@ class HomotopyEdge(Edge):
     # @param child - the child node of the edge.
     # @param num_objects - the total number of topological objects.
     # @param cost - the cost of the edge - defaults to 1
-    def __init__(self, parent, child, num_objects=0, cost=1, features=None,ray_angle=np.pi/2):
+    def __init__(self, parent, child, cost=1, features=None,ray_angle=np.pi/2):
         super(HomotopyEdge, self).__init__(parent, child, cost)
         # H-signature fragment (only shows crossing that can occur)
 
-        if features is not None:
-            num_objects = features.shape[0]
-
-        self.HSign = HomotopySignature()
+        self.HSign = HomotopySignature([])
 
         if features is not None:
             self.geo2DHSignCheck(features, ray_angle)
@@ -58,34 +102,35 @@ class HomotopyEdge(Edge):
 
     # geo2DHSignCheck
     def geo2DHSignCheck(self, features, ray_angle=np.pi/2):
-        num_features = len(self.HSignFrag)
+        #pdb.set_trace()
+        num_features = features.shape[0]
 
         for i in range(num_features):
             sign = rayIntersection(self.p.pt, self.c.pt, \
                                                 features[i], ray_angle)
             if sign != 0:
-                self.HSign.append(sign * i)
+                self.HSign.cross(i+1, sign)
 
-        if len(self.HSign) > 0:
+        if len(self.HSign) > 1:
             # sort the crossings into the correct order.
             # This is done by projecting the given features onto the vector between the parent and child.
-            vec = self.child.pt - self.parent.pt
+            vec = self.c.pt - self.p.pt
             projections = [0] * len(self.HSign)
-            for i in range(len(self.HSign):
-                projections[i] = features[abs(self.HSign[i])].dot(vec)
+            for i in range(len(self.HSign)):
+                projections[i] = features[abs(self.HSign.sign[i])-1].dot(vec)
 
-            _, self.HSign = zip(*sort(zip(projections, self.HSign)))
+            _, self.HSign.sign = zip(*sorted(zip(projections, self.HSign.sign)))
 
 
     def __str__(self):
-        return 'e(p.id='+str(self.p.id)+',c.id='+str(self.c.id)+',hFrag='+str(self.HSignFrag)+',cost='+str(self.cost)+')'
+        return 'e(p.id='+str(self.p.id)+',c.id='+str(self.c.id)+',hFrag='+str(self.HSign)+',cost='+str(self.cost)+')'
 
 class HomotopySignature(object):
     # Constuctor
     # @param numHazards - this is the total number of obstacles the h-signature
     #           needs to keep track of.
-    def __init__(self):
-        self.sign = []
+    def __init__(self, sign):
+        self.sign = sign
         #self.pythonVer = sys.version_info[0]
 
     # edgeCross
@@ -96,15 +141,15 @@ class HomotopySignature(object):
     # @return - true if valid edge crossing, false if the crossing is invalid (loop)
     # @post - this objects sign is updated with the given
     def edgeCross(self, edge):
-        # if not isinstance(edge, HomotopyEdge):
-        #     raise TypeError('edgeCross passed an edge which is not of type HomotopyEdge')
-        #
-        # if len(edge.HSignFrag) < 1:
-        #     return True
-        #
-        # # check if cancel with previous sign
-        # if -self.sign[-1] == edge.HSign
-        #
+        if not isinstance(edge, HomotopyEdge):
+            raise TypeError('edgeCross passed an edge which is not of type HomotopyEdge')
+
+        if len(edge.HSignFrag) < 1:
+            return True
+
+        # check if cancel with previous sign
+        if -self.sign[-1] == edge.HSign
+
         ######################################################################################## THIS NEEDS TO BE WRITTEN
         return True
 
@@ -115,6 +160,9 @@ class HomotopySignature(object):
     # @param value - the sign of the crossing (+1, 0, -1) 0, makes no sense to be given
     def cross(self, id, value):
         # Bad id just ignore the crosssing
+        if id == 0:
+            raise ValueError('HomotopySignature id must not be 0')
+
         if value > 0:
             value = id
         elif value < 0:
@@ -122,7 +170,7 @@ class HomotopySignature(object):
         else:
             return
 
-        if self.sign[-1] == -value:
+        if len(self.sign) > 0 and self.sign[-1] == -value:
             self.sign.pop()
         else:
             self.sign.append(value)
@@ -156,12 +204,14 @@ class HomotopySignature(object):
 
     def __neg__(self):
         sign = self.copy()
-        sign.sign = -(sign.sign.reverse())
+        sign.sign.reverse()
+        sign.sign = [-s for s in sign.sign]
         return sign
 
     def __iadd__(self, other):
         # check for canceling signs
         j = 0
+        #pdb.set_trace()
         while len(self.sign) > 0 and  j < len(other.sign) \
                     and self.sign[-1] == -other.sign[j]:
             # remove the canceled sign and increase j
@@ -169,19 +219,24 @@ class HomotopySignature(object):
             j += 1
 
         if j < len(other.sign):
-            self.sign += other.sign[j:]
+            if len(self.sign) > 0:
+                self.sign += other.sign[j:]
+            else:
+                self.sign = other.sign[j:]
+        return self
 
     def __add__(self, other):
         newSign = self.copy()
-        newSign.sign += other.sign
+        newSign += other
         return newSign
 
     def __isub__(self, other):
-        self += -other
+        self += (-other)
+        return self
 
     def __sub__(self, other):
         newSign = self.copy()
-        newSign.sign -= other.sign
+        newSign -= other
         return newSign
 
     # str(self) operator overload
@@ -190,10 +245,11 @@ class HomotopySignature(object):
         return str(self.sign)
 
     def __hash__(self):
-        if sys.version_info[0] < 3:
-            return hash(self.sign.data)
-        else:
-            return hash(self.sign.tobytes())
+        return hash(tuple(self.sign))
+        #if sys.version_info[0] < 3:
+        #    return hash(self.sign.data)
+        #else:
+        #    return hash(self.sign.tobytes())
 
     # len(self) operator overload
     def __len__(self):

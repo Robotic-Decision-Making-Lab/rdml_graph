@@ -1,6 +1,7 @@
 # init for homotopy
 
-from .HSignature import HSignature, HSignatureGoal
+from .HSignature import HSignatureGoal
+from .HomotopySignature import HomotopySignature, HomotopyEdge
 from .HomotopyNode import HomotopyNode, getWaypointsHomotopy
-from .HomotopyEdge import HomotopyEdge, rayIntersection
+from .HomotopyEdgeOld import rayIntersection
 from .FeatureNode import FeatureNode, HomotopyFeatureState
