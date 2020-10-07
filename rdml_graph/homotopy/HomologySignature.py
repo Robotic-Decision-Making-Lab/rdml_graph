@@ -31,6 +31,7 @@ from rdml_graph.homotopy.HEdge import HEdge
 import copy
 
 import sys
+import pdb
 
 # rayIntersection
 # Given a line segment an origin and an angle from the ray, return 0 for
@@ -100,7 +101,9 @@ class HomologySignature(HSignature):
     def edge_cross(self, edge):
         if not isinstance(edge, HEdge):
             raise TypeError('edge_cross passed an edge which is not of type HEdge')
-        self.sign += edge.HSign
+        #pdb.set_trace()
+
+        self.sign += edge.HSign.sign
         if len(self.sign) < 1:
             return True
         elif np.amax(self.sign) > 1 or np.amin(self.sign) < -1:

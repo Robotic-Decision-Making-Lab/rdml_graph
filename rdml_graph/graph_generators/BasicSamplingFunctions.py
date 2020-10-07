@@ -22,6 +22,7 @@
 #
 
 import numpy as np
+import shapely.geometry as geo
 
 from ..core import GeometricNode
 from ..core import Edge
@@ -39,6 +40,42 @@ def sample2DUniform(map, num_samples, idStart=0):
     return nodes, samples
 
 
+def contains_list(geoPt, obstacles):
+    for obs in obstacles:
+        if obs.contains(geoPt):
+            return True
+    return False
+
+# @param map - a dictionary with needed parameters for sampling with obstacles
+#           bounding - the bounding polygon (shaply)
+#           obs - a list of polygon obstacles ([shaply, ...])
+# @param num_samples - the total number of points to sample
+# @param id_start - the starting point of id's
+def sample2DPolygon(map, num_samples, idStart=0):
+    bounding = map['bounding']
+    minx, miny, maxx, maxy = bounding.bounds # Gets the bounding box around the actual shape
+    scale = np.array([maxx - minx, maxy - miny])
+    intercept = np.array([minx, miny])
+
+    points = np.empty((num_samples, 2))
+
+    num_pts = 0
+    while num_pts < num_samples:
+        # sample point
+        pt = np.random.random(2) * scale + intercept
+
+        geoPt = geo.Point(pt[0],pt[1])
+        if bounding.contains(geoPt) and (not contains_list(geoPt, map['obs'])):
+            points[num_pts] = pt
+            num_pts += 1
+
+    nodes = [GeometricNode(i + idStart, points[i]) for i in range(points.shape[0])]
+    return nodes, points
+
+
+
+
+
 
 ########################## Collision checking algorithms
 
@@ -50,6 +87,21 @@ def sample2DUniform(map, num_samples, idStart=0):
 # @param map - the input map to check for collisions using.
 def noCollision(u , v, map):
     return False
+
+# no collision
+# a simple function to always indicate there are no collisions for the PRM
+# to grow.
+# @param u - one of the input nodes.
+# @param v - the second input node.
+# @param map - the input map to check for collisions using.
+#
+# @return - True if there is a collision, false otherwise
+def polygonCollision(u, v, map):
+    line = geo.LineString([(u.pt[0], u.pt[1]), (v.pt[0], v.pt[1])])
+    for obs in map['obs']:
+        if line.intersects(obs):
+            return True
+    return False # no found collisions
 
 
 ######################### Edge connection functions
