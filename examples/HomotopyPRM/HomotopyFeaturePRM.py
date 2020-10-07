@@ -48,7 +48,7 @@ G = gr.PRM(map, 100, 6.0, connection=gr.HEdgeConn, initialNodes=initialNodes)
 num_features = map['hazards'].shape[0]
 # Create the start homotopy node over the PRM graph.
 names = frozenset(['shaw island'])
-start = gr.HomotopyFeatureState(G[0], gr.HSignature(num_features), root=G[0], neededNames=names)
+start = gr.HomotopyFeatureState(G[0], gr.HomologySignature(num_features), root=G[0], neededNames=names)
 
 
 # Create the goal h signature.

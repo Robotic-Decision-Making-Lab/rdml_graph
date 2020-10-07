@@ -38,26 +38,27 @@ n5 = gr.GeometricNode(5, np.array([4.5,3.2]))
 
 G = [n,n1,n2,n3,n4,n5]
 
-n.addEdge(gr.HEdge(n,n1, gr.HomologySignature(), features=features))
-n1.addEdge(gr.HEdge(n1,n, gr.HomologySignature(), features=features))
+sign = gr.HomologySignature(features.shape[0])
+n.addEdge(gr.HEdge(n,n1, sign, features=features))
+n1.addEdge(gr.HEdge(n1,n, sign, features=features))
 
-n.addEdge(gr.HEdge(n,n2, gr.HomologySignature(), features=features))
-n2.addEdge(gr.HEdge(n2,n, gr.HomologySignature(), features=features))
+n.addEdge(gr.HEdge(n,n2, sign, features=features))
+n2.addEdge(gr.HEdge(n2,n, sign, features=features))
 
-n.addEdge(gr.HEdge(n,n3, gr.HomologySignature(), features=features))
-n3.addEdge(gr.HEdge(n3,n, gr.HomologySignature(), features=features))
+n.addEdge(gr.HEdge(n,n3, sign, features=features))
+n3.addEdge(gr.HEdge(n3,n, sign, features=features))
 
-n2.addEdge(gr.HEdge(n2,n4, gr.HomologySignature(), features=features))
-n4.addEdge(gr.HEdge(n4,n2, gr.HomologySignature(), features=features))
+n2.addEdge(gr.HEdge(n2,n4, sign, features=features))
+n4.addEdge(gr.HEdge(n4,n2, sign, features=features))
 
-n1.addEdge(gr.HEdge(n1,n5, gr.HomologySignature(), features=features))
-n5.addEdge(gr.HEdge(n5,n1, gr.HomologySignature(), features=featuress))
+n1.addEdge(gr.HEdge(n1,n5, sign, features=features))
+n5.addEdge(gr.HEdge(n5,n1, sign, features=features))
 
-n3.addEdge(gr.HEdge(n3,n5, gr.HomologySignature(), features=features))
-n5.addEdge(gr.HEdge(n5,n3, gr.HomologySignature(), features=features))
+n3.addEdge(gr.HEdge(n3,n5, sign, features=features))
+n5.addEdge(gr.HEdge(n5,n3, sign, features=features))
 
-n.addEdge(gr.HEdge(n,n5, gr.HomologySignature(), features=features))
-n5.addEdge(gr.HEdge(n5,n, gr.HomologySignature(), features=features))
+n.addEdge(gr.HEdge(n,n5, sign, features=features))
+n5.addEdge(gr.HEdge(n5,n, sign, features=features))
 
 gr.plot2DGeoGraph(G, 'blue')
 plt.title('Original')
