@@ -45,13 +45,13 @@ start = gr.HNode(G[0], gr.HomologySignature(num_features), root=G[0])
 
 
 # Create the goal h signature.
-goalPartialHSign = gr.HSignatureGoal(num_features)
+goalPartialHSign = gr.HomologySignatureGoal(num_features)
 goalPartialHSign.addConstraint(0, -1) # add constraints to goal hsign
 goalPartialHSign.addConstraint(1, 0)
 
 
 # run the AStar planning
-path, cost = gr.AStar(start, g=gr.partial_homotopy_goal_check, \
+path, cost = gr.AStar(start, g=gr.partial_homology_goal_check, \
                         goal = (G[1], goalPartialHSign))
 
 ################ Output results

@@ -70,4 +70,4 @@ class HEdge(Edge):
 
 
     def __str__(self):
-        return 'e(p.id='+str(self.p.id)+',c.id='+str(self.c.id)+',hFrag='+str(self.HSignFrag)+',cost='+str(self.cost)+')'
+        return 'e(p.id='+str(self.p.id)+',c.id='+str(self.c.id)+',hFrag='+str(self.HSign)+',cost='+str(self.cost)+')'

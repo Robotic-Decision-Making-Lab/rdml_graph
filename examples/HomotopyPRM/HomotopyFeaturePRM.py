@@ -52,7 +52,7 @@ start = gr.HomotopyFeatureState(G[0], gr.HomologySignature(num_features), root=G
 
 
 # Create the goal h signature.
-goalPartialHSign = gr.HSignatureGoal(num_features)
+goalPartialHSign = gr.HomologySignatureGoal(num_features)
 goalPartialHSign.addConstraint(0, -1) # add constraints to goal hsign
 goalPartialHSign.addConstraint(1, 0)
 
@@ -64,7 +64,7 @@ def h_euclidean_tuple(n, data, goal):
     return np.linalg.norm(n.node.pt - goal[0].pt)
 
 # run the AStar planning
-path, cost = gr.AStar(start, g=gr.partial_homotopy_feature_goal, \
+path, cost = gr.AStar(start, g=gr.partial_homology_feature_goal, \
                         h = h_euclidean_tuple,
                         goal = (G[1], goalPartialHSign, names, keywords))
 

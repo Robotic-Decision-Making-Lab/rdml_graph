@@ -37,7 +37,7 @@ n3 = gr.GeometricNode(3, np.array([4.4,-3]))
 n4 = gr.GeometricNode(4, np.array([-2.2,-10]))
 n5 = gr.GeometricNode(5, np.array([4.5,3.2]))
 
-sign = gr.HomotopySignature(features.shape[0])
+sign = gr.HomologySignature(features.shape[0])
 n.addEdge(gr.HEdge(n,n1, sign, features=features))
 n1.addEdge(gr.HEdge(n1,n, sign, features=features))
 
@@ -61,8 +61,8 @@ n5.addEdge(gr.HEdge(n5,n, sign, features=features))
 
 print(features.shape)
 
-start = gr.HNode(n, gr.HSignature(1), root=n)
-goalH = gr.HSignature(1)
+start = gr.HNode(n, gr.HomologySignature(1), root=n)
+goalH = gr.HomologySignature(1)
 goalH.cross(0,1)
 goal = gr.HNode(n5, goalH, root=n)
 
@@ -80,13 +80,13 @@ for i in range(len(path)):
     print(n)
 
 ################## test path with partial H-sign goal
-hSignGoal = gr.HSignatureGoal(1)
+hSignGoal = gr.HomologySignatureGoal(1)
 hSignGoal.mask[0] = 0
 hSignGoal.sign[0] = 1
 
-path, cost = gr.AStar(start, g=gr.partial_homotopy_goal_check, goal=(n5, hSignGoal))
+path, cost = gr.AStar(start, g=gr.partial_homology_goal_check, goal=(n5, hSignGoal))
 
-print('HSignatureGoal used instead')
+print('HomologySignatureGoal used instead')
 print('Cost = ' + str(cost))
 print('Path executed')
 for i in range(len(path)):

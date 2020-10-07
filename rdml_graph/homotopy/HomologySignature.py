@@ -176,7 +176,7 @@ class HomologySignature(HSignature):
         return str(self.sign)
 
     def __hash__(self):
-        if sys.version_info[0] < 3:
+        if sys.version_info[0] > 3:
             return hash(self.sign.data)
         else:
             return hash(self.sign.tobytes())
@@ -198,7 +198,7 @@ class HomologySignature(HSignature):
 
 
 
-class HSignatureGoal(object):
+class HomologySignatureGoal(object):
     def __init__(self, num_objects):
         self.mask = np.zeros(num_objects, dtype=np.bool)
         self.sign = HomologySignature(num_objects)

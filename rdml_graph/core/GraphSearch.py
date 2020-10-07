@@ -24,7 +24,7 @@
 from rdml_graph.core import SearchState
 from rdml_graph.core import State
 import sys
-from rdml_graph.homotopy import HSignatureGoal
+from rdml_graph.homotopy import HomologySignatureGoal
 # For the priority queue used by the AStar algorith.
 import heapq
 # For queue
@@ -56,16 +56,16 @@ def pass_all(n, data, goal):
 
 # partial_homotopy_goal_check
 # Checks if the nodes are the same, and checks if the h-signatures fit the
-# constraints in HSignatureGoal, which allows partial h-signature matches.
+# constraints in HomologySignatureGoal, which allows partial h-signature matches.
 # @param n - the input node (Should be a HNode)
 # @param data - generic (not used)
 # @param goal - the input goal data to the search funcion.
-#               MUST match (Node, HSignatureGoal type)
-def partial_homotopy_goal_check(n, data, goal):
+#               MUST match (Node, HomologySignatureGoal type)
+def partial_homology_goal_check(n, data, goal):
     goalNode = goal[0]
     goalH = goal[1]
-    if not isinstance(goalH, HSignatureGoal):
-        raise TypeError("partial_homotopy_goal_check given goal which should be (Node, HSignatureGoal)")
+    if not isinstance(goalH, HomologySignatureGoal):
+        raise TypeError("partial_homotopy_goal_check given goal which should be (Node, HomologySignatureGoal)")
 
     return goalH.checkSign(n.h_sign) and goalNode == n.node
 
@@ -74,17 +74,17 @@ def partial_homotopy_goal_check(n, data, goal):
 # for negatives, this can be updated for the future.
 # @param n - the input node to check
 # @param data - some set of data (not used)
-# @param goal - a tuple of (Node, HSignatureGoal, names(set), keywords(set))
+# @param goal - a tuple of (Node, HomologySignatureGoal, names(set), keywords(set))
 #
 # @return - true if it is a goal state.
-def partial_homotopy_feature_goal(n, data, goal):
+def partial_homology_feature_goal(n, data, goal):
     goalNode = goal[0]
     goalH = goal[1]
     goalNames = goal[2]
     goalKeywords = goal[3]
 
-    if not isinstance(goalH, HSignatureGoal):
-        raise TypeError("partial_homotopy_feature_goal given goal which should be (Node, HSignatureGoal, set(string), set(string))")
+    if not isinstance(goalH, HomologySignatureGoal):
+        raise TypeError("partial_homotopy_feature_goal given goal which should be (Node, HomologySignatureGoal, set(string), set(string))")
 
     return goalH.checkSign(n.h_sign) and goalNode == n.node and \
             goalNames <= n.names
