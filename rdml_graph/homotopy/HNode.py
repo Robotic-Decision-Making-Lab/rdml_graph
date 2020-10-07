@@ -16,16 +16,19 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# HomologyNode.py
+# HNode.py
 # Written Ian Rankin - February 2020
 #
-# Homology augumented node.
+# Homotopy augumented node.
 # This is a set of nodes built on-top of a standard
-# Node and graph, but has a different successor function for the H2-augmented graph
-# (H2 = homology here)
+# Node and graph, but has a different successor function
+#
+# This is designed to work with either Homotopy or Homology signatures.
+# This makes code re-use easier or more straight forward.
+#
 # Based on work by following paper:
-# S. Bhattacharya, R. Ghrist, V. Kumar (2015) Persistent Homology for Path Planning
-#       in uncertain environments.
+# S. Bhattacharya, M. Likhachev, V. Kumar (2012) Topological constraints in
+#       search-based robot path planning
 #
 
 from rdml_graph.core import State
@@ -37,23 +40,23 @@ import numpy as np
 
 import pdb
 
-# # getWaypoints
-# # get waypoints from a list of HomotopyNodes.
-# # @param path - a list of homotopy nodes.
-# #
-# # @return 2d numpy array of waypoints, (n x 2)
-# def getWaypointsHomotopy(path):
-#     pts = np.empty((len(path), 2))
-#     for i, homotopy in enumerate(path):
-#         pts[i] = homotopy.node.pt
+# getWaypoints
+# get waypoints from a list of HNodes.
+# @param path - a list of homotopy nodes.
 #
-#     return pts
+# @return 2d numpy array of waypoints, (n x 2)
+def getWaypointsHomotopy(path):
+    pts = np.empty((len(path), 2))
+    for i, homotopy in enumerate(path):
+        pts[i] = homotopy.node.pt
 
-class HomologyNode(State):
+    return pts
+
+class HNode(State):
     # constructor
-    # @param node - the input Node for homotopy graph.
-    # @param h_sign - the input H signature. (np array )
-    # @param parent - [optional] the edge from the parent HomotopyNode
+    # @param node - the input Node for h-augmented graph. (Either homotopy or homology)
+    # @param h_sign - the input H signature.
+    # @param parent - [optional] the edge from the parent HNode
     # @param root - [optional] the root node of the homotopy graph.
     def __init__(self, n, h_sign, parentEdge=None, root=None):
         self.node = n
@@ -65,14 +68,13 @@ class HomologyNode(State):
     def successor(self):
         result = []
         for edge in self.node.e:
-            newHSign = self.h_sign + edge.HSignFrag
-
-            goodHSign = True # TODO Handle looping to make it a mod-2 graph etc.
+            newHSign = self.h_sign.copy()
+            goodHSign = newHSign.edge_cross(edge)
 
             if goodHSign:
-                succ = HomotopyNode(n=edge.c, h_sign=newHSign,\
+                succ = HNode(n=edge.c, h_sign=newHSign,\
                                 parentEdge=edge, root=self.root)
-                result.append((succ, edge.getCost()))
+                result += [(succ, edge.getCost())]
         #pdb.set_trace()
         return result
 
@@ -82,7 +84,7 @@ class HomologyNode(State):
     # equals checks other is the same class and then checks node and h-signature
     # for equality.
     def __eq__(self, other):
-        if not isinstance(other, HomotopyNode):
+        if not isinstance(other, HNode):
             return False
         return self.node == other.node and self.h_sign == other.h_sign and \
                 (self.root is None or other.root is None or self.root == other.root)
@@ -95,14 +97,13 @@ class HomologyNode(State):
     # str()
     # prints out info about the currnet Homotopy Node
     def __str__(self):
-        return 'HomologyNode(h-sign='+ str(self.h_sign) +', n=' + str(self.node) + ')'
+        return 'HNode(h-sign='+ str(self.h_sign) +', n=' + str(self.node) + ')'
 
     # hash function overload
     # This hash takes into account both the node hash (should be defined),
     # and the h signatures hash (also defined).
     # parent edge is not considered.
-    ###### THIS is important for SEARCHES as it defines what is considered
+    ###### THIS is actually important for SEARCHES as it defines what is considered
     # already explored.
     def __hash__(self):
-        return hash(self.node) # TODO - remove hash!
         return hash((self.node, self.h_sign))

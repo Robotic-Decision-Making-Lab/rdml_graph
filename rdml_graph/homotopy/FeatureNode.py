@@ -28,7 +28,7 @@
 #
 
 from rdml_graph.core import GeometricNode
-from rdml_graph.homotopy import HomotopyNode
+from rdml_graph.homotopy import HNode
 import copy
 
 import pdb
@@ -55,11 +55,11 @@ class FeatureNode(GeometricNode):
 
 
 # A state that incapsulates the set of states of Homotopy and features
-class HomotopyFeatureState(HomotopyNode):
+class HomotopyFeatureState(HNode):
     # constructor
     # @param node - the input Node for homotopy graph.
     # @param h_sign - the input H signature.
-    # @param parent - [optional] the edge from the parent HomotopyNode
+    # @param parent - [optional] the edge from the parent HNode
     # @param root - [optional] the root node of the homotopy graph.
     # @param names - a set of names along path
     # @param keywords - a set of keywords along path.
@@ -104,11 +104,11 @@ class HomotopyFeatureState(HomotopyNode):
 
 #
 # # A state that incapsulates the set of states of Homotopy and features
-# class HomotopyFeatureState(HomotopyNode):
+# class HomotopyFeatureState(HNode):
 #     # constructor
 #     # @param node - the input Node for homotopy graph.
 #     # @param h_sign - the input H signature.
-#     # @param parent - [optional] the edge from the parent HomotopyNode
+#     # @param parent - [optional] the edge from the parent HNode
 #     # @param root - [optional] the root node of the homotopy graph.
 #     # @param names - a set of names along path
 #     # @param keywords - a set of keywords along path.

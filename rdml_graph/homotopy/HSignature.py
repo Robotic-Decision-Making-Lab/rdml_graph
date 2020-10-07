@@ -26,7 +26,6 @@
 import numpy as np
 import copy
 import sys
-from rdml_graph.homotopy.HomotopySignature import HomotopyEdge
 
 
 # for checking python version (required for hashing function)

@@ -23,6 +23,15 @@
 # Each HSignature is stored as the set of each non-signature obstacles
 # or some partial or complete list.
 
+from __future__ import absolute_import
+
+import numpy as np
+from rdml_graph.homotopy import HSignature
+from rdml_graph.homotopy.HEdge import HEdge
+import copy
+
+import sys
+
 # rayIntersection
 # Given a line segment an origin and an angle from the ray, return 0 for
 # no intersection, and postive to a crossing in the positive direction, and
@@ -89,9 +98,9 @@ class HomologySignature(HSignature):
     # @return - true if valid edge crossing, false if the crossing is invalid (loop)
     # @post - this objects sign is updated with the given
     def edge_cross(self, edge):
-        if not isinstance(edge, HomotopyEdge):
-            raise TypeError('edge_cross passed an edge which is not of type HomotopyEdge')
-        self.sign += edge.HSignFrag
+        if not isinstance(edge, HEdge):
+            raise TypeError('edge_cross passed an edge which is not of type HEdge')
+        self.sign += edge.HSign
         if len(self.sign) < 1:
             return True
         elif np.amax(self.sign) > 1 or np.amin(self.sign) < -1:
@@ -192,7 +201,7 @@ class HomologySignature(HSignature):
 class HSignatureGoal(object):
     def __init__(self, num_objects):
         self.mask = np.zeros(num_objects, dtype=np.bool)
-        self.sign = HSignature(num_objects)
+        self.sign = HomologySignature(num_objects)
 
     def addConstraint(self, id, value):
         if id >= len(self.mask) or id < 0:

@@ -57,7 +57,7 @@ def pass_all(n, data, goal):
 # partial_homotopy_goal_check
 # Checks if the nodes are the same, and checks if the h-signatures fit the
 # constraints in HSignatureGoal, which allows partial h-signature matches.
-# @param n - the input node (Should be a HomotopyNode)
+# @param n - the input node (Should be a HNode)
 # @param data - generic (not used)
 # @param goal - the input goal data to the search funcion.
 #               MUST match (Node, HSignatureGoal type)

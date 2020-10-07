@@ -59,15 +59,15 @@ print(sign - sign2)
 
 features = np.array([[0,0], [2,2]])
 
-e = gr.HomotopyEdge(n,n1)
+e = gr.HEdge(n,n1, gr.HomotopySignature())
 print(e)
-e = gr.HomotopyEdge(n,n1, features=features)
+e = gr.HEdge(n,n1, gr.HomotopySignature(), features=features)
 print(e)
-e2 = gr.HomotopyEdge(n1,n2, features=features)
+e2 = gr.HEdge(n1,n2, gr.HomotopySignature(), features=features)
 print(e2)
-e3 = gr.HomotopyEdge(n,n2, features=features)
+e3 = gr.HEdge(n,n2, gr.HomotopySignature(), features=features)
 print(e3)
-e4 = gr.HomotopyEdge(n2,n, features=features)
+e4 = gr.HEdge(n2,n, gr.HomotopySignature(), features=features)
 print(e4)
 
 

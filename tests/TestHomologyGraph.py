@@ -37,34 +37,34 @@ n3 = gr.GeometricNode(3, np.array([4.4,-3]))
 n4 = gr.GeometricNode(4, np.array([-2.2,-10]))
 n5 = gr.GeometricNode(5, np.array([4.5,3.2]))
 
+sign = gr.HomotopySignature(features.shape[0])
+n.addEdge(gr.HEdge(n,n1, sign, features=features))
+n1.addEdge(gr.HEdge(n1,n, sign, features=features))
 
-n.addEdge(gr.HomotopyEdge(n,n1, features=features))
-n1.addEdge(gr.HomotopyEdge(n1,n, features=features))
+n.addEdge(gr.HEdge(n,n2, sign, features=features))
+n2.addEdge(gr.HEdge(n2,n, sign, features=features))
 
-n.addEdge(gr.HomotopyEdge(n,n2, features=features))
-n2.addEdge(gr.HomotopyEdge(n2,n, features=features))
+n.addEdge(gr.HEdge(n,n3, sign, features=features))
+n3.addEdge(gr.HEdge(n3,n, sign, features=features))
 
-n.addEdge(gr.HomotopyEdge(n,n3, features=features))
-n3.addEdge(gr.HomotopyEdge(n3,n, features=features))
+n2.addEdge(gr.HEdge(n2,n4, sign, features=features))
+n4.addEdge(gr.HEdge(n4,n2, sign, features=features))
 
-n2.addEdge(gr.HomotopyEdge(n2,n4, features=features))
-n4.addEdge(gr.HomotopyEdge(n4,n2, features=features))
+n1.addEdge(gr.HEdge(n1,n5, sign, features=features))
+n5.addEdge(gr.HEdge(n5,n1, sign, features=features))
 
-n1.addEdge(gr.HomotopyEdge(n1,n5, features=features))
-n5.addEdge(gr.HomotopyEdge(n5,n1, features=features))
+n3.addEdge(gr.HEdge(n3,n5, sign, features=features))
+n5.addEdge(gr.HEdge(n5,n3, sign, features=features))
 
-n3.addEdge(gr.HomotopyEdge(n3,n5, features=features))
-n5.addEdge(gr.HomotopyEdge(n5,n3, features=features))
-
-n.addEdge(gr.HomotopyEdge(n,n5, features=features))
-n5.addEdge(gr.HomotopyEdge(n5,n, features=features))
+n.addEdge(gr.HEdge(n,n5, sign, features=features))
+n5.addEdge(gr.HEdge(n5,n, sign, features=features))
 
 print(features.shape)
 
-start = gr.HomotopyNode(n, gr.HSignature(1), root=n)
+start = gr.HNode(n, gr.HSignature(1), root=n)
 goalH = gr.HSignature(1)
 goalH.cross(0,1)
-goal = gr.HomotopyNode(n5, goalH, root=n)
+goal = gr.HNode(n5, goalH, root=n)
 
 print(start)
 print(goal)

@@ -26,5 +26,5 @@ pip install -e . --user
 ```
 import rdml_graph as gr
 
-hSign = gr.HSignature(5)
+hSign = gr.HomologySignature(5)
 ```

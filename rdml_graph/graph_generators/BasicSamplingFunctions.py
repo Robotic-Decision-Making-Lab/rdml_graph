@@ -25,7 +25,8 @@ import numpy as np
 
 from ..core import GeometricNode
 from ..core import Edge
-from ..homotopy import HomotopyEdge
+from ..homotopy import HEdge
+from ..homotopy import HomologySignature
 
 ########################## Sampling functions for PRM's
 
@@ -69,7 +70,7 @@ def EdgeConnection(parent, child, map, cost = None):
     return cost
 
 
-# HomotopyEdgeConn
+# HEdgeConn
 # Creates a connection between parent and child node using a Homotopy Edge
 # @param parent - parent node of connection
 # @param child - child node of connection.
@@ -77,13 +78,23 @@ def EdgeConnection(parent, child, map, cost = None):
 # @param cost - the cost of the connection (if None assume it must caluclate the cost)
 #
 # @return - cost of edge.
-def HomotopyEdgeConn(parent, child, map, cost = None):
+def HEdgeConn(parent, child, map, cost = None):
     if cost is None:
         cost = np.linalg.norm(parent.pt - child.pt, ord=2)
+
+    # if 'ray_angle' in map:
+    #     ray_angle = map['ray_angle']
+    # else:
+    #     ray_angle = np.pi/2
+    # if 'h_type' in map and map['h_type'].lower() == 'homotopy':
+    #     h_sign =
+
+    h_sign = HomologySignature(map['hazards'].shape[0])
     if 'ray_angle' in map:
-        parent.addEdge(HomotopyEdge(parent, child, cost=cost,  \
+        parent.addEdge(HEdge(parent, child, h_sign, cost=cost, \
                         features=map['hazards'], ray_angle=map['ray_angle']))
     else:
-        parent.addEdge(HomotopyEdge(parent, child, cost=cost, features=map['hazards']))
+        parent.addEdge(HEdge(parent, child, h_sign, cost=cost,\
+                            features=map['hazards']))
 
     return cost

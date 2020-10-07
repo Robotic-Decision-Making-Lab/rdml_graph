@@ -41,7 +41,7 @@ feat2 = gr.FeatureNode(3, "uf-1", pt=np.array([3.0, 3.0]), keywords={'upwelling 
 
 initialNodes = [startN, endN, feat1, feat2]
 
-G = gr.PRM(map, 100, 6.0, connection=gr.HomotopyEdgeConn, initialNodes=initialNodes)
+G = gr.PRM(map, 100, 6.0, connection=gr.HEdgeConn, initialNodes=initialNodes)
 
 
 ############### Setup and run AStar
