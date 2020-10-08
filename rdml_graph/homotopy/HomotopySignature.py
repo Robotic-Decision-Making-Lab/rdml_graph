@@ -31,11 +31,10 @@
 
 
 
-###################################### NOTE: This code has not been completed!!!
-
 import numpy as np
 import copy
-import sys
+from rdml_graph.homotopy import HSignature
+from rdml_graph.homotopy.HomologySignature import rayIntersection
 
 # for checking python version (required for hashing function)
 import sys
@@ -44,17 +43,18 @@ import pdb
 
 
 
-class HomotopySignature(object):
+class HomotopySignature(HSignature):
     # Constuctor
     # @param numHazards - this is the total number of obstacles the h-signature
     #           needs to keep track of.
-    def __init__(self, sign):
-        self.sign = sign
+    def __init__(self, sign=[]):
+        self.sign = copy.copy(sign)
         #self.pythonVer = sys.version_info[0]
 
     # edge_cross
     # This function takes the HSignature and the HSign fragment contained in a
     # Homotopy Edge, and adds the edge crossings to the current HSignature.
+    # Lazy looping rejection
     # @param edge - a crossing homotopy edge.
     #
     # @return - true if valid edge crossing, false if the crossing is invalid (loop)
@@ -66,12 +66,55 @@ class HomotopySignature(object):
         if len(edge.HSign) < 1:
             return True
 
-        # check if cancel with previous sign
-        if -self.sign[-1] == edge.HSign.sign[-1]:
-            return False # NOT CORRECT
+        # self += edge.HSign
+        #
+        # # check for repeats
+        # # Might need a better checking method O(n)
+        # for i in range(1, len(self)):
+        #     if self.sign[i] == self.sign[i-1]:
+        #         return False
 
-        ######################################################################################## THIS NEEDS TO BE WRITTEN
+        while len(self.sign) > 0 and  j < len(other.sign) \
+                    and self.sign[-1] == -other.sign[j]:
+            # remove the canceled sign and increase j
+            self.sign.pop()
+            j += 1
+
+        if j < len(other.sign):
+            if len(self.sign) > 0:
+                # check for repeats:
+                if self.sign[-1] == other.sign[j]:
+                    return False
+                self.sign += other.sign[j:]
+            else:
+                self.sign = other.sign[j:]
+
         return True
+
+    # compute_line_segment
+    # This function turns the current HSignature into the h signature for a
+    # line-segment
+    # @param pt_a - the first point of the line segment (numpy)
+    # @param pt_a - the second point of the line segment (numpy)
+    def compute_line_segment(self, pt_a, pt_b, features, ray_angle=np.pi/2):
+        #pdb.set_trace()
+        num_features = features.shape[0]
+        self.sign = []
+
+        for i in range(num_features):
+            sign = rayIntersection(pt_a, pt_b, features[i], ray_angle)
+            if sign != 0:
+                self.cross(i+1, sign)
+
+        if len(self) > 1:
+            # sort the crossings into the correct order.
+            # This is done by projecting the given features onto the vector between the parent and child.
+            vec = pt_b - pt_a
+            projections = [0] * len(self)
+            for i in range(len(self)):
+                projections[i] = features[abs(self.sign[i])-1].dot(vec)
+
+            _, self.sign = zip(*sorted(zip(projections, self.sign)))
 
 
     # cross

@@ -24,12 +24,12 @@
 import rdml_graph as gr
 import numpy as np
 
-n = gr.GeometricNode(0,np.array([0,1]))
+n = gr.GeometricNode(0,np.array([-1,1]))
 n1 = gr.GeometricNode(1, np.array([1,2]))
 n2 = gr.GeometricNode(2, np.array([3,4]))
 n3 = gr.GeometricNode(3, np.array([4.4,-3]))
 n4 = gr.GeometricNode(4, np.array([-2.2,-10]))
-n5 = gr.GeometricNode(5, np.array([4.5,3.2]))
+n5 = gr.GeometricNode(5, np.array([0,3.2]))
 
 
 sign = gr.HomotopySignature([])
@@ -60,16 +60,25 @@ print(sign - sign2)
 features = np.array([[0,0], [2,2]])
 
 e = gr.HEdge(n,n1, gr.HomotopySignature())
+print('should be: []')
 print(e)
 e = gr.HEdge(n,n1, gr.HomotopySignature(), features=features)
+print('should be [1]')
 print(e)
 e2 = gr.HEdge(n1,n2, gr.HomotopySignature(), features=features)
+print('should be [2]')
 print(e2)
 e3 = gr.HEdge(n,n2, gr.HomotopySignature(), features=features)
+print('should be [1,2]')
 print(e3)
 e4 = gr.HEdge(n2,n, gr.HomotopySignature(), features=features)
+print('should be [-2,-1]')
 print(e4)
 
+e5 = gr.HEdge(n5,n1, gr.HomotopySignature(), features=features)
+e6 = gr.HEdge(n, n5, gr.HomotopySignature(), features=features)
+print(e5)
+print(e6)
 
 
 
