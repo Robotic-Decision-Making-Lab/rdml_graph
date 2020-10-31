@@ -38,11 +38,12 @@ class FeatureNode(GeometricNode):
     # @param id - an integer which describes the node.
     # @param name - the name of the feature it represents.
     # @param keywords - a list or set of keywords describing the feature (can be empty)
-    def __init__(self, id, name, pt=None, keywords={}):
+    def __init__(self, id, name, pt=None, keywords={}, obs=None):
         super(FeatureNode, self).__init__(id, pt)
 
         self.name = name
         self.keywords=set(keywords)
+        self.obs = obs
 
     def __str__(self):
         result = 'node(id='+ str(self.id) + ', name=' + str(self.name) + \

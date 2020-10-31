@@ -30,6 +30,8 @@ import heapq
 # For queue
 import numpy as np
 
+import pdb
+
 # defualt huerestic function for AStar.
 # it should work for any type of state, but when using the algorithm degrades
 # to simply Dijkstra's algorithm rather than A*.
@@ -83,6 +85,8 @@ def partial_homology_feature_goal(n, data, goal):
     goalNames = goal[2]
     goalKeywords = goal[3]
 
+    #print(n.node.id)
+
     if not isinstance(goalH, HomologySignatureGoal):
         raise TypeError("partial_homotopy_feature_goal given goal which should be (Node, HomologySignatureGoal, set(string), set(string))")
 
@@ -111,7 +115,13 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
     frontier = [startState]
     explored = set()
 
+    i = 0
+
     while len(frontier) > 0:
+        #pdb.set_trace()
+
+        i += 1
+
         # get current state to explore
         cur = heapq.heappop(frontier)
 
@@ -133,6 +143,8 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
                     # run heuristic function.
                     succ.hCost = h(succ.state, data, goal)
                     heapq.heappush(frontier, succ)
+    print(i)
+    pdb.set_trace()
     # End of while, no solution found.
     return [], float('inf')
 

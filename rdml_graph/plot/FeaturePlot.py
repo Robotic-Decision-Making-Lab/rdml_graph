@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 # plotFeatureNodes
 # This function plots a list of feature nodes and labels them on the figure.
 # @param nodes - list of nodes to plot.
-def plotFeatureNodes(nodes, dashlength = 40, color='black', fontsize=12):
+def plotFeatureNodes(nodes, dashlength = 40, color='black', fontsize=12, zorder=10, annotate=True):
     if not isinstance(nodes, list):
         nodes = [nodes]
 
@@ -40,9 +40,10 @@ def plotFeatureNodes(nodes, dashlength = 40, color='black', fontsize=12):
         #        rotation = 0, \
         #        dashrotation = 0,
         #        dashpush = 10)
-        plt.annotate(n.name, (n.pt[0], n.pt[1]), xytext=(n.pt[0] - 0.25, n.pt[1] + 0.35), color=color, fontsize=fontsize)
+        if annotate:
+            plt.annotate(n.name, (n.pt[0], n.pt[1]), xytext=(n.pt[0] - 0.25, n.pt[1] + 0.35), color=color, fontsize=fontsize, zorder=zorder)
 
         xPts.append(n.pt[0])
         yPts.append(n.pt[1])
 
-    plt.scatter(xPts, yPts, color='black')
+    plt.scatter(xPts, yPts, color='black', zorder=zorder)
