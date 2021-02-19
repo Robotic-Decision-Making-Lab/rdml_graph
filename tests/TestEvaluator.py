@@ -6,9 +6,16 @@
 import numpy as np
 import rdml_graph as gr
 
-info_field = np.ones((50,50, 2))
-eval = gr.MaskedEvaluator(info_field, np.arange(0,50), np.arange(0,50), 9)
+x_axis = 20
+y_axis = 15
 
-path = np.array([[13,11], [13, 34]])
+info_field = np.ones((x_axis,y_axis, 2)) * np.array([2,3])
+eval = gr.MaskedEvaluator(info_field, \
+                    np.arange(0,x_axis), np.arange(0,y_axis), \
+                    radius=2)
 
-eval.getScore(path)
+path = np.array([[3,4], [8, 5], [13,12], [21,13]])
+
+score = eval.getScore(path)
+
+print(score)

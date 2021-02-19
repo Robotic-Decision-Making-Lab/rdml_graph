@@ -86,12 +86,16 @@ class MaskedEvaluator(PathEvaluator):
 
         if isTop:
             y_mins = np.where(np.logical_and(x >= line_low_loc, x <= line_high_loc), -(a*x + c) / b, \
-                    np.where(x < line_low_loc, min_pt[1] + np.sqrt(self.radius**2 - (min_pt[0]-x)**2), \
-                                       max_pt[1] + np.sqrt(self.radius**2 - (max_pt[0]-x)**2)))
+                    np.where(x < line_low_loc, min_pt[1] +  \
+                                            np.sqrt(np.max(self.radius**2 - (min_pt[0]-x)**2, 0)), \
+                                       max_pt[1] + \
+                                            np.sqrt(np.max(self.radius**2 - (max_pt[0]-x)**2, 0))))
         else:
             y_mins = np.where(np.logical_and(x >= line_low_loc, x <= line_high_loc), -(a*x + c) / b, \
-                    np.where(x < line_low_loc, min_pt[1] - np.sqrt(self.radius**2 - (min_pt[0]-x)**2), \
-                                       max_pt[1] - np.sqrt(self.radius**2 - (max_pt[0]-x)**2)))
+                    np.where(x < line_low_loc, min_pt[1] -  \
+                                            np.sqrt(np.max(self.radius**2 - (min_pt[0]-x)**2, 0)), \
+                                       max_pt[1] - \
+                                            np.sqrt(np.max(self.radius**2 - (max_pt[0]-x)**2, 0))))
 
         return y_mins
 
@@ -131,40 +135,45 @@ class MaskedEvaluator(PathEvaluator):
         low_param = parameterizeLine(lower_min_per, lower_max_per)
 
 
-        min_x = min_pt[0] - self.radius
-        max_x = max_pt[0] + self.radius
+        min_x = max(min_pt[0] - self.radius, 0)
+        max_x = min(max_pt[0] + self.radius, self.info_field.shape[0]-1)
         x_range = np.arange(min_x, max_x+1, 1)
 
-        min_y = self.gen_slices_along_x(x_range, min_pt, max_pt, \
+        min_y_arr = self.gen_slices_along_x(x_range, min_pt, max_pt, \
                                     line_low_loc=lower_min_per[0], \
                                     line_high_loc=lower_max_per[0], \
                                     line_param=low_param, \
                                     isTop = False)
-        max_y = self.gen_slices_along_x(x_range, min_pt, max_pt, \
+        max_y_arr = self.gen_slices_along_x(x_range, min_pt, max_pt, \
                                     line_low_loc=upper_min_per[0], \
                                     line_high_loc=upper_max_per[0], \
                                     line_param=upper_param, \
                                     isTop = True)
 
         #pdb.set_trace()
-        import matplotlib.pyplot as plt
-        plt.plot(x_range,min_y)
-        plt.plot(x_range,max_y)
-        plt.plot(np.array(pt1[0],pt2[0]), np.array(pt1[1],pt2[1]), color='green')
-        plt.show()
+        # import matplotlib.pyplot as plt
+        # plt.plot(x_range,min_y)
+        # plt.plot(x_range,max_y)
+        # plt.plot(np.array(pt1[0],pt2[0]), np.array(pt1[1],pt2[1]), color='green')
+        # plt.show()
 
 
 
-        for x in x_range:
-            min_y = int(floor(min_y[x]))
-            max_y = int(ceil(max_y[x]))
+        for i, x in enumerate(x_range):
+            min_y = int(max(np.round(min_y_arr[i]), 0))
+            max_y = int(min(np.round(max_y_arr[i]), self.info_field.shape[1]))
+
+            shaped_mask = np.repeat(cur_mask[x,min_y:max_y, np.newaxis]==1, \
+                                    len(self.chan), \
+                                    axis=1)
 
             # (condition, true_selector, false_selector)
-            scores_raw = np.where(cur_mask[x,min_y:max_y]==1, \
-                        np.zeros((1,max_y - min_y, len(self.chan))), \
-                        self.info_field[x, min_y:max_y, self.chan])
+            scores_raw = np.where(shaped_mask, \
+                        np.zeros((max_y - min_y, len(self.chan))), \
+                        self.info_field[x, min_y:max_y, self.chan].transpose())
 
-            scores += np.sum(scores_raw, axis=[0,1])
+
+            scores += np.sum(scores_raw, axis=0)
             cur_mask[x, min_y:max_y] = 1
 
         return scores
@@ -177,7 +186,7 @@ class MaskedEvaluator(PathEvaluator):
     def getScore(self, path, budget=float('inf')):
         # force path along budget (TODO)
 
-        mask = np.zeros(self.info_field.shape, dtype=np.int8)
+        mask = np.zeros(self.info_field.shape[0:2], dtype=np.int8)
         scores = np.zeros(len(self.chan))
 
         for i in range(1, len(path)):
@@ -186,6 +195,7 @@ class MaskedEvaluator(PathEvaluator):
 
             # TODO convert points to x and y ticks.
             scores += self.getSegmentAlongX(pt1, pt2, mask)
+            print(mask.transpose())
 
         return scores
 
