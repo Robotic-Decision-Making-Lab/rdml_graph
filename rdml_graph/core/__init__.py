@@ -1,6 +1,6 @@
 from .State import State
 from .SearchState import SearchState
-from .Node import Node, GeometricNode
+from .Node import Node, GeometricNode, getWaypoints
 from .Edge import Edge
 from .GraphSearch import AStar, dijkstra, BFS, graph_goal_check, partial_homology_goal_check,  \
             h_euclidean, partial_homology_feature_goal

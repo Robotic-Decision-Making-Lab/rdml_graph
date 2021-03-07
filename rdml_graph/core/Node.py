@@ -25,6 +25,20 @@
 from rdml_graph.core import State
 from rdml_graph.core import Edge
 
+import numpy as np
+
+# getWaypoints
+# get waypoints from a list of HNodes.
+# @param path - a list of homotopy nodes.
+#
+# @return 2d numpy array of waypoints, (n x 2)
+def getWaypoints(path):
+    pts = np.empty((len(path), 2))
+    for i, n in enumerate(path):
+        pts[i] = n.pt
+
+    return pts
+
 class Node(State):
     # constructor
     # @param id - the integer the Node repersents.

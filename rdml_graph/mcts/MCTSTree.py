@@ -55,12 +55,18 @@ class MCTSTree(SearchState):
     def backpropReward(self, reward, actor_number):
         if actor_number == self.actor_number:
             self.sum_reward  += reward
-            if reward > self.best_reward:
-                self.best_reward = reward
+            if isinstance(reward, np.ndarray):
+                pass
+            else:
+                if reward > self.best_reward:
+                    self.best_reward = reward
         else:
             self.sum_reward -= reward
-            if -reward > self.best_reward:
-                self.best_reward = -reward
+            if isinstance(reward, np.ndarray):
+                pass
+            else:
+                if -reward > self.best_reward:
+                    self.best_reward = -reward
         self.num_updates += 1
 
         if self.parent is not None:

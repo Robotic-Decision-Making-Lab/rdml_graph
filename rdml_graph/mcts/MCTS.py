@@ -28,6 +28,7 @@ import tqdm
 import numpy as np
 from rdml_graph.mcts import MCTSTree
 from rdml_graph.mcts import UCBSelection, randomRollout, bestAvgReward
+from rdml_graph.mcts.ParetoFront import ParetoFront
 
 import pdb
 
@@ -43,18 +44,23 @@ import pdb
 # @param solutionFunction - (root, data)
 # @param data - persistent data across the MCTS.
 # @param actor_number - the starting actor number.
+# @param multi_obj_dim - the dimension of the multi-objective reward values
 #
 # @return - solution, reward
 #           solution - list of states of best path (including start state)
 #           reward - float value of best reward.
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
-            rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, actor_number=0):
+            rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, \
+            actor_number=0, multi_obj_dim=1):
     # Set the root of the search tree.
     root = MCTSTree(start, 0, None)
     root.unpicked_children = root.successor(budget)
 
-    bestReward = -np.inf
-    bestSeq = None
+    if multi_obj_dim > 1:
+        optimal = ParetoFront(multi_obj_dim, alloc_size=int(np.ceil(max_iterations/10)))
+    else:
+        bestReward = -np.inf
+        bestSeq = None
 
     # Main loop of MCTS
     for i in tqdm.tqdm(range(max_iterations)):
@@ -88,9 +94,13 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
             sequence = rolloutFunc(current, budget, data)
             rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
 
-            if rolloutReward > bestReward:
-                bestReward = rolloutReward
-                bestSeq = sequence
+
+            if multi_obj_dim > 1:
+                optimal.check_and_add(rolloutReward, sequence)
+            else:
+                if rolloutReward > bestReward:
+                    bestReward = rolloutReward
+                    bestSeq = sequence
             #pdb.set_trace()
 
             ######## BACK-PROPOGATE
@@ -100,6 +110,11 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
     # end main for loop
 
     ######## SOLUTION
-    solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
-    return solutionSeq, solutionReward
+
+    if multi_obj_dim > 1:
+        front_rewards, front_paths = optimal.get()
+        return front_paths, front_rewards
+    else:
+        solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
+        return solutionSeq, solutionReward
 # End MCTS

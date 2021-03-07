@@ -24,6 +24,7 @@
 import tqdm
 import numpy as np
 from rdml_graph.mcts import MCTSTree
+from rdml_graph.mcts.ParetoFront import ParetoFront
 
 import pdb
 
@@ -47,6 +48,21 @@ def UCBSelection(current, budget, data):
             bestScore = score
             bestChild = child
     return bestChild
+
+def paretoUCBSelection(current, budget, data):
+    D = current.sum_reward.shape[0]
+    optimal = ParetoFront(D, len(current.children))
+
+    for child in current.children:
+        UCB = child.reward() +  \
+            np.sqrt((4 * np.log(current.num_updates)) / (2 * child.num_updates))
+
+        optimal.check_and_add(UCB, child)
+
+    rew, child = optimal.get_random()
+    return child
+
+
 ############## rollout functions
 
 # randomRollout
@@ -92,6 +108,7 @@ def randomRollout(treeState, budget, data=None):
         treeState.children.append(succ[childIdx])
         return randomRollout(succ[childIdx], budget, data)
     '''
+
 
 ############### solution functions
 

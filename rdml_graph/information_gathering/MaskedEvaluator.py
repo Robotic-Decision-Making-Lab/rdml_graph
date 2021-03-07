@@ -135,8 +135,8 @@ class MaskedEvaluator(PathEvaluator):
         low_param = parameterizeLine(lower_min_per, lower_max_per)
 
 
-        min_x = max(min_pt[0] - self.radius, 0)
-        max_x = min(max_pt[0] + self.radius, self.info_field.shape[0]-1)
+        min_x = round(max(min_pt[0] - self.radius, 0))
+        max_x = round(min(max_pt[0] + self.radius, self.info_field.shape[0]-1))
         x_range = np.arange(min_x, max_x+1, 1)
 
         min_y_arr = self.gen_slices_along_x(x_range, min_pt, max_pt, \
@@ -195,7 +195,7 @@ class MaskedEvaluator(PathEvaluator):
 
             # TODO convert points to x and y ticks.
             scores += self.getSegmentAlongX(pt1, pt2, mask)
-            print(mask.transpose())
+            #print(mask.transpose())
 
         return scores
 
