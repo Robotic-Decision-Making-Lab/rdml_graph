@@ -56,6 +56,11 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
     root = MCTSTree(start, 0, None)
     root.unpicked_children = root.successor(budget)
 
+    if multi_obj_dim < -1:
+        multi_obj_dim = -multi_obj_dim
+        all_values = True
+    else:
+        all_values = False
     if multi_obj_dim > 1:
         optimal = ParetoFront(multi_obj_dim, alloc_size=int(np.ceil(max_iterations/10)))
     else:
@@ -111,7 +116,14 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
 
     ######## SOLUTION
 
-    if multi_obj_dim > 1:
+    if all_values:
+        multi_obj_dim = -multi_obj_dim
+
+        front_rewards, front_paths = optimal.get()
+        bestSeq, bestReward = [], 0
+        solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
+        return front_paths, front_rewards, solutionSeq, solutionReward
+    elif multi_obj_dim > 1:
         front_rewards, front_paths = optimal.get()
         return front_paths, front_rewards
     else:
