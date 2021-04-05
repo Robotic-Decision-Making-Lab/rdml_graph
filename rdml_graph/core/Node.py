@@ -102,7 +102,7 @@ class TreeNode(Node):
     # @param parent_edge - the parent node (no edge given)
     def __init__(self, id, parent):
         super(TreeNode, self).__init__(id)
-        self.p = parent
+        self.parent = parent
 
     def get_viz(self, labels=False, t=None):
         if t is None:
@@ -114,7 +114,7 @@ class TreeNode(Node):
             t.node(str(self.id), '')
 
         if self.p is not None:
-            t.edge(str(self.p.id), str(self.id))
+            t.edge(str(self.parent.id), str(self.id))
 
         # recursivly call sub calls
         for e in self.e:

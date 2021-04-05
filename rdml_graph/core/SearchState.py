@@ -23,17 +23,22 @@
 # Should be extended for new functionality
 
 from rdml_graph.core import State
+from rdml_graph.core import TreeNode
+from rdml_graph.core import Edge
 
-class SearchState(object):
+import pdb
+
+class SearchState(TreeNode):
     # Constructor
     # @param state - should be of class State
     def __init__(self, state, rCost=0, hCost=0, parent=None):
+        super(SearchState, self).__init__(id, parent)
         if not isinstance(state, State):
             raise TypeError("Search state given argument state not of type 'State', instead is type: " + str(type(state)))
         self.rCost = rCost # real cost
         self.hCost = hCost # estimated cost
         self.state = state # The actual state
-        self.parent = parent # Pointer to parent node of state for finding full path
+        # self.parent = parent # Pointer to parent node of state for finding full path
         self.invertCmp = False # allows inverting invert comparison (say for max heap)
 
     # successor
@@ -43,8 +48,13 @@ class SearchState(object):
     # @return - a list of SearchState of successors of the current search state.
     def successor(self):
         # consider how to handle the estimated hCost
-        return [SearchState(s[0], rCost=self.rCost+s[1], parent=self)  \
-                    for s in self.state.successor()]
+        succ = self.state.successor()
+        states = [SearchState(s[0], rCost=self.rCost+s[1], parent=self)  \
+                    for s in succ]
+        self.e = [Edge.Edge(self, s, suc[1]) for s, suc in zip(states, succ)]
+        self.calcSucc = True
+        return states
+
 
     # cost
     # returns the combination of real cost and estimated additional cost
