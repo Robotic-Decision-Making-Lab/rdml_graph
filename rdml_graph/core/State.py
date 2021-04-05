@@ -30,3 +30,7 @@ class State(object):
     #               with new state and additional cost
     def successor(self):
         return []
+
+
+    def getLabel(self):
+        return str(self)

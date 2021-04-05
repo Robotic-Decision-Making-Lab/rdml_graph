@@ -106,17 +106,20 @@ def partial_homology_feature_goal(n, data, goal):
 # @param h - a heuristic function for the AStar search needs type (state, data, goal)
 # @param data - a potential set of input data for huerestics and goal states.
 # @param goal - a potential set of goal data (REQUIRED by default)
+# @param out_tree - if true, output tree, otherwise do not output a tree.
 #
 # @returns - list, cost
 #   an optimal list states to the goal state. - if no path return empty list.
 # [first state, ---, goal state]
-def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
-    startState = SearchState(start, hCost=h(start, data, goal))
+def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None, \
+            output_tree=False):
+    startState = SearchState(start, hCost=h(start, data, goal), id=0)
     frontier = [startState]
     explored = set()
 
     i = 0
 
+    cur_id = 1
     while len(frontier) > 0:
         #pdb.set_trace()
 
@@ -128,7 +131,10 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
         if cur.state not in explored:
             # check if the current state is in the goal state.
             if g(cur.state, data, goal):
-                return cur.getPath(), cur.rCost
+                if output_tree:
+                    return cur.getPath(), cur.rCost, startState
+                else:
+                    return cur.getPath(), cur.rCost
 
             # add state to set of explored states
             explored.add(cur.state)
@@ -146,8 +152,10 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None):
     print(i)
     pdb.set_trace()
     # End of while, no solution found.
-    return [], float('inf')
-
+    if output_tree:
+        return [], float('inf'), startState
+    else:
+        return [], float('inf')
 
 
 # dijkstra's algorithm (All nodes)

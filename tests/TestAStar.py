@@ -23,6 +23,7 @@
 # working properly.
 
 import rdml_graph as gr
+import pdb
 
 n = gr.Node(0)
 n1 = gr.Node(1)
@@ -43,7 +44,7 @@ n4.addEdge(gr.Edge(n4,n6,2.2))
 
 
 correctSolution = [0,2,4,6]
-path, cost = gr.AStar(n, goal=n6)
+path, cost, root = gr.AStar(n, goal=n6, output_tree=True)
 
 print('Cost = ' + str(cost))
 print('Path executed')
@@ -64,3 +65,6 @@ if correct:
     print('Passed test')
 else:
     print('Failed test')
+
+t = root.get_viz(labels=True)
+t.view()

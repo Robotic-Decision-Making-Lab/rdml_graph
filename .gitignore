@@ -1,3 +1,7 @@
+# Ignore graphviz stuff
+*.gv
+*.gv.pdf
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

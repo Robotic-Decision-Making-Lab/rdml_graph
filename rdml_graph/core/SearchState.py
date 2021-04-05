@@ -28,11 +28,20 @@ from rdml_graph.core import Edge
 
 import pdb
 
+
 class SearchState(TreeNode):
+    __search_state_id_num_global__ = 0
     # Constructor
     # @param state - should be of class State
-    def __init__(self, state, rCost=0, hCost=0, parent=None):
-        super(SearchState, self).__init__(id, parent)
+    def __init__(self, state, rCost=0, hCost=0, parent=None, id=None):
+        super(SearchState, self).__init__(SearchState.__search_state_id_num_global__, parent)
+
+        # init code for id handling.
+        if id is not None:
+            SearchState.__search_state_id_num_global__ = id
+            self.id = id
+        SearchState.__search_state_id_num_global__ += 1
+
         if not isinstance(state, State):
             raise TypeError("Search state given argument state not of type 'State', instead is type: " + str(type(state)))
         self.rCost = rCost # real cost
@@ -105,6 +114,10 @@ class SearchState(TreeNode):
         if not isinstance(other, SearchState):
             return False
         return self.cost() == other.cost()
+
+    # a function to return the label of the tree.
+    def get_plot_label(self):
+        return str(self.state.getLabel())
 
     # str(self) operator overload
     # This function provides a human readable quick information

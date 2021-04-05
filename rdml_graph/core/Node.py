@@ -104,6 +104,13 @@ class TreeNode(Node):
         super(TreeNode, self).__init__(id)
         self.parent = parent
 
+
+    # A set of code to get visualization code for a tree.
+    # This uses the graphviz python library to generate a Digraph object for tree.
+    # @oaram labels - boolean for if the tree should inlcude lables.
+    # @param t - a Digraph object to start with (leave if creating a new viz)
+    #
+    # @return - Digraph object ( t.view() ) called after will show the tree.
     def get_viz(self, labels=False, t=None):
         if t is None:
             t = Digraph('T')
@@ -113,7 +120,7 @@ class TreeNode(Node):
         else:
             t.node(str(self.id), '')
 
-        if self.p is not None:
+        if self.parent is not None:
             t.edge(str(self.parent.id), str(self.id))
 
         # recursivly call sub calls
