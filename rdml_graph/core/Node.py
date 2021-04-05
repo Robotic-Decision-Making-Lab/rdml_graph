@@ -25,6 +25,8 @@
 from rdml_graph.core import State
 from rdml_graph.core import Edge
 
+# directional graph
+from graphviz import Digraph
 import numpy as np
 
 # getWaypoints
@@ -89,6 +91,43 @@ class Node(State):
     # Returns a quick human readable string
     def __str__(self):
         result = 'node(id='+ str(self.id) + ', edges={'
+        for edge in self.e:
+            result += str(edge)+','
+        result += '})'
+        return result
+#######################################################
+
+class TreeNode(Node):
+    # @param id - the integer that is the 'index' of the node.
+    # @param parent_edge - the parent node (no edge given)
+    def __init__(self, id, parent):
+        super(TreeNode, self).__init__(id)
+        self.p = parent
+
+    def get_viz(self, labels=False, t=None):
+        if t is None:
+            t = Digraph('T')
+
+        if labels:
+            t.node(str(self.id), self.get_plot_label())
+        else:
+            t.node(str(self.id), '')
+
+        if self.p is not None:
+            t.edge(str(self.p.id), str(self.id))
+
+        # recursivly call sub calls
+        for e in self.e:
+            if isinstance(e.c, TreeNode):
+                t = e.c.get_viz(labels, t)
+        return t
+
+
+    def get_plot_label(self):
+        return str(self.id)
+
+    def __str__(self):
+        result = 'node(id='+ str(self.id) + ', parent=' + str(self.p) + ', edges={'
         for edge in self.e:
             result += str(edge)+','
         result += '})'
