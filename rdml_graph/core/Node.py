@@ -25,8 +25,6 @@
 from rdml_graph.core import State
 from rdml_graph.core import Edge
 
-# directional graph
-from graphviz import Digraph
 import numpy as np
 
 # getWaypoints
@@ -112,6 +110,10 @@ class TreeNode(Node):
     #
     # @return - Digraph object ( t.view() ) called after will show the tree.
     def get_viz(self, labels=False, t=None):
+        # directional graph
+        # a bit strange, but only import if needed.
+        from graphviz import Digraph
+
         if t is None:
             t = Digraph('T')
 
