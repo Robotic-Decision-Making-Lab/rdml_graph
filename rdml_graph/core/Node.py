@@ -116,7 +116,9 @@ class TreeNode(Node):
             t = Digraph('T')
 
         if labels:
-            t.node(str(self.id), self.get_plot_label())
+            label = self.get_plot_label()
+            print(label)
+            t.node(str(self.id), label)
         else:
             t.node(str(self.id), '')
 
@@ -130,7 +132,7 @@ class TreeNode(Node):
         return t
 
 
-    def get_plot_label(self):
+    def get_plot_label(self, data=None):
         return str(self.id)
 
     def __str__(self):

@@ -51,7 +51,7 @@ import pdb
 #           reward - float value of best reward.
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
             rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, \
-            actor_number=0, multi_obj_dim=1):
+            actor_number=0, multi_obj_dim=1, output_tree=False):
     # Set the root of the search tree.
     root = MCTSTree(start, 0, None)
     root.unpicked_children = root.successor(budget)
@@ -122,11 +122,20 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
         front_rewards, front_paths = optimal.get()
         bestSeq, bestReward = [], 0
         solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
-        return front_paths, front_rewards, solutionSeq, solutionReward
+        if output_tree:
+            return front_paths, front_rewards, solutionSeq, solutionReward, root
+        else:
+            return front_paths, front_rewards, solutionSeq, solutionReward
     elif multi_obj_dim > 1:
         front_rewards, front_paths = optimal.get()
-        return front_paths, front_rewards
+        if output_tree:
+            return front_paths, front_rewards, root
+        else:
+            return front_paths, front_rewards
     else:
         solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
-        return solutionSeq, solutionReward
+        if output_tree:
+            return solutionSeq, solutionReward, root
+        else:
+            return solutionSeq, solutionReward
 # End MCTS

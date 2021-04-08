@@ -32,5 +32,7 @@ class State(object):
         return []
 
 
-    def getLabel(self):
+    # getLabel
+    # An optional redefined getLabel function for visualization or other generation.
+    def getLabel(self, data=None):
         return str(self)
