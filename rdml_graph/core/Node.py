@@ -117,7 +117,6 @@ class TreeNode(Node):
 
         if labels:
             label = self.get_plot_label()
-            print(label)
             t.node(str(self.id), label)
         else:
             t.node(str(self.id), '')
