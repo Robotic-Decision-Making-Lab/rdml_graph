@@ -102,7 +102,7 @@ class DecisionNode(TreeNode):
 
         # recursivly call sub calls
         for e in self.e:
-            if isinstance(e.c, gr.TreeNode):
+            if isinstance(e.c, TreeNode):
                 t = e.c.get_viz(labels, t)
             else:
                 class_label='label_'+str(random.randint(1000000, 100000000))
@@ -184,52 +184,3 @@ class CategoryDecision(DecisionNode):
             o += ' ' + str(edge.categories)
 
         return o
-
-
-
-# split_list
-# splits a list into sub lists with each element going to the list specified in
-# idxs
-# @param lis - the input list of objects to split into smaller list
-# @param idxs - the input list of indcies each object in lis should be split into
-# @param largest_idx - an optional index to setup the list to run faster if the
-#                   the number of sub lists is known.
-def split_list(lis, idxs, largest_idx=None):
-    if largest_idx is None:
-        splits = {}
-        raise Exception()
-        for i in range(len(idxs)):
-            splits[idxs[i]].append(lis[i])
-        return splits
-    else:
-        counts = [0] * largest_idx
-
-        for i in range(len(idxs)):
-            counts[idxs[i]] += 1
-        splits = [[None] * counts[i] for i in range(largest_idx)]
-
-        counts = [0] * largest_idx
-
-        for i in range(len(idxs)):
-            j = idxs[i]
-            splits[j][counts[j]] = lis[i]
-            counts[j] += 1
-        return splits
-
-
-
-if __name__ == '__main__':
-    # create fake tree for quick test.
-    root = FloatDecision(0, None, 0, 0.25)
-    c1 = CategoryDecision(1, root, 1, [['apples'], ['oranges', 'peaches']])
-    c1.set_node(0, 1)
-    c1.set_node(1, 2)
-    root.set_upper(c1)
-    root.set_lower(0)
-
-    X = [[0.5, 'apples'], [0.75, 'oranges'], [0, 'literally does not matter'], [1.2, 'peaches']]
-
-    out_y = [root.traverse(x) for x in X]
-
-    print(X)
-    print(out_y)

@@ -21,8 +21,9 @@
 #
 # Set of functions to learn decision tree's
 
-import rdml_graph.core import TreeNode
-from rdml.decision_tree import classification_importance, regression_importance, \
+from rdml_graph.core import TreeNode
+from rdml_graph.decision_tree.DecisionTreeHelper import \
+        classification_importance, regression_importance, \
         class_plurality, reg_plurality, \
         same_class, bin_category_split, bin_float_split, default_attribute_func
 

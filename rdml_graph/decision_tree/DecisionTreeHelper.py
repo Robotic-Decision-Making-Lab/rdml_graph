@@ -21,8 +21,13 @@
 #
 # A set of function to help the decision tree learner.
 
-from rdml.decision_tree import DecisionNode, FloatDecision, CategoryDecision
+from rdml_graph.decision_tree import DecisionNode, FloatDecision, CategoryDecision
 
+from scipy.stats import entropy
+import numpy as np
+import math
+from itertools import combinations
+from statistics import variance, mean
 
 ######################## IMPORTANCE FUNCTIONS #########################
 
