@@ -46,7 +46,7 @@ import pdb
 # @param actor_number - the starting actor number.
 # @param multi_obj_dim - the dimension of the multi-objective reward values
 #
-# @return - solution, reward
+# @return - solution, reward, opt[root_of_tree]
 #           solution - list of states of best path (including start state)
 #           reward - float value of best reward.
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \

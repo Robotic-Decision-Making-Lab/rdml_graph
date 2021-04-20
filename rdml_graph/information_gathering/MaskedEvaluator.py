@@ -83,6 +83,7 @@ class MaskedEvaluator(PathEvaluator):
 
     def gen_slices_along_x(self, x, min_pt, max_pt, line_low_loc, line_high_loc, line_param, isTop):
         a,b,c = line_param
+        pdb.set_trace()
 
         if isTop:
             y_mins = np.where(np.logical_and(x >= line_low_loc, x <= line_high_loc), -(a*x + c) / b, \
@@ -138,6 +139,8 @@ class MaskedEvaluator(PathEvaluator):
         min_x = round(max(min_pt[0] - self.radius, 0))
         max_x = round(min(max_pt[0] + self.radius, self.info_field.shape[0]-1))
         x_range = np.arange(min_x, max_x+1, 1)
+
+        pdb.set_trace()
 
         min_y_arr = self.gen_slices_along_x(x_range, min_pt, max_pt, \
                                     line_low_loc=lower_min_per[0], \
