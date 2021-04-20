@@ -64,7 +64,7 @@ class MaskedEvaluator(PathEvaluator):
         # handle single dimminsion info_fields for backwards compatability
         if len(info_field.shape) == 2:
             self.info_field = info_field[:,:, np.newaxis]
-            self.chan = np.array([1], dtype=np.int16)
+            self.chan = np.array([0], dtype=np.int16)
         else:
             self.info_field = info_field
 
@@ -75,7 +75,14 @@ class MaskedEvaluator(PathEvaluator):
                 self.chan = channels
 
         self.x_ticks = x_ticks
+        self.x_scale = x_ticks[1] - x_ticks[0]
+
         self.y_ticks = y_ticks
+        self.y_scale = y_ticks[1] - y_ticks[0]
+
+        min_scale = min(self.x_scale, self.y_scale)
+        if radius < (min_scale/2):
+            radius = min_scale/2
         self.radius = radius
 
 
@@ -83,7 +90,6 @@ class MaskedEvaluator(PathEvaluator):
 
     def gen_slices_along_x(self, x, min_pt, max_pt, line_low_loc, line_high_loc, line_param, isTop):
         a,b,c = line_param
-        pdb.set_trace()
 
         if isTop:
             y_mins = np.where(np.logical_and(x >= line_low_loc, x <= line_high_loc), -(a*x + c) / b, \
@@ -136,11 +142,15 @@ class MaskedEvaluator(PathEvaluator):
         low_param = parameterizeLine(lower_min_per, lower_max_per)
 
 
-        min_x = round(max(min_pt[0] - self.radius, 0))
-        max_x = round(min(max_pt[0] + self.radius, self.info_field.shape[0]-1))
-        x_range = np.arange(min_x, max_x+1, 1)
+        min_x = max(min_pt[0] - self.radius, self.x_ticks[0])
+        max_x = min(max_pt[0] + self.radius, self.x_ticks[-1]+self.x_scale)
 
-        pdb.set_trace()
+        min_x_idx = round((min_x - self.x_ticks[0]) / self.x_scale)
+        max_x_idx = round((max_x - self.x_ticks[0]) / self.x_scale)
+
+        x_range = np.arange((min_x_idx*self.x_scale)+self.x_ticks[0], \
+                ((max_x_idx+1)*self.x_scale)+self.x_ticks[0], self.x_scale)
+
 
         min_y_arr = self.gen_slices_along_x(x_range, min_pt, max_pt, \
                                     line_low_loc=lower_min_per[0], \
@@ -160,11 +170,12 @@ class MaskedEvaluator(PathEvaluator):
         # plt.plot(np.array(pt1[0],pt2[0]), np.array(pt1[1],pt2[1]), color='green')
         # plt.show()
 
-
-
-        for i, x in enumerate(x_range):
-            min_y = int(max(np.round(min_y_arr[i]), 0))
-            max_y = int(min(np.round(max_y_arr[i]), self.info_field.shape[1]))
+        for i, x in enumerate(range(min_x_idx, max_x_idx)):
+            #min_y = int(max(np.round(min_y_arr[i]), 0))
+            #max_y = int(min(np.round(max_y_arr[i]), self.info_field.shape[1]))
+            min_y = round((max(min_y_arr[i], self.y_ticks[0])-self.y_ticks[0]) / self.y_scale)
+            max_y = round((min(max_y_arr[i], self.y_ticks[-1]+self.y_scale)\
+                                -self.y_ticks[0]) / self.y_scale)
 
             shaped_mask = np.repeat(cur_mask[x,min_y:max_y, np.newaxis]==1, \
                                     len(self.chan), \
@@ -178,6 +189,8 @@ class MaskedEvaluator(PathEvaluator):
 
             scores += np.sum(scores_raw, axis=0)
             cur_mask[x, min_y:max_y] = 1
+
+        print(cur_mask)
 
         return scores
 
