@@ -44,4 +44,13 @@ for i in range(multi_field.shape[2]):
     mat_i = plt.matshow(multi_field[:,:,i])
     cbar = plt.colorbar(mat_i)
 
+paths = [np.array([[6,22], [16, 11], [43, 34]]), \
+         np.array([[6,22], [18, 47]])]
+
+for i in range(5):
+    paths.append(np.random.random((4,2))*49)
+
+
+gr.plot_multi(multi_field, paths)
+
 plt.show()
