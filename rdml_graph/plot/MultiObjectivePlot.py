@@ -28,11 +28,13 @@ from rdml_graph.plot import plot2DPath
 
 # plot_multi
 # plots multiple objectives and paths
-# @param paths - list of 2d numpy paths
 # @param info_field - the information field numpy(width, height, channels)
+# @param paths - [opt] list of 2d numpy paths
 # @param info_names - [opt] list of names for information fields
+# @param path_names - [opt] list of names for the paths
 # @param fig - [opt] the input figure
-def plot_multi(info_field, paths=[], info_names=None, path_names=None, fig= None):
+def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
+        cmap='Greys', radius=None, fig= None):
     if fig is None:
         fig =plt.figure(constrained_layout=True)
 
@@ -66,12 +68,12 @@ def plot_multi(info_field, paths=[], info_names=None, path_names=None, fig= None
             ax.imshow(info_field[:,:,i].transpose(), \
                         vmin=np.min(info_field[:,:,i]), \
                         vmax=np.max(info_field[:,:,i]), \
-                        origin='lower')
+                        origin='lower', cmap=cmap)
             ps = []
 
             for j, path in enumerate(paths):
                 p = plot2DPath(path, color=colors[j % len(colors)], \
-                                label=path_names[j])
+                                label=path_names[j], radius=radius)
                 ps.append(p)
             # end for (paths)
         # end for (info field)
@@ -88,12 +90,4 @@ def plot_multi(info_field, paths=[], info_names=None, path_names=None, fig= None
         raise NotImplemented('Num info larger than 4 is not implemented currently')
     # end if num_info
 
-
-
-
-
-
-
-
-
-#
+    return fig

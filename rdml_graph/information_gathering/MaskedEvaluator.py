@@ -91,7 +91,8 @@ class MaskedEvaluator(PathEvaluator):
         self.normalize=normalize
 
         if expected_val is None:
-            self.expected_val = np.ones(len(self.chan)) / 2
+            #self.expected_val = np.ones(len(self.chan))
+            self.expected_val = np.mean(self.info_field, axis=(0,1))
         else:
             self.expected_val = expected_val
 
@@ -99,7 +100,7 @@ class MaskedEvaluator(PathEvaluator):
         if budget == float('inf'):
             self.scales = np.ones(len(self.chan))
         else:
-            self.scales = 1 / (self.expected_val*(budget+radius*2)*2*radius)
+            self.scales = 1 / (self.expected_val*(budget+radius*2)*2*radius*2)
 
 
     def gen_slices_along_x(self, x, min_pt, max_pt, line_low_loc, line_high_loc, line_param, isTop):
