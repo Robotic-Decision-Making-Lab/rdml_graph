@@ -15,3 +15,9 @@ from .graph_generators import *
 
 from . import information_gathering
 from .information_gathering import *
+
+from . import decision_tree
+from .decision_tree import *
+
+from . import utilities
+from .utilities import *

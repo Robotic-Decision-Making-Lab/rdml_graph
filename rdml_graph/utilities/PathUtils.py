@@ -1,4 +1,4 @@
-# Copyright 2020 Ian Rankin
+# Copyright 2021 Ian Rankin
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this
 # software and associated documentation files (the "Software"), to deal in the Software
@@ -16,23 +16,43 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# State.py
-# Written Ian Rankin February 2020
+# PathUtils.py
+# Written Ian Rankin April 2021
 #
-# A basic class definition of an abstract state for search algorithms
-# Each must define its successor function.
-
-class State(object):
-    # A default successor Function
-    # Abstract function
-    #
-    # @return - [(successor state, cost)] a list of tuples
-    #               with new state and additional cost
-    def successor(self):
-        return []
+# A set of function for handling paths
 
 
-    # getLabel
-    # An optional redefined getLabel function for visualization or other generation.
-    def getLabel(self, data=None):
-        return str(self)
+import numpy as np
+from rdml_graph.core import Node
+from rdml_graph.homotopy import HNode
+
+
+# getWaypoints
+# get waypoints from a list of HNodes.
+# @param path - a list of homotopy nodes.
+#
+# @return 2d numpy array of waypoints, (n x 2)
+def getWaypoints(path):
+    if len(path) < 1:
+        return np.empty((0, 2))
+    elif isinstance(path[0], HNode):
+        return getWaypointsHomotopy(path)
+
+    pts = np.empty((len(path), 2))
+    for i, n in enumerate(path):
+        pts[i] = n.pt
+
+    return pts
+
+
+# getWaypoints
+# get waypoints from a list of HNodes.
+# @param path - a list of homotopy nodes.
+#
+# @return 2d numpy array of waypoints, (n x 2)
+def getWaypointsHomotopy(path):
+    pts = np.empty((len(path), 2))
+    for i, homotopy in enumerate(path):
+        pts[i] = homotopy.node.pt
+
+    return pts

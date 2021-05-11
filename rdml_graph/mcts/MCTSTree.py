@@ -24,6 +24,7 @@
 # the tree search.
 
 from rdml_graph.core import State
+from rdml_graph.core import Edge
 from rdml_graph.core import SearchState
 import pdb
 
@@ -32,7 +33,7 @@ import numpy as np
 class MCTSTree(SearchState):
     # Constructor
 
-    def __init__(self, state, rCost, parent):
+    def __init__(self, state, rCost, parent, actor_number=0):
         super(MCTSTree, self).__init__(state, rCost=rCost, hCost=0, parent=parent)
 
         self.unpicked_children = []
@@ -40,7 +41,7 @@ class MCTSTree(SearchState):
         self.best_reward = -np.inf
         self.sum_reward = 0
         self.num_updates = 0
-        self.actor_number = 0
+        self.actor_number = actor_number
 
     # reward
     # reward is an average of all total rewards propagated through the tree.
@@ -99,10 +100,16 @@ class MCTSTree(SearchState):
     # @return - list of MCTSTree objects.
     def successor(self, budget=np.inf):
         result = []
-        for s in self.state.successor():
+        self.e = []
+        succ = self.state.successor()
+        for s in succ:
             cost = self.rCost + s[1]
             if cost <= budget:
-                result.append(MCTSTree(s[0], cost, self))
+                n = MCTSTree(s[0], cost, self)
+                result.append(n)
+                self.e.append(Edge(self, n, s[1]))
                 if len(s) == 3:
                     result[-1].actor_number = s[2]
+
+
         return result

@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 
 info_field = gr.random_field2d((50,50))
 
-multi_field = gr.random_multi_field2d((50,50), 3, num_gauss=np.array([30,30,27]))
+multi_field = gr.random_multi_field2d((50,50), 3, num_gauss=np.array([5,7,9]))
 
 mat1 = plt.matshow(info_field)
 cbar = plt.colorbar(mat1)
@@ -43,5 +43,14 @@ for i in range(multi_field.shape[2]):
     plt.figure()
     mat_i = plt.matshow(multi_field[:,:,i])
     cbar = plt.colorbar(mat_i)
+
+paths = [np.array([[6,22], [16, 11], [43, 34]]), \
+         np.array([[6,22], [18, 47]])]
+
+for i in range(5):
+    paths.append(np.random.random((4,2))*49)
+
+
+gr.plot_multi(multi_field, paths, cmap='Greys')
 
 plt.show()

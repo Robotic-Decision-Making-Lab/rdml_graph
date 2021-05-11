@@ -54,6 +54,9 @@ class TicTacToeState(gr.State):
                     result.append((nextState, 0, self.agentTurn))
         return result
 
+    def getLabel(self):
+        return str(self.board)
+
     # winState
     # indicates if the state is currently in a winning state
     # return - 0 for agent 0 winning, 1 for agent 1, 2 - for cat's game and -1 for not a winning state.
@@ -135,7 +138,11 @@ def ticTacToeReward(listOfStates, budget, data):
 start = TicTacToeState(agentTurn=1)
 start.board[1][1] = 1.0
 
-solution, reward = gr.MCTS(start, 2000, ticTacToeReward, actor_number=0)#, solutionFunc=gr.mostSimulations)
+solution, reward, root = gr.MCTS(start, 50, ticTacToeReward, actor_number=0, \
+                            solutionFunc=gr.mostSimulations, output_tree=True)
+
+t = root.get_viz(labels=True)
+t.view()
 
 print('Solution reward = ' + str(reward))
 for state in solution:

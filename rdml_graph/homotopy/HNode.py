@@ -40,17 +40,6 @@ import numpy as np
 
 import pdb
 
-# getWaypoints
-# get waypoints from a list of HNodes.
-# @param path - a list of homotopy nodes.
-#
-# @return 2d numpy array of waypoints, (n x 2)
-def getWaypointsHomotopy(path):
-    pts = np.empty((len(path), 2))
-    for i, homotopy in enumerate(path):
-        pts[i] = homotopy.node.pt
-
-    return pts
 
 class HNode(State):
     # constructor

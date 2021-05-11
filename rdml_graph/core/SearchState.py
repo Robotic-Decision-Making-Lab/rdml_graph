@@ -116,8 +116,8 @@ class SearchState(TreeNode):
         return self.cost() == other.cost()
 
     # a function to return the label of the tree.
-    def get_plot_label(self):
-        return str(self.state.getLabel())
+    def get_plot_label(self, data=None):
+        return str(self.state.getLabel(data))
 
     # str(self) operator overload
     # This function provides a human readable quick information

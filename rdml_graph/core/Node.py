@@ -27,17 +27,7 @@ from rdml_graph.core import Edge
 
 import numpy as np
 
-# getWaypoints
-# get waypoints from a list of HNodes.
-# @param path - a list of homotopy nodes.
-#
-# @return 2d numpy array of waypoints, (n x 2)
-def getWaypoints(path):
-    pts = np.empty((len(path), 2))
-    for i, n in enumerate(path):
-        pts[i] = n.pt
 
-    return pts
 
 class Node(State):
     # constructor
@@ -109,16 +99,17 @@ class TreeNode(Node):
     # @param t - a Digraph object to start with (leave if creating a new viz)
     #
     # @return - Digraph object ( t.view() ) called after will show the tree.
-    def get_viz(self, labels=False, t=None):
+    def get_viz(self, labels=False, t=None, data=None):
         # directional graph
         # a bit strange, but only import if needed.
         from graphviz import Digraph
-
+                
         if t is None:
             t = Digraph('T')
 
         if labels:
-            t.node(str(self.id), self.get_plot_label())
+            label = self.get_plot_label(data)
+            t.node(str(self.id), label)
         else:
             t.node(str(self.id), '')
 
@@ -128,11 +119,11 @@ class TreeNode(Node):
         # recursivly call sub calls
         for e in self.e:
             if isinstance(e.c, TreeNode):
-                t = e.c.get_viz(labels, t)
+                t = e.c.get_viz(labels, t, data)
         return t
 
 
-    def get_plot_label(self):
+    def get_plot_label(self, data=None):
         return str(self.id)
 
     def __str__(self):
