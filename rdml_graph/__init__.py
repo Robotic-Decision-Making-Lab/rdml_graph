@@ -21,3 +21,6 @@ from .decision_tree import *
 
 from . import utilities
 from .utilities import *
+
+from . import parallel
+from .parallel import *
