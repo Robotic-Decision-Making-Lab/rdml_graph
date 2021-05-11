@@ -86,13 +86,13 @@ class DecisionNode(TreeNode):
     # @param t - a Digraph object to start with (leave if creating a new viz)
     #
     # @return - Digraph object ( t.view() ) called after will show the tree.
-    def get_viz(self, labels=False, t=None):
+    def get_viz(self, labels=False, t=None, data=None):
         if t is None:
             from graphviz import Digraph
             t = Digraph('T')
 
         if labels:
-            label = self.get_plot_label()
+            label = self.get_plot_label(data)
             t.node(str(self.id), label)
         else:
             t.node(str(self.id), '')
@@ -103,7 +103,7 @@ class DecisionNode(TreeNode):
         # recursivly call sub calls
         for e in self.e:
             if isinstance(e.c, TreeNode):
-                t = e.c.get_viz(labels, t)
+                t = e.c.get_viz(labels, t, data)
             else:
                 class_label='label_'+str(random.randint(1000000, 100000000))
                 t.node(class_label, str(e.c))
@@ -173,8 +173,16 @@ class CategoryDecision(DecisionNode):
         self.e = [CategoryEdge(self, None, cat) for cat in categories]
 
     def get_plot_label(self, data=None):
-        s = 'idx: ' + str(self.idx) + ' cat0: ' + str(self.e[0].categories) \
+        s = ' cat0: ' + str(self.e[0].categories) \
                 + ' cat1: ' + str(self.e[1].categories)
+
+        if data is None:
+            s = 'idx: ' + str(self.idx) + s
+        elif 'idx_labels' in data:
+            s = data['idx_labels'][self.idx] + s
+        else:
+            s = 'idx: ' + str(self.idx) + s
+
         return s
 
     def __str__(self):

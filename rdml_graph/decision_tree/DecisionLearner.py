@@ -27,6 +27,7 @@ from rdml_graph.decision_tree.DecisionTreeHelper import \
         class_plurality, reg_plurality, \
         same_class, bin_category_split, bin_float_split, default_attribute_func
 
+import pdb
 
 
 
@@ -79,8 +80,9 @@ def learn_decision_tree(X, \
     else:
         # find best case
         n = attribute_func(X, importance_func, types, parent, id)
-        # if n is None:
-        #     return plurality_func(X)
+        if n is None:
+            print('Attribute function returned None, and I do not know why, debug this!'')
+            pdb.set_trace()
         splits = n.separate(X, with_label=with_labels)
 
         for i, sub_X in enumerate(splits):

@@ -34,7 +34,7 @@ from rdml_graph.plot import plot2DPath
 # @param path_names - [opt] list of names for the paths
 # @param fig - [opt] the input figure
 def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
-        cmap='Greys', radius=None, fig= None):
+        cmap='viridis', radius=None, fig= None):
     if fig is None:
         fig =plt.figure(constrained_layout=True)
 
@@ -42,11 +42,12 @@ def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
     num_info = info_field.shape[2]
     height = 5
 
-    colors = ['red', 'green', 'blue', 'white', 'black', 'purple', 'turquoise', \
+    colors = ['black', 'white', 'red', 'green', 'blue', 'purple', 'turquoise', \
             'crimson', 'navy', 'brown', 'yellow', 'orange', 'gray', 'indigo', \
             'lime', 'cyan', 'orangered', 'teal', 'magenta', 'peru', 'olive', \
             'aquamarine', 'orchid', 'lightcoral', 'khaki', 'dodgerblue', \
             'fuchsia', 'silver', 'navajowhite', 'limegreen']
+    line_styles = ['solid', 'dashed', 'dashdot', 'dotted']
 
     if info_names is None:
         info_names = ['Objective '+str(i+1) for i in range(num_info)]
@@ -58,13 +59,16 @@ def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
     if num_info <= 4:
         gs = fig.add_gridspec(ncols=num_info+1, nrows=1, figure=fig, \
                 width_ratios=([7]*num_info)+[2])
-        fig.set_size_inches(height*num_info, height)
+        fig.set_size_inches(height*num_info, height+0.5)
 
 
 
         for i in range(num_info):
             ax = fig.add_subplot(gs[0,i])
             ax.set_title(info_names[i])
+            if i == 0:
+                plt.ylabel('y (km)')
+            plt.xlabel('x (km)')
             ax.imshow(info_field[:,:,i].transpose(), \
                         vmin=np.min(info_field[:,:,i]), \
                         vmax=np.max(info_field[:,:,i]), \
@@ -73,7 +77,8 @@ def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
 
             for j, path in enumerate(paths):
                 p = plot2DPath(path, color=colors[j % len(colors)], \
-                                label=path_names[j], radius=radius)
+                                label=path_names[j], radius=radius, \
+                                line_style=line_styles[j % len(line_styles)])
                 ps.append(p)
             # end for (paths)
         # end for (info field)

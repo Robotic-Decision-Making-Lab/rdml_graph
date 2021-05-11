@@ -42,12 +42,13 @@ def plot2DGeoGraph(G, color='blue'):
 # @param pts - a list of 2D points along the path
 # @param color - the color of the path when plotted.
 # @param head_width - the width of the arrow head
-def plot2DPath(path, color='red', head_width=0.5, label='', radius=None):
+def plot2DPath(path, color='red', line_style='solid', head_width=0.5, label='', radius=None):
     line = None
     for i in range(1, len(path)):
         diff = path[i] - path[i-1]
         line = plt.arrow(path[i-1][0], path[i-1][1], diff[0], diff[1], \
-                length_includes_head=True, head_width=head_width, color=color,\
+                length_includes_head=True, \
+                head_width=head_width, color=color,\
                 label=label)
 
     if radius is not None:

@@ -64,7 +64,8 @@ class MaskedEvaluator(PathEvaluator):
     # @param channels - [opt] a sequence object of indcies to output from the info_field
     #         , if left as None all indcies are ignored. (if info_field has only)
     #          one dimminsion, then this argument is ignored.
-    def __init__(self, info_field, x_ticks, y_ticks, radius, budget=float('inf'), normalize=True, expected_val=None, channels=None):
+    def __init__(self, info_field, x_ticks, y_ticks, radius, budget=float('inf'),\
+                    normalize=True, expected_val=None, channels=None):
         # handle single dimminsion info_fields for backwards compatability
         if len(info_field.shape) == 2:
             self.info_field = info_field[:,:, np.newaxis]
@@ -186,18 +187,10 @@ class MaskedEvaluator(PathEvaluator):
         # plt.show()
 
         for i, x in enumerate(range(min_x_idx, max_x_idx)):
-            #min_y = int(max(np.round(min_y_arr[i]), 0))
-            #max_y = int(min(np.round(max_y_arr[i]), self.info_field.shape[1]))
-            # if max_y_arr[i] == np.nan or min_y_arr[i] == np.nan:
-            #     pdb.set_trace()
+            min_y = round((max(min_y_arr[i], self.y_ticks[0])-self.y_ticks[0]) / self.y_scale)
+            max_y = round((min(max_y_arr[i], self.y_ticks[-1]+self.y_scale)\
+                                -self.y_ticks[0]) / self.y_scale)
 
-            try:
-                min_y = round((max(min_y_arr[i], self.y_ticks[0])-self.y_ticks[0]) / self.y_scale)
-                max_y = round((min(max_y_arr[i], self.y_ticks[-1]+self.y_scale)\
-                                    -self.y_ticks[0]) / self.y_scale)
-
-            except:
-                pdb.set_trace() # BUG WITH STRAIGHT VERTICAL LINES GRRR...
 
             shaped_mask = np.repeat(cur_mask[x,min_y:max_y, np.newaxis]==1, \
                                     len(self.chan), \
@@ -209,11 +202,19 @@ class MaskedEvaluator(PathEvaluator):
                         self.info_field[x, min_y:max_y, self.chan].transpose())
 
 
-            scores += np.sum(scores_raw, axis=0)
+            scores = self.determineScore(shaped_mask, scores, x, min_y, max_y)
             cur_mask[x, min_y:max_y] = 1
 
         #print(cur_mask)
 
+        return scores
+
+    def determineScore(self, shaped_mask, scores, x, min_y, max_y):
+        scores_raw = np.where(shaped_mask, \
+                    np.zeros((max_y - min_y, len(self.chan))), \
+                    self.info_field[x, min_y:max_y, self.chan].transpose())
+
+        scores += np.sum(scores_raw, axis=0)
         return scores
 
 
@@ -231,68 +232,7 @@ class MaskedEvaluator(PathEvaluator):
             pt1 = path[i-1]
             pt2 = path[i]
 
-            # TODO convert points to x and y ticks.
             scores += self.getSegmentAlongX(pt1, pt2, mask)
-            #print(mask.transpose())
 
 
         return scores * self.scales
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#
