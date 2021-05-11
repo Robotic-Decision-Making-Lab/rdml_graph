@@ -81,7 +81,7 @@ def learn_decision_tree(X, \
         # find best case
         n = attribute_func(X, importance_func, types, parent, id)
         if n is None:
-            print('Attribute function returned None, and I do not know why, debug this!'')
+            print('Attribute function returned None, and I do not know why, debug this!')
             pdb.set_trace()
         splits = n.separate(X, with_label=with_labels)
 
