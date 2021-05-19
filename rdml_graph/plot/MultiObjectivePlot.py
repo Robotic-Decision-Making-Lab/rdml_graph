@@ -34,7 +34,7 @@ from rdml_graph.plot import plot2DPath
 # @param path_names - [opt] list of names for the paths
 # @param fig - [opt] the input figure
 def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
-        cmap='viridis', radius=None, fig= None):
+        cmap='viridis', radius=None, legend=True, fig= None):
     if fig is None:
         fig =plt.figure(constrained_layout=True)
 
@@ -90,9 +90,10 @@ def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
         ax.axes.xaxis.set_visible(False)
         ax.axes.yaxis.set_visible(False)
 
-        plt.legend(handles=ps, loc='center')
+        if legend:
+            plt.legend(handles=ps, loc='center')
     else:
         raise NotImplemented('Num info larger than 4 is not implemented currently')
     # end if num_info
 
-    return fig
+    return fig, ps
