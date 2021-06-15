@@ -51,6 +51,10 @@ def getWaypoints(path):
 #
 # @return 2d numpy array of waypoints, (n x 2)
 def getWaypointsHomotopy(path):
+    if isinstance(path, HNode):
+        path = path.get_parent_path()
+
+
     pts = np.empty((len(path), 2))
     for i, homotopy in enumerate(path):
         pts[i] = homotopy.node.pt

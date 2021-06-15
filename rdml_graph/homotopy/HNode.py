@@ -47,10 +47,10 @@ class HNode(State):
     # @param h_sign - the input H signature.
     # @param parent - [optional] the edge from the parent HNode
     # @param root - [optional] the root node of the homotopy graph.
-    def __init__(self, n, h_sign, parentEdge=None, root=None):
+    def __init__(self, n, h_sign, parent=None, root=None):
         self.node = n
         self.h_sign = h_sign
-        self.parentEdge = parentEdge
+        self.parent = parent
         self.root = root
 
     # successor function for Homotopy node.
@@ -62,10 +62,18 @@ class HNode(State):
 
             if goodHSign:
                 succ = HNode(n=edge.c, h_sign=newHSign,\
-                                parentEdge=edge, root=self.root)
+                                parent=self, root=self.root)
                 result += [(succ, edge.getCost())]
         #pdb.set_trace()
         return result
+
+    def get_parent_path(self):
+        # base case
+        if self.parent is None:
+            return [self]
+        else:
+            return self.parent.get_parent_path() + [self]
+
 
     ################## operator overloading
 

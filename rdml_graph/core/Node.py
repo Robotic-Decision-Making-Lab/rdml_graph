@@ -95,6 +95,52 @@ class TreeNode(Node):
         self.parent = parent
 
 
+    def dfs_equals(self, a, b):
+        return a == b
+
+    # depth first search
+    # returns the full path to the output location.
+    # param n - the input node
+    #
+    # @return - list of nodes from the leaf
+    def dfs(self, n):
+        # base-case
+        if self.dfs_equals(self, n):
+            return [n]
+        else:
+            for edge in self.e:
+                if self.dfs_equals(edge.c, n):
+                    return [self, edge.c]
+                elif isinstance(edge.c, TreeNode):
+                    ret = edge.c.dfs(n)
+                    if ret is not None:
+                        return [self] + ret
+
+            # No object found, return None
+            return None
+
+    # depth first search
+    # returns the full path to the output location.
+    # param n - the input node
+    #
+    # @return - list of nodes from the leaf
+    def dfs_edge(self, n):
+        # base-case
+        if self.dfs_equals(self, n):
+            return []
+        else:
+            for edge in self.e:
+                if self.dfs_equals(edge.c, n):
+                    return [edge]
+                elif isinstance(edge.c, TreeNode):
+                    ret = edge.c.dfs_edge(n)
+                    if ret is not None:
+                        return [edge] + ret
+
+            # No object found, return None
+            return None
+
+
     # A set of code to get visualization code for a tree.
     # This uses the graphviz python library to generate a Digraph object for tree.
     # @oaram labels - boolean for if the tree should inlcude lables.
@@ -125,7 +171,7 @@ class TreeNode(Node):
         return str(self.id)
 
     def __str__(self):
-        result = 'node(id='+ str(self.id) + ', parent=' + str(self.p) + ', edges={'
+        result = 'node(id='+ str(self.id) + ', parent=' + str(self.parent) + ', edges={'
         for edge in self.e:
             result += str(edge)+','
         result += '})'

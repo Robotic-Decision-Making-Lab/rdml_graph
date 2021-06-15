@@ -44,7 +44,10 @@ def classification_importance(splits):
         # find number of class numbers for each split
         class_nums = {}
         for x in X:
-            target = x[1]
+            if isinstance(x[1], list) or isinstance(x[1], tuple):
+                target = x[1][0]
+            else:
+                target = x[1]
             if target in class_nums:
                 class_nums[target] += 1
             else:
@@ -68,6 +71,11 @@ def regression_importance(splits):
 
     for X in splits:
         targets = [x[1] for x in X]
+        if len(targets) > 0:
+            if isinstance(targets[0], list) or isinstance(targets[0], tuple):
+                targets_raw = targets
+                targets = [t[0] for t in targets]
+
         if len(targets) <= 1:
             variances.append(0)
         elif len(targets) == 2:
@@ -114,10 +122,18 @@ def class_plurality(X):
 def reg_plurality(X):
     if len(X) == 0:
         raise ValueError("reg_plurality passed an empty list")
+    if len(X) == 1:
+        return X[0][1]
+    else:
+        if isinstance(X[0][1], list) or isinstance(X[0][1], tuple):
+            targets = [x[1][0] for x in X]
+            return [x[1] for x in X]
+        else:
+            targets = [x[1] for x in X]
 
-    targets = [x[1] for x in X]
+        return mean(targets)
+    #else:
 
-    return mean(targets)
 
 
 ############################### STOP FUNCTIONS ######################

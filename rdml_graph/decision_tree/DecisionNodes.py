@@ -68,6 +68,18 @@ class DecisionNode(TreeNode):
         # end for loop over X
         return splits
 
+    # @override
+    def dfs_equals(self, a, b):
+        if isinstance(a, tuple):
+            return b == a[1]
+        elif isinstance(a, list):
+            for a_item in a:
+                if self.dfs_equals(a_item, b):
+                    return True
+            return False
+        else:
+            return a == b
+
     # This function returns the next node in the tree given the input (or a leaf object)
     # this is not super effcient, but fairly elegant.
     # @param input - given the current input return the output
@@ -178,8 +190,10 @@ class CategoryDecision(DecisionNode):
 
         if data is None:
             s = 'idx: ' + str(self.idx) + s
-        elif 'idx_labels' in data:
-            s = data['idx_labels'][self.idx] + s
+        elif 'hotspot_idxs' in data:
+            s = str(data['hotspot_idxs'][self.idx]) + s
+        elif 'hotspot_labels' in data:
+            s = data['hotspot_labels'][self.idx] + s
         else:
             s = 'idx: ' + str(self.idx) + s
 
