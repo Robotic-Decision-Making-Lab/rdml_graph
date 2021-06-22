@@ -169,7 +169,17 @@ class FloatDecision(DecisionNode):
         self.e[0].c = node
 
     def get_plot_label(self, data=None):
-        s = 'idx: ' + str(self.idx) + ' > ' + str(self.e[0].value)
+
+        if data is None:
+            s = 'idx: ' + str(self.idx)
+        elif 'feature_idx' in data:
+            s = str(data['feature_idx'][self.idx])
+        elif 'feature_labels' in data:
+            s = data['feature_labels'][self.idx]
+        else:
+            s = 'idx: ' + str(self.idx)
+
+        s = s + ' > ' + str(self.e[0].value)
         return s
 
 
@@ -190,10 +200,10 @@ class CategoryDecision(DecisionNode):
 
         if data is None:
             s = 'idx: ' + str(self.idx) + s
-        elif 'hotspot_idxs' in data:
-            s = str(data['hotspot_idxs'][self.idx]) + s
-        elif 'hotspot_labels' in data:
-            s = data['hotspot_labels'][self.idx] + s
+        elif 'feature_idx' in data:
+            s = str(data['feature_idx'][self.idx]) + s
+        elif 'feature_labels' in data:
+            s = data['feature_labels'][self.idx] + s
         else:
             s = 'idx: ' + str(self.idx) + s
 

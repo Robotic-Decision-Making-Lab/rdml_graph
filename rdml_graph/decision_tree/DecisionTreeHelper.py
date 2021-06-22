@@ -25,15 +25,21 @@ from rdml_graph.decision_tree import DecisionNode, FloatDecision, CategoryDecisi
 
 from scipy.stats import entropy
 import numpy as np
+from random import randint
 import math
 from itertools import combinations
 from statistics import variance, mean
+
+import pdb
 
 ######################## IMPORTANCE FUNCTIONS #########################
 
 
 # class_importance
 # This is an entropy function on classification
+# @param splits - a list of list of samples [node1[samples], node2[samples], ...]
+#
+# @return - the output
 def classification_importance(splits):
     # find all class numbers.
     class_nums_list = []
@@ -63,6 +69,34 @@ def classification_importance(splits):
     return -total_entropy
 
 
+
+def get_targets(X):
+    targets = [x[1] for x in X]
+    if len(targets) > 0:
+        if isinstance(targets[0], list) or isinstance(targets[0], tuple):
+            targets_raw = targets
+            targets = [t[0] for t in targets]
+
+    return targets
+
+
+def calculate_variance(X):
+    targets = get_targets(X)
+
+    if len(targets) <= 1:
+        return 0
+    elif len(targets) == 2:
+        mean = targets[0] + targets[1]
+        sum_var = (targets[0]-mean)**2+(targets[1]-mean)**2
+        return (sum_var/2)
+    else:
+        return variance(targets)
+
+def calculate_mean(X):
+    targets = get_targets(X)
+    return mean(targets)
+
+
 def regression_importance(splits):
     loss = 0
 
@@ -70,20 +104,7 @@ def regression_importance(splits):
     variances = []
 
     for X in splits:
-        targets = [x[1] for x in X]
-        if len(targets) > 0:
-            if isinstance(targets[0], list) or isinstance(targets[0], tuple):
-                targets_raw = targets
-                targets = [t[0] for t in targets]
-
-        if len(targets) <= 1:
-            variances.append(0)
-        elif len(targets) == 2:
-            mean = targets[0] + targets[1]
-            sum_var = (targets[0]-mean)**2+(targets[1]-mean)**2
-            variances.append(sum_var/2)
-        else:
-            variances.append(variance(targets))
+        variances.append(calculate_variance(X))
 
         total_num_samples += len(X)
 
@@ -94,6 +115,22 @@ def regression_importance(splits):
     return -output_var
 
 
+def least_squares_importance(splits):
+    loss = 0
+
+    total_num_samples = 0
+
+    for X in splits:
+        targets = get_targets(X)
+        split_mean = mean(targets)
+        
+        for t in targets:
+            loss += (t - split_mean)**2
+        total_num_samples += len(targets)
+
+    #print('loss: ' + str(loss) +' num_samps: ' + str(total_num_samples) + ' MSE: ' + str(loss / total_num_samples))
+
+    return -loss / total_num_samples
 
 ####################### PLURALITY FUNCTIONS ########################
 
@@ -289,11 +326,27 @@ def default_attribute_func(X, importance_func, types, parent, id):
         #targets = [x[1] for x in X]
 
         n, importance = handler(X_i, importance_func, parent, id)
+
+        # if types[i] == 'category':
+        #     print(n)
+        #     print(importance)
+        #     pdb.set_trace()
+
         # set index of node to correct index
         if n is not None:
             n.idx = i
 
+
         if importance > best_importance:
             best_importance = importance
-            best_attribute = n
-    return best_attribute
+            best_attribute = [n]
+        elif importance == best_importance and importance > -float('inf'):
+            best_attribute.append(n)
+
+    if best_attribute is None:
+        return None
+
+    # if len(best_attribute) > 1:
+    #     print(best_attribute)
+    #     pdb.set_trace()
+    return best_attribute[randint(0, len(best_attribute)-1)]

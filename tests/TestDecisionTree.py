@@ -75,16 +75,33 @@ if __name__ == '__main__':
     root,_ = gr.learn_decision_tree(X, \
                     types=types, \
                     attribute_func=gr.default_attribute_func,\
-                    importance_func=gr.regression_importance, \
+                    #importance_func=gr.regression_importance, \
+                    importance_func=gr.least_squares_importance, \
                     plurality_func=gr.reg_plurality,\
                     max_depth=4)
+
+    reg_root,_ = gr.learn_decision_tree(X, \
+                    types=types, \
+                    attribute_func=gr.default_attribute_func,\
+                    importance_func=gr.regression_importance, \
+                    #importance_func=gr.least_squares_importance, \
+                    plurality_func=gr.reg_plurality,\
+                    max_depth=4)
+
+    from graphviz import Digraph
 
     x = [3.4, 'a']
     y = root.traverse(x)
     print(y)
 
-    t2 = root.get_viz(labels=True)
+    t = Digraph('T')
+    t2 = root.get_viz(labels=True, t=t)
     t2.view()
+
+    t = Digraph('T-regres')
+    t2 = reg_root.get_viz(labels=True, t=t)
+    t2.view()
+
 
     xs = np.arange(0,10,0.01)
     y = [root.traverse([i, 'a']) for i in xs]

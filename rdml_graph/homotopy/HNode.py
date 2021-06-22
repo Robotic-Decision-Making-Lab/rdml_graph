@@ -33,29 +33,37 @@
 
 from rdml_graph.core import State
 from rdml_graph.core import Node
+from rdml_graph.core import TreeNode
 from rdml_graph.core import Edge
 from rdml_graph.homotopy import HSignature
 
+#from numba import njit
 import numpy as np
 
 import pdb
 
 
-class HNode(State):
+class HNode(TreeNode):
     # constructor
     # @param node - the input Node for h-augmented graph. (Either homotopy or homology)
     # @param h_sign - the input H signature.
-    # @param parent - [optional] the edge from the parent HNode
+    # @param parent - [optional] the parent HNode
     # @param root - [optional] the root node of the homotopy graph.
     def __init__(self, n, h_sign, parent=None, root=None):
+        super(HNode, self).__init__(-2, parent)
         self.node = n
         self.h_sign = h_sign
-        self.parent = parent
         self.root = root
+        self.e = None
 
     # successor function for Homotopy node.
     def successor(self):
-        result = []
+        if self.e is not None:
+            return [(e.c, e.getCost()) for e in self.e]
+
+        self.e = []
+        # self.e = [Edge(self, HNode(n=edge.c, h_sign=self.h_sign.copy(), parent=self, root=self.root), edge.getCost()) \
+        #     for edge in self.node.e if (self.h_sign.copy()).edge_cross(edge)]
         for edge in self.node.e:
             newHSign = self.h_sign.copy()
             goodHSign = newHSign.edge_cross(edge)
@@ -63,9 +71,9 @@ class HNode(State):
             if goodHSign:
                 succ = HNode(n=edge.c, h_sign=newHSign,\
                                 parent=self, root=self.root)
-                result += [(succ, edge.getCost())]
+                self.e.append(Edge(self, succ, edge.getCost()))
         #pdb.set_trace()
-        return result
+        return [(e.c, e.getCost()) for e in self.e]
 
     def get_parent_path(self):
         # base case
@@ -104,3 +112,42 @@ class HNode(State):
     # already explored.
     def __hash__(self):
         return hash((self.node, self.h_sign))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #
