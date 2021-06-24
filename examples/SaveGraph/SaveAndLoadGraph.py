@@ -62,7 +62,7 @@ n5.addEdge(gr.HEdge(n5,n, sign, features=features))
 
 gr.plot2DGeoGraph(G, 'blue')
 plt.title('Original')
-plt.show(False)
+plt.show(block=False)
 
 
 pickle.dump(G, open("sample.g", "wb"))

@@ -54,7 +54,7 @@ class TicTacToeState(gr.State):
                     result.append((nextState, 0, self.agentTurn))
         return result
 
-    def getLabel(self):
+    def getLabel(self, data=None):
         return str(self.board)
 
     # winState

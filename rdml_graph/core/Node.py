@@ -59,7 +59,7 @@ class Node(State):
 
     # returns a short description of the label of the node.
     # shorter than the description described by str(self)
-    def getLabel(self):
+    def getLabel(self, data=None):
         return self.id
 
     ############### operator overloading
@@ -152,7 +152,7 @@ class TreeNode(Node):
             t = Digraph('T')
 
         if labels:
-            label = self.get_plot_label(data)
+            label = self.get_plot_label(data=data)
             t.node(str(self.id), label)
         else:
             t.node(str(self.id), '')
