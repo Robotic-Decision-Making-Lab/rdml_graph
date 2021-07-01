@@ -80,7 +80,10 @@ class HomotopySignature(HSignature):
         while len(self.sign) > 0 and  j < len(edge.HSign) \
                     and self.sign[-1] == -edge.HSign[j]:
             # remove the canceled sign and increase j
-            self.sign.pop()
+            try:
+                self.sign.pop()
+            except:
+                pdb.set_trace()
             j += 1
 
         if j < len(edge.HSign):
@@ -118,6 +121,8 @@ class HomotopySignature(HSignature):
                 projections[i] = features[abs(self.sign[i])-1].dot(vec)
 
             _, self.sign = zip(*sorted(zip(projections, self.sign)))
+            self.sign = list(self.sign)
+
 
 
     # cross
@@ -147,6 +152,8 @@ class HomotopySignature(HSignature):
 
     ############################## Operator overloading
 
+    def __getitem__(self, key):
+        return self.sign[key]
 
     def __neg__(self):
         sign = self.copy()

@@ -35,7 +35,7 @@ map = {'width': 20, 'height': 20, 'hazards': np.array([[5.0, 5.0], [7.5, 3.0]])}
 startN = gr.GeometricNode(0, np.array([6, 7]))
 endN = gr.GeometricNode(1, np.array([8.5, 7]))
 
-G = gr.PRM(map, 100, 6.0, connection=gr.HEdgeConn, initialNodes=[startN, endN])
+G = gr.PRM(map, 100, 6.0, connection=gr.HomotopyEdgeConn, initialNodes=[startN, endN])
 
 
 ############### Setup and run AStar
