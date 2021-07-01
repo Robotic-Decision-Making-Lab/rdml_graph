@@ -53,7 +53,7 @@ goalPartialHSign.addConstraint(1, 0)
 start_t = time.time()
 
 # run the AStar planning
-path, cost, root = gr.AStar(start, g=gr.partial_homology_goal_check, \
+path, cost, root = gr.AStar(start, g=gr.partial_h_goal_check, \
                         goal = (G[1], goalPartialHSign), output_tree=True)
 
 end = time.time()

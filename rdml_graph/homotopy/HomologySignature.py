@@ -27,6 +27,7 @@ from __future__ import absolute_import
 
 import numpy as np
 from rdml_graph.homotopy import HSignature
+from rdml_graph.homotopy import HSignatureGoal
 from rdml_graph.homotopy.HEdge import HEdge
 import copy
 
@@ -201,7 +202,7 @@ class HomologySignature(HSignature):
 
 
 
-class HomologySignatureGoal(object):
+class HomologySignatureGoal(HSignatureGoal):
     def __init__(self, num_objects):
         self.mask = np.zeros(num_objects, dtype=np.bool)
         self.sign = HomologySignature(num_objects)

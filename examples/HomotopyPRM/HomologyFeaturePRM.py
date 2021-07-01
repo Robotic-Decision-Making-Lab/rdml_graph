@@ -64,7 +64,7 @@ def h_euclidean_tuple(n, data, goal):
     return np.linalg.norm(n.node.pt - goal[0].pt)
 
 # run the AStar planning
-path, cost = gr.AStar(start, g=gr.partial_homology_feature_goal, \
+path, cost = gr.AStar(start, g=gr.partial_h_feature_goal, \
                         h = h_euclidean_tuple,
                         goal = (G[1], goalPartialHSign, names, keywords))
 

@@ -34,6 +34,8 @@
 import numpy as np
 import copy
 from rdml_graph.homotopy import HSignature
+from rdml_graph.homotopy.HEdge import HEdge
+from rdml_graph.homotopy import HSignatureGoal
 from rdml_graph.homotopy.HomologySignature import rayIntersection
 
 # for checking python version (required for hashing function)
@@ -73,21 +75,22 @@ class HomotopySignature(HSignature):
         # for i in range(1, len(self)):
         #     if self.sign[i] == self.sign[i-1]:
         #         return False
+        j = 0
 
-        while len(self.sign) > 0 and  j < len(other.sign) \
-                    and self.sign[-1] == -other.sign[j]:
+        while len(self.sign) > 0 and  j < len(edge.HSign) \
+                    and self.sign[-1] == -edge.HSign[j]:
             # remove the canceled sign and increase j
             self.sign.pop()
             j += 1
 
-        if j < len(other.sign):
+        if j < len(edge.HSign):
             if len(self.sign) > 0:
                 # check for repeats:
-                if self.sign[-1] == other.sign[j]:
+                if self.sign[-1] == edge.HSign[j]:
                     return False
-                self.sign += other.sign[j:]
+                self.sign += edge.HSign[j:]
             else:
-                self.sign = other.sign[j:]
+                self.sign = edge.HSign[j:]
 
         return True
 
@@ -144,26 +147,6 @@ class HomotopySignature(HSignature):
 
     ############################## Operator overloading
 
-    # y = self[idx] operator overload
-    # overload square bracket operator
-    # Returns element of H-signature
-    # @param idx
-    # def __getitem__(self, id):
-    #     if isinstance(id, slice):
-    #         # is a slice, handle slices
-    #         return self.sign[id]
-    #     else: # Is just a simple index
-    #         if id >= len(self) or id < 0:
-    #             raise IndexError('H-signature access idx: ' + str(id) + '  with length ' + str(len(self)))
-    #         return self.sign[id]
-    #
-    # def __setitem__(self, key, item):
-    #     if item > 1:
-    #         raise ValueError('HSignature['+str(key)+'] passed value: '+str(item)+' larger than 1')
-    #     elif item < -1:
-    #         raise ValueError('HSignature['+str(key)+'] passed value: '+str(item)+' smaller than -1')
-    #
-    #     self.sign[key] = item
 
     def __neg__(self):
         sign = self.copy()
@@ -228,29 +211,18 @@ class HomotopySignature(HSignature):
         return not (self == other)
 
 
-# class HSignatureGoal(object):
-#     def __init__(self, num_objects):
-#         self.mask = np.zeros(num_objects, dtype=np.bool)
-#         self.sign = HSignature(num_objects)
-#
-#     def addConstraint(self, id, value):
-#         if id >= len(self.mask) or id < 0:
-#             raise IndexError('H-signature goal access idx: ' + str(id) + '  with length ' + str(len(self.mask)))
-#         self.mask[id] = 1
-#         self.sign.cross(id, value)
-#
-#     def removeConstraint(self, id):
-#         if id >= len(self.mask) or id < 0:
-#             raise IndexError('H-signature goal access idx: ' + str(id) + '  with length ' + str(len(self.mask)))
-#         self.mask[id] = 0
-#         self.sign.sign[id] = 0
-#
-#     # checkSign
-#     # A function to check if the given H signature goal matches the
-#     def checkSign(self, other):
-#         return np.all(np.logical_or(np.logical_not(self.mask),\
-#                                     np.equal(other.sign, self.sign.sign)))
+class HomotopySignatureGoal(HSignatureGoal):
+    def __init__(self, goal_signature):
+        self.goal_sign = goal_signature
 
+
+    # checkSign
+    # A function to check if the given H signature goal matches the
+    def checkSign(self, other):
+        if isinstance(other, HomotopySignature):
+            return self.goal_sign == other
+        else:
+            return False
 
 
 

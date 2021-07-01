@@ -1,7 +1,8 @@
 # init for homotopy
 
 from .HSignature import HSignature
-from .HomotopySignature import HomotopySignature
+from .HGoalSignature import partial_h_goal_check, partial_h_feature_goal, HSignatureGoal
+from .HomotopySignature import HomotopySignature, HomotopySignatureGoal
 from .HomologySignature import HomologySignature, HomologySignatureGoal, rayIntersection
 from .HNode import HNode
 from .HEdge import HEdge

@@ -84,7 +84,7 @@ hSignGoal = gr.HomologySignatureGoal(1)
 hSignGoal.mask[0] = 0
 hSignGoal.sign[0] = 1
 
-path, cost = gr.AStar(start, g=gr.partial_homology_goal_check, goal=(n5, hSignGoal))
+path, cost = gr.AStar(start, g=gr.partial_h_goal_check, goal=(n5, hSignGoal))
 
 print('HomologySignatureGoal used instead')
 print('Cost = ' + str(cost))
