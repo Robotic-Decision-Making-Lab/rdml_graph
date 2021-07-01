@@ -102,7 +102,7 @@ class HNode(TreeNode):
     # str()
     # prints out info about the currnet Homotopy Node
     def __str__(self):
-        return 'HNode(h-sign='+ str(self.h_sign) +', n=' + str(self.node) + ')'
+        return 'HNode(h-sign='+ str(self.h_sign) +', n=' + str(self.node.id) + ')'
 
     # hash function overload
     # This hash takes into account both the node hash (should be defined),

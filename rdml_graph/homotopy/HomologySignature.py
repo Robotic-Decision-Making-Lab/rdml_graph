@@ -16,11 +16,11 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# HSignature.py
+# HomologySignature.py
 # Written Ian Rankin - January 2020
 #
-# A basic structure to handle HSignatures
-# Each HSignature is stored as the set of each non-signature obstacles
+# A basic structure to handle HomologySignatures
+# Each HomologySignature is stored as the set of each non-signature obstacles
 # or some partial or complete list.
 
 from __future__ import absolute_import

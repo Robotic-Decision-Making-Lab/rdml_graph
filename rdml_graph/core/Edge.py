@@ -49,8 +49,10 @@ class Edge(object):
     def __eq__(self, other):
         #return isinstance(other, Edge) and self.c.id == other.c.id and self.p.id == other.p.id \
         #        and self.cost() == other.cost()
-        return isinstance(other, Edge) and self.c == other.c and self.p == other.p \
-                and self.cost() == other.cost()
+        if isinstance(other, Edge):
+            return self.c == other.c and self.p == other.p and self.cost() == other.cost()
+        else:
+            return False
 
     def __str__(self):
         s = 'e('

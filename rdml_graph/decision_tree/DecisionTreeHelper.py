@@ -123,7 +123,7 @@ def least_squares_importance(splits):
     for X in splits:
         targets = get_targets(X)
         split_mean = mean(targets)
-        
+
         for t in targets:
             loss += (t - split_mean)**2
         total_num_samples += len(targets)

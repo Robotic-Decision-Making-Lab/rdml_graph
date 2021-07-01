@@ -85,6 +85,8 @@ def learn_decision_tree(X, \
             #pdb.set_trace()
             print('\n\n\nX: ' + str(X))
             return plurality_func(X), id
+        n.samples = X
+        n.types = types
         splits = n.separate(X, with_label=with_labels)
 
         for i, sub_X in enumerate(splits):

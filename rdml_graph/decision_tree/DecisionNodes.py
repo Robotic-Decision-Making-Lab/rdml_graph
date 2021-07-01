@@ -31,10 +31,11 @@ import pdb
 class DecisionNode(TreeNode):
     # @param id - the id of the decision node (needs to be a unique integer)
     # @param parent - the parent of the decision node
-    def __init__(self, id, parent):
+    def __init__(self, id, parent, samples=[], types=[]):
         super(DecisionNode, self).__init__(id, parent)
         self.idx = None # Should be overriden by non-abstract classes
         self.samples=samples
+        self.types=types
 
     # set_node
     # This function sets the connector nodes for
@@ -141,6 +142,12 @@ class CategoryEdge(DecisionEdge):
     def __contains__(self, item):
         return item in self.categories
 
+    def __eq__(self, other):
+        if isinstance(other, FloatEdge):
+            return id(self) == id(other)
+        else:
+            return False
+
 class FloatEdge(DecisionEdge):
     def __init__(self, parent, child, value, larger=True):
         super(FloatEdge, self).__init__(parent, child)
@@ -152,11 +159,17 @@ class FloatEdge(DecisionEdge):
         return not (bool(item > self.value) ^ bool(self.larger))
 
 
+    def __eq__(self, other):
+        if isinstance(other, FloatEdge):
+            return self.value == other.value and self.larger == other.larger and id(self.p) == id(other.p)
+        else:
+            return False
+
 # A bi-decision decision node
 # All values greater than value are in the second edge.
 class FloatDecision(DecisionNode):
-    def __init__(self, id, parent, idx, value):
-        super(DecisionNode, self).__init__(id, parent)
+    def __init__(self, id, parent, idx, value, samples=[], types=[]):
+        super(FloatDecision, self).__init__(id, parent, samples, types)
         self.idx = idx
 
         self.e = [  FloatEdge(self, None, value, False), \
@@ -182,14 +195,20 @@ class FloatDecision(DecisionNode):
         s = s + ' > ' + str(self.e[0].value)
         return s
 
+    def __str__(self):
+        o = 'FloatDecision: ' + str(self.id) + ' idx: ' + str(self.idx)
+
+        o += ' > ' + str(self.e[0].value)
+        return o
+
 
 class CategoryDecision(DecisionNode):
     # @param id - the id of the decision node (needs to be a unique integer)
     # @param parent - the parent of the decision node
     # @param idx - the index in the input values of the categories
     # @param categories - a list of lists specifying the desired categories
-    def __init__(self, id, parent, idx, categories):
-        super(DecisionNode, self).__init__(id, parent)
+    def __init__(self, id, parent, idx, categories, samples=[], types=[]):
+        super(CategoryDecision, self).__init__(id, parent, samples, types)
         self.idx = idx
 
         self.e = [CategoryEdge(self, None, cat) for cat in categories]
@@ -210,7 +229,7 @@ class CategoryDecision(DecisionNode):
         return s
 
     def __str__(self):
-        o = 'CategoryDecision: ' + str(id) + ' idx: ' + str(self.idx) + ' categoies:'
+        o = 'CategoryDecision: ' + str(self.id) + ' idx: ' + str(self.idx) + ' categories:'
 
         for edge in self.e:
             o += ' ' + str(edge.categories)
