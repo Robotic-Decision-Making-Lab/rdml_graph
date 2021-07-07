@@ -15,7 +15,8 @@
 # FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
-#
+
+## @package Node
 # Node.py
 # Written Ian Rankin October 2019 - edited Feb 2020
 #
@@ -30,46 +31,58 @@ from graphviz import Digraph
 import numpy as np
 
 
-
+## Node class for a node of a graph structure.
+#
+# The node class is the basic data structure to handle nodes of a graph.
+# This can be extended to include a wide variety of subclasses.
 class Node(State):
-    # constructor
-    # @param id - the integer the Node repersents.
+    ## constructor
+    # @param id - the integer the Node repersents. (int)
     def __init__(self, id):
         self.e = []
         self.id = id
 
+    ## @var e
+    # A list of Edge objects
+    ## @var id
+    # The unique id of the node (int)
+
     # @overide
-    # successor function for State
+    ## successor function for State
+    # @return [(child, cost), ...]
     def successor(self):
         return [(edge.c, edge.getCost()) for edge in self.e]
 
-    # a function to allow adding an edge to the node.
+    ## a function to allow adding an edge to the node.
+    # @param edge - the input edge to add (int)
     def addEdge(self, edge):
         self.e.append(edge)
 
-    # returns a list of edges
+    ## returns a list of edges
     def getEdges(self):
         return self.e
 
+    ## checks if there is a connection to a node with the otherID
+    # @param otherID  - the id of the other node to check.
     def checkConnection(self, otherID):
         for edge in self.e:
             if edge.c.id == otherID:
                 return edge
         return None
 
-    # returns a short description of the label of the node.
+    ## returns a short description of the label of the node.
     # shorter than the description described by str(self)
     def getLabel(self, data=None):
         return self.id
 
     ############### operator overloading
 
-    # == operator
+    ## == operator
     # Only looks at the id's to check if it is the same node.
     def __eq__(self, other):
         return isinstance(other, Node) and self.id == other.id
 
-    # != operator
+    ## != operator
     # returns inverse of equals sign.
     def __ne__(self, other):
         return not (self == other)
@@ -77,7 +90,7 @@ class Node(State):
     def __hash__(self):
         return hash(self.id)
 
-    # str(self) operator
+    ## str(self) operator
     # Returns a quick human readable string
     def __str__(self):
         result = 'node(id='+ str(self.id) + ', edges={'
@@ -87,22 +100,28 @@ class Node(State):
         return result
 #######################################################
 
+## TreeNode class
+# This class extends node with an additional pointer to it's parent for easy traversal.
 class TreeNode(Node):
+    ## constructor
     # @param id - the integer that is the 'index' of the node.
     # @param parent_edge - the parent node (no edge given)
     def __init__(self, id, parent):
         super(TreeNode, self).__init__(id)
         self.parent = parent
+    ## @var parent
+    # the parent Node (no edge)
 
 
+    ## Designed to be overloaded for checking if it is equals in a DFS.
     def dfs_equals(self, a, b):
         return a == b
 
-    # depth first search
+    ## depth first search
     # returns the full path to the output location.
-    # param n - the input node
+    # @param n - the input node
     #
-    # @return - list of nodes from the leaf
+    # @return list of nodes from the leaf
     def dfs(self, n):
         # base-case
         if self.dfs_equals(self, n):
@@ -119,7 +138,7 @@ class TreeNode(Node):
             # No object found, return None
             return None
 
-    # depth first search
+    ## depth first search
     # returns the full path to the output location.
     # param n - the input node
     #
@@ -141,7 +160,7 @@ class TreeNode(Node):
             return None
 
 
-    # A set of code to get visualization code for a tree.
+    ## A set of code to get visualization code for a tree.
     # This uses the graphviz python library to generate a Digraph object for tree.
     # @oaram labels - boolean for if the tree should inlcude lables.
     # @param t - a Digraph object to start with (leave if creating a new viz)
@@ -167,6 +186,7 @@ class TreeNode(Node):
         return t
 
 
+    ## Designed to be overloaded for labels in visualization
     def get_plot_label(self, data=None):
         return str(self.id)
 
@@ -177,18 +197,20 @@ class TreeNode(Node):
         result += '})'
         return result
 
-#######################################################
-# GeometricNode that includes a geometric point as part of the
+
+## GeometricNode that includes a geometric point as part of the
 # node as well as the graph structure.
 class GeometricNode(Node):
-    # Constructor
+    ## Constructor
     # @param id - the integer that is the 'index' of the node.
-    # @param pt - numpy array repersenting spatial point.
+    # @param pt - numpy array representing spatial point.
     def __init__(self, id, pt):
         super(GeometricNode, self).__init__(id)
         self.pt = pt
+    ## @var pt
+    # The numpy array representing the spatial point.
 
-    # str(self) operator
+    ## str(self) operator
     # Returns a quick human readable string
     def __str__(self):
         result = 'node(id='+ str(self.id) + ', pt='+ str(self.pt) +' edges={'

@@ -17,7 +17,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# HGoalSignature.py
+## @package HGoalSignature.py
 # Written Ian Rankin - January 2020
 #
 # A basic structure to handle HGoalSignatures
@@ -27,7 +27,7 @@
 
 
 
-# partial_homology_goal_check
+## partial_homology_goal_check
 # Checks if the nodes are the same, and checks if the h-signatures fit the
 # constraints in HomologySignatureGoal, which allows partial h-signature matches.
 # @param n - the input node (Should be a HNode)
@@ -42,7 +42,7 @@ def partial_h_goal_check(n, data, goal):
 
     return goalH.checkSign(n.h_sign) and goalNode == n.node
 
-# partial_homology_feature_goal
+## partial_homology_feature_goal
 # A function to check for goal states with both homotopy and a topological features.
 # This function only checks if a keyword is in the goal set, rather than checking
 # for negatives, this can be updated for the future.
@@ -65,10 +65,10 @@ def partial_h_feature_goal(n, data, goal):
     return goalH.checkSign(n.h_sign) and goalNode == n.node and \
             goalNames <= n.names
 
-# abstract class for an Hsignature goal
+## abstract class for an Hsignature goal
 class HSignatureGoal(object):
 
-    # checkSign
+    ## checkSign
     # A function to check if the given H signature goal matches the
     def checkSign(self, other):
         raise NotImplementedError()

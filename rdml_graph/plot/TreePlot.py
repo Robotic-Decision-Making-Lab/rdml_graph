@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# TreePlot.py
+## TreePlot.py
 # Written Ian Rankin - February 2020
 #
 # A set of functions to plot a tree from a certain node.
@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 from rdml_graph.core import Node
 from collections import deque
 
-# plotTree
+## plotTree
 # plot's a tree using a BFS search through the environment.
 # Each level is given equal space.
 # @param root - the top of the tree given as a Node

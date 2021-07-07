@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# MCTSHelper.py
+## @package MCTSHelper.py
 # Written Ian Rankin February 2020
 #
 # A set of various helper functions for the MCTS Tree search.
@@ -32,7 +32,7 @@ import pdb
 
 ############## Selection functions
 
-# UCBSelection
+## UCBSelection
 # Upper confidence bound selection.
 # @param current - the current tree node
 # @param budget - the budget of the algorithm, if needed.
@@ -49,6 +49,12 @@ def UCBSelection(current, budget, data):
             bestChild = child
     return bestChild
 
+## UCBSelection
+# Upper confidence bound selection for pareto fronts.
+# Developed from a paper that I am too lazy to find cite to right now.
+# @param current - the current tree node
+# @param budget - the budget of the algorithm, if needed.
+# @param data - generic data, if needed.
 def paretoUCBSelection(current, budget, data):
     D = current.sum_reward.shape[0]
     optimal = ParetoFront(D, len(current.children))
@@ -65,7 +71,7 @@ def paretoUCBSelection(current, budget, data):
 
 ############## rollout functions
 
-# randomRollout
+## randomRollout
 # This function performs rollout using random child selection.
 # @param treeState - the current state of the rollout function
 # @param budget - the budget of the sequence
@@ -114,7 +120,7 @@ def randomRollout(treeState, budget, data=None):
 
 
 
-# bestAvgNext
+## bestAvgNext
 # This function selects the next action which optimizes the best average reward.
 # @param root - the current state of the rollout function
 # @param bestSeq - the sequence with highest reward
@@ -169,7 +175,7 @@ def mostSimulations(root, bestSeq, bestR, data=None):
     else:
         return root.getPath(), root.reward()
 
-# bestReward
+## bestReward
 # This function selects the best seen leaf
 # @param root - the current state of the rollout function
 # @param bestSeq - the sequence with highest reward
@@ -190,7 +196,7 @@ def bestAvgReward(root, bestSeq, bestR, data=None):
     else:
         return root.getPath(), root.reward()
 
-# highestReward
+## highestReward
 # This function selects the best seen leaf. (Should not be selected for multiple agents)
 # The best sequence passed is the best reward returned regardless of the agent
 # receiving that reward.

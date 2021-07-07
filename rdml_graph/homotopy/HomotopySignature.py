@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# HomotopySignature.py
+## @package HomotopySignature.py
 # Written Ian Rankin - January 2020
 #
 # A basic structure to handle HSignatures
@@ -44,16 +44,24 @@ import sys
 import pdb
 
 
-
+## A basic structure to handle HSignatures
+# These are implemented as the homotopy signature given in:
+# S. Bhattacharya, M. Likhachev, V. Kumar (2012) Topological constraints in
+#       search-based robot path planning
+#
+# Note these are homotopy invariants instead of homology. This implies order
+# matters.
+# IMPORTANT: Feature numbers must start at 1 and not 0.
+# Yes this is weird, but makes computation and storage signicantly faster.
 class HomotopySignature(HSignature):
-    # Constuctor
+    ## Constuctor
     # @param numHazards - this is the total number of obstacles the h-signature
     #           needs to keep track of.
     def __init__(self, sign=[]):
         self.sign = copy.copy(sign)
         #self.pythonVer = sys.version_info[0]
 
-    # edge_cross
+    ## edge_cross
     # This function takes the HSignature and the HSign fragment contained in a
     # Homotopy Edge, and adds the edge crossings to the current HSignature.
     # Lazy looping rejection
@@ -97,7 +105,7 @@ class HomotopySignature(HSignature):
 
         return True
 
-    # compute_line_segment
+    ## compute_line_segment
     # This function turns the current HSignature into the h signature for a
     # line-segment
     # @param pt_a - the first point of the line segment (numpy)
@@ -125,7 +133,7 @@ class HomotopySignature(HSignature):
 
 
 
-    # cross
+    ## cross
     # A function to add a crossing to the HSignature
     # @param id - the id of the feature
     # @param value - the sign of the crossing (+1, 0, -1) 0, makes no sense to be given
@@ -192,7 +200,7 @@ class HomotopySignature(HSignature):
         newSign -= other
         return newSign
 
-    # str(self) operator overload
+    ## str(self) operator overload
     # Human readable print output
     def __str__(self):
         return str(self.sign)
@@ -204,26 +212,28 @@ class HomotopySignature(HSignature):
         #else:
         #    return hash(self.sign.tobytes())
 
-    # len(self) operator overload
+    ## len(self) operator overload
     def __len__(self):
         return len(self.sign)
 
-    # == operator overload
+    ## == operator overload
     # Function to handle checking for equality between HSignatures
     def __eq__(self, other):
         return self.sign == other.sign
 
-    # != operator overload
+    ## != operator overload
     def __ne__(self, other):
         return not (self == other)
 
 
+## Signature goal for homotopy.
+# Only implemented to
 class HomotopySignatureGoal(HSignatureGoal):
     def __init__(self, goal_signature):
         self.goal_sign = goal_signature
 
 
-    # checkSign
+    ## checkSign
     # A function to check if the given H signature goal matches the
     def checkSign(self, other):
         if isinstance(other, HomotopySignature):

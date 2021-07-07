@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# FeaturePlot.py
+## @package FeaturePlot.py
 # Written Ian Rankin April 2019
 #
 # A set of function for plotting homotopy feature points.
@@ -24,7 +24,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# plotFeatureNodes
+## plotFeatureNodes
 # This function plots a list of feature nodes and labels them on the figure.
 # @param nodes - list of nodes to plot.
 def plotFeatureNodes(nodes, dashlength = 40, color='black', fontsize=12, zorder=10, annotate=True):

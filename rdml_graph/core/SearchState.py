@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# SearchState.py
+## @package SearchState.py
 # Written Ian Rankin - January 2020
 #
 # A basic state for search functions
@@ -31,8 +31,12 @@ import pdb
 
 class SearchState(TreeNode):
     __search_state_id_num_global__ = 0
-    # Constructor
+    ## Constructor
     # @param state - should be of class State
+    # @param rCost - the real cost to the state
+    # @param hCost - the huerestic cost to the goal from this state
+    # @param parent - the parent SearchState
+    # @param id - the unique id of the object.
     def __init__(self, state, rCost=0, hCost=0, parent=None, id=None):
         super(SearchState, self).__init__(SearchState.__search_state_id_num_global__, parent)
 
@@ -50,7 +54,11 @@ class SearchState(TreeNode):
         # self.parent = parent # Pointer to parent node of state for finding full path
         self.invertCmp = False # allows inverting invert comparison (say for max heap)
 
-    # successor
+    ## @var invertCmp
+    # sets whether the comparision should be inverted. This allows for flipping things
+    # like a max heap etc.
+
+    ## successor
     # Gets the successors of the current search state.
     # It calls the states successor function to update the search states
     #
@@ -65,12 +73,12 @@ class SearchState(TreeNode):
         return states
 
 
-    # cost
+    ## cost
     # returns the combination of real cost and estimated additional cost
     def cost(self):
         return self.rCost + self.hCost
 
-    # getRevPath
+    ## getRevPath
     # This function works its way to up the search tree to the root node
     # to return the list of all states in path.
     def getRevPath(self):
@@ -80,7 +88,7 @@ class SearchState(TreeNode):
         return [self.state] + self.parent.getRevPath()
 
 
-    # getPath
+    ## getPath
     # This function works its way to up the search tree to the root node
     # to return the list of all states in path.
     def getPath(self):
@@ -91,7 +99,7 @@ class SearchState(TreeNode):
 
     ################################ Operator overloads
 
-    # < operator overload
+    ## < operator overload
     # Redefine less than operator for heapq
     # Comparison between costs performed
     def __lt__(self, other):
@@ -100,7 +108,7 @@ class SearchState(TreeNode):
         else:
             return self.cost() < other.cost()
 
-    # > operator overload
+    ## > operator overload
     # Redefine greater than operator for heapq
     # Comparison between costs performed
     def __gt__(self, other):
@@ -109,13 +117,13 @@ class SearchState(TreeNode):
         else:
             return self.cost() < other.cost()
 
-    # == operator overload
+    ## == operator overload
     def __eq__(self, other):
         if not isinstance(other, SearchState):
             return False
         return self.cost() == other.cost()
 
-    # a function to return the label of the tree.
+    ## a function to return the label of the tree.
     def get_plot_label(self, data=None):
         return str(self.state.getLabel(data))
 

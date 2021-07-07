@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# DecisionNodes.py
+## @package DecisionNodes.py
 # Written Ian Rankin - March 2021
 
 from rdml_graph.core import TreeNode, Edge
@@ -26,9 +26,10 @@ import pdb
 
 
 
-# While it currently does nothing, this leaves me with the option to add something
+## While it currently does nothing, this leaves me with the option to add something
 # to all decision node types. (Potentially a function for explanation etc.)
 class DecisionNode(TreeNode):
+    ## constructor
     # @param id - the id of the decision node (needs to be a unique integer)
     # @param parent - the parent of the decision node
     def __init__(self, id, parent, samples=[], types=[]):
@@ -37,12 +38,19 @@ class DecisionNode(TreeNode):
         self.samples=samples
         self.types=types
 
-    # set_node
+    ## @var idx
+    # The index of the feature inputs the decision node is using
+    ## @var samples
+    # A list of the samples used to generate the decision node
+    ## @var types
+    # A list of strings that describe what type each feature in the input is.
+
+    ## set_node
     # This function sets the connector nodes for
     def set_node(self, edge_num, node):
         self.e[edge_num].c = node
 
-    # traverses the tree to get to the leaf node.
+    ## traverses the tree to get to the leaf node.
     def traverse(self, input):
         next = self.get_next(input)
         if isinstance(next, DecisionNode):
@@ -50,6 +58,7 @@ class DecisionNode(TreeNode):
         else:
             return next
 
+    ## seperate
     # @override
     # @param X - the input data
     # @param with_label - set true if the input data includes
@@ -81,7 +90,7 @@ class DecisionNode(TreeNode):
         else:
             return a == b
 
-    # This function returns the next node in the tree given the input (or a leaf object)
+    ## This function returns the next node in the tree given the input (or a leaf object)
     # this is not super effcient, but fairly elegant.
     # @param input - given the current input return the output
     #
@@ -93,7 +102,7 @@ class DecisionNode(TreeNode):
         # category not listed
         raise ValueError('Given input ' + str(input) +' decision node: ' + str(self.e))
 
-    # A set of code to get visualization code for a tree.
+    ## A set of code to get visualization code for a tree.
     # This uses the graphviz python library to generate a Digraph object for tree.
     # @oaram labels - boolean for if the tree should inlcude lables.
     # @param t - a Digraph object to start with (leave if creating a new viz)
@@ -165,7 +174,7 @@ class FloatEdge(DecisionEdge):
         else:
             return False
 
-# A bi-decision decision node
+## A bi-decision decision node
 # All values greater than value are in the second edge.
 class FloatDecision(DecisionNode):
     def __init__(self, id, parent, idx, value, samples=[], types=[]):
@@ -203,6 +212,7 @@ class FloatDecision(DecisionNode):
 
 
 class CategoryDecision(DecisionNode):
+    ## constructor
     # @param id - the id of the decision node (needs to be a unique integer)
     # @param parent - the parent of the decision node
     # @param idx - the index in the input values of the categories

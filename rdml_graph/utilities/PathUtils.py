@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# PathUtils.py
+## @package PathUtils.py
 # Written Ian Rankin April 2021
 #
 # A set of function for handling paths
@@ -27,7 +27,7 @@ from rdml_graph.core import Node
 from rdml_graph.homotopy import HNode
 
 
-# getWaypoints
+## getWaypoints
 # get waypoints from a list of HNodes.
 # @param path - a list of homotopy nodes.
 #
@@ -45,7 +45,7 @@ def getWaypoints(path):
     return pts
 
 
-# getWaypoints
+## getWaypoints
 # get waypoints from a list of HNodes.
 # @param path - a list of homotopy nodes.
 #

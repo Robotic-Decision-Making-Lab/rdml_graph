@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# MCTS.py
+## @package MCTS.py
 # Written Ian Rankin February 2020
 # Based on code written by Graeme Best, and also code written by Seth McCammon
 #
@@ -33,7 +33,7 @@ from rdml_graph.mcts.ParetoFront import ParetoFront
 import pdb
 
 
-# MCTS
+## MCTS
 # The main entry function to the MCTS algorithm.
 # @param start - the entry state of the MCTS algorithm
 # @param max_iterations - maximum number of iterations the MCTS algorithm runs.

@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# MaskedEvaluator.py
+## @package MaskedEvaluator.py
 # Written Ian Rankin January 2021
 #
 # Similar to the PathEvaluatorWithRadius in Evaluator.py, this code is also path
@@ -33,7 +33,7 @@ import math
 import pdb
 
 
-# parameterizeLine
+## parameterizeLine
 # parameterize line using the equation ax + by + c = 0
 # @param pt1 - the first point
 # @param pt2 - the second point
@@ -54,7 +54,7 @@ def parameterizeLine(pt1, pt2):
 
 class MaskedEvaluator(PathEvaluator):
 
-    # constructor
+    ## constructor
     # @param info_field - numpy array (x,y,channels) OR (x,y)
     # @param x_ticks - (should be even ticks.)
     # @param y_ticks - (should be even ticks.)
@@ -240,7 +240,7 @@ class MaskedEvaluator(PathEvaluator):
         return scores
 
 
-    # @override
+    ## @override
     # getScore, gets the score of path given within the budget
     # @param path - the path as 2d numpy array (n x 2)
     # @param budget - the budget of the path, (typically path length)

@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# HomologySignature.py
+## @package HomologySignature.py
 # Written Ian Rankin - January 2020
 #
 # A basic structure to handle HomologySignatures
@@ -34,7 +34,7 @@ import copy
 import sys
 import pdb
 
-# rayIntersection
+## rayIntersection
 # Given a line segment an origin and an angle from the ray, return 0 for
 # no intersection, and postive to a crossing in the positive direction, and
 # negative for a crossing in the negative direction.
@@ -77,7 +77,7 @@ def rayIntersection(pt1, pt2, origin, angle=np.pi/2):
         # no intersection
         return 0
 
-# Homology signature
+## Homology signature
 # A discrete homology signature.
 # It uses the same reference lines for homotopy signautres described by:
 # Kim, S., Bhattacharya S., Kumar, V. (2014) Path Planning for a Tethered Mobile Robot
@@ -86,13 +86,13 @@ def rayIntersection(pt1, pt2, origin, angle=np.pi/2):
 # S. Bhattacharya, R. Ghrist, V. Kumar (2015) Persistent Homology for Path Planning
 #       in uncertain environments.
 class HomologySignature(HSignature):
-    # Constuctor
+    ## Constuctor
     # @param numHazards - this is the total number of obstcales the h-signature
     #           needs to keep track of.
     def __init__(self, numHazards):
         self.sign = np.zeros(numHazards, dtype=np.byte)
 
-    # edge_cross
+    ## edge_cross
     # This function takes the HSignature and the HSign fragment contained in a
     # Homotopy Edge, and adds the edge crossings to the current HSignature.
     # @param edge - a crossing homotopy edge.
@@ -111,7 +111,7 @@ class HomologySignature(HSignature):
             return False
         return True
 
-    # compute_line_segment
+    ## compute_line_segment
     # This function turns the current HSignature into the h signature for a
     # line-segment
     # @param pt_a - the first point of the line segment (numpy)
@@ -123,7 +123,7 @@ class HomologySignature(HSignature):
             self.sign[i] = rayIntersection(pt_a, pt_b, \
                                                 features[i], ray_angle)
 
-    # cross
+    ## cross
     # A function to add a crossing to the HSignature
     def cross(self, id, value):
         # Bad id just ignore the crosssing
@@ -138,7 +138,7 @@ class HomologySignature(HSignature):
 
     ############################## Operator overloading
 
-    # y = self[idx] operator overload
+    ## y = self[idx] operator overload
     # overload square bracket operator
     # Returns element of H-signature
     # @param idx
@@ -174,7 +174,7 @@ class HomologySignature(HSignature):
         newSign.sign -= other.sign
         return newSign
 
-    # str(self) operator overload
+    ## str(self) operator overload
     # Human readable print output
     def __str__(self):
         return str(self.sign)
@@ -185,23 +185,23 @@ class HomologySignature(HSignature):
         else:
             return hash(self.sign.tobytes())
 
-    # len(self) operator overload
+    ## len(self) operator overload
     def __len__(self):
         return len(self.sign)
 
-    # == operator overload
+    ## == operator overload
     # Function to handle checking for equality between HSignatures
     def __eq__(self, other):
         if len(other) != len(self):
             return False
         return not np.any(np.not_equal(other.sign, self.sign))
 
-    # != operator overload
+    ## != operator overload
     def __ne__(self, other):
         return not (self == other)
 
 
-
+## Goal signature for a homology signature
 class HomologySignatureGoal(HSignatureGoal):
     def __init__(self, num_objects):
         self.mask = np.zeros(num_objects, dtype=np.bool)
@@ -219,7 +219,7 @@ class HomologySignatureGoal(HSignatureGoal):
         self.mask[id] = 0
         self.sign.sign[id] = 0
 
-    # checkSign
+    ## checkSign
     # A function to check if the given H signature goal matches the
     def checkSign(self, other):
         return np.all(np.logical_or(np.logical_not(self.mask),\

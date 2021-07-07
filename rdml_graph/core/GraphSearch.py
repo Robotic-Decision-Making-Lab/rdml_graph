@@ -15,8 +15,8 @@
 # FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
-#
-# AStar.py
+
+# @package AStar.py
 # Written Ian Rankin February 2020 - Modified from code written October 2019
 #
 # The AStar algorithm written using the SearchState class
@@ -32,26 +32,26 @@ import numpy as np
 
 import pdb
 
-# defualt huerestic function for AStar.
+## defualt huerestic function for AStar.
 # it should work for any type of state, but when using the algorithm degrades
 # to simply Dijkstra's algorithm rather than A*.
 # @param x - the graph input path.
 def default_h(x, data = None, goal=None):
     return 0.0
 
-# A simple euclidean distance huerestic for the AStar algorithm
+## A simple euclidean distance huerestic for the AStar algorithm
 # I doubt this does particulary much to speed on computation if any at all.
 def h_euclidean(n, data, goal):
     return np.linalg.norm(n.node.pt - goal[0].pt)
 
-# graphGoalCheck
+## graphGoalCheck
 # A basic graph checker looking for a particular node to be the same.
 # @param n - the node to check
 # @param data - some set of input data
 def graph_goal_check(n, data, goal):
     return n == goal
 
-# pass_all
+## pass_all
 # goal check that allows all through
 def pass_all(n, data, goal):
     return True
@@ -59,7 +59,7 @@ def pass_all(n, data, goal):
 
 
 
-# AStar
+## AStar
 # A generic implementation of the AStar algorithm.
 # An optimal graph search algorithm.
 # If looking for shortest path to all nodes, see Dijkstra's algorithm.
@@ -123,7 +123,7 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None, \
         return [], float('inf')
 
 
-# dijkstra's algorithm (All nodes)
+## dijkstra's algorithm (All nodes)
 # This is dijkstra's algorithm ran to find the shortest path to all reachable
 # nodes of a graph from the start location.
 # See any algorithms book for description of dijkstra's algorithm.
@@ -172,7 +172,7 @@ def DFS():
 
 
 
-# BFS
+## BFS
 # Breadth First Search algorithm. This has an optional budget which restricts
 # expansion beyond the budget given the cost of the state function returned
 # REQUIRED

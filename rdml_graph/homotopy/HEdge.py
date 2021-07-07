@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# HEdge.py
+## @package HEdge.py
 # Written Ian Rankin - February 2020
 #
 # Homotopy augumented edge.
@@ -48,9 +48,19 @@ import rdml_graph.homotopy
 
 
 
-
+## Homotopy augumented edge.
+# This is a set of edges defining crossings given the edge.
+# Slightly different from Homotopy Node which keeps a copy of the node it is
+# representing, but the actual node.
+#
+# This edge is just an extension of an Edge with extra information to contain
+# crossing information.
+#
+# Based on work by following paper:
+# S. Bhattacharya, M. Likhachev, V. Kumar (2012) Topological constraints in
+#       search-based robot path planning
 class HEdge(Edge):
-    # constructor
+    ## constructor
     # @param parent - the parent node of the edge.
     # @param child - the child node of the edge.
     # @param num_objects - the total number of topological objects.

@@ -35,7 +35,7 @@ import pdb
 ######################## IMPORTANCE FUNCTIONS #########################
 
 
-# class_importance
+## class_importance
 # This is an entropy function on classification
 # @param splits - a list of list of samples [node1[samples], node2[samples], ...]
 #
@@ -175,7 +175,7 @@ def reg_plurality(X):
 
 ############################### STOP FUNCTIONS ######################
 
-# check if the same class
+## check if the same class
 # @param X - the input data [[sample, class], ...]
 #
 # @return - true if all data is the same class, otherwise false
@@ -195,7 +195,7 @@ def same_class(X):
 ############################ SPLIT FUNCTIONS ###########################
 
 
-# bin_category_split
+## bin_category_split
 # A binary split of categories using the importance function to determine the
 # best split.
 # @param X - the input data [(x_i, target), ...]
@@ -247,7 +247,7 @@ def bin_category_split(X, importance_func, parent, id):
 def data_sort_key(x):
     return x[0]
 
-# bin_float_split
+## bin_float_split
 # A binary split of floats using the importance function to determine the
 # best split.
 # This function sorts by the given data and incrementally finds the best split
@@ -300,7 +300,7 @@ def bin_float_split(X, importance_func, parent, id, with_labels=True):
 
 
 
-# default_attribute_func
+## default_attribute_func
 # Finds the argmax of the possible attributes given a particular importance_func
 # @param X - the input data [(x1, label1), ...]
 # @param importance_func - the importance of different attributes

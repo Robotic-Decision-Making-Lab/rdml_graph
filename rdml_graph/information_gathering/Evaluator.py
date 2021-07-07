@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# Evaluator.py
+## @package Evaluator.py
 # Written Seth McCammon, revised Ian Rankin April 2020
 #
 # A set of path evaluation functions for information gathering algorithms.
@@ -40,7 +40,7 @@ class PathEvaluator(object):
     def __init__(self):
         pass
 
-    # overide
+    ## overide
     # getScore, gets the score of path given within the budget
     # @param path - the path as 2d numpy array (n x 2)
     # @param budget - the budget of the path, (typically path length)

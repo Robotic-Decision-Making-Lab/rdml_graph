@@ -15,8 +15,8 @@
 # FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
-#
-# Edge.py
+
+## @package Edge.py
 # Written Ian Rankin October 2019
 #
 # Rather a directed edge, but called an edge for short.
@@ -26,9 +26,16 @@
 
 from rdml_graph.core import Node
 
+## Rather a directed edge, but called an edge for short.
+# Contains the basic implementation for an edge.
+# Particular designed to be extendable to allow different information to be
+# stored.
 class Edge(object):
-    # constructor
+    ## constructor
     # Pass the parent and child nodes directly (not indcies)
+    # @param parent - the parent Node of the edge
+    # @param child - the child Node of the edge
+    # @param cost - [opt] the cost of the edge.
     def __init__(self, parent, child, cost = 1.0):
         # should be handed the parent node directly.
         self.p = parent
@@ -37,14 +44,21 @@ class Edge(object):
         # don't reference directly rather reference the getCost function.
         self.cost = cost
 
-    # get function for cost.
+    ## @var p
+    # the parent Node of the edge
+    ## @var c
+    # The child Node of the edge.
+    ## @var cost
+    # The cost of the Edge (use getCost function).
+
+    ## get function for cost.
     # This shoud be called rather than directly referencing
     # in case the function is overloaded.
     def getCost(self):
         return self.cost
 
 
-    # checks if connecting id's are the same and cost is the same (could potentially)
+    ## checks if connecting id's are the same and cost is the same (could potentially)
     # have two different edges to the same two nodes.
     def __eq__(self, other):
         #return isinstance(other, Edge) and self.c.id == other.c.id and self.p.id == other.p.id \

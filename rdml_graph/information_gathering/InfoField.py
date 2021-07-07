@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# InfoField.py
+## @package InfoField.py
 # Written Ian Rankin - January 2021
 #
 # This set of functions generates various information fields, and handles
@@ -28,7 +28,7 @@ from collections import Sequence
 import pdb
 
 
-# random_field
+## random_field
 # This function generates a random 2d scalar field using randomly placed
 # gaussian spots.
 # @param size (width, height in boxes) of the the field
@@ -69,7 +69,7 @@ def random_field2d(size, num_gauss=30, mean_height=0.2, mean_var=None):
 	return field
 
 
-# force a given sequence or scalar to be the given length
+## force a given sequence or scalar to be the given length
 # it fails if the in_seq is not the correct length or a scalar.
 # @param in_seq - the input possible sequence
 #					(should be either scalar or sequence of correct length)
@@ -83,7 +83,7 @@ def force_seq(in_seq, desired_len):
 	return in_seq
 
 
-# random_multi_field2d
+## random_multi_field2d
 # This function generates multiple channels of 2d scalar fields.
 # @param size - (width, height in pixels) of the the field
 # @param dim - the number of multiple objectives

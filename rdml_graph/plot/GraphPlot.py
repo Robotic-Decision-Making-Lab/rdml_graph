@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# GraphPlot.py
+## @package GraphPlot.py
 # Written Ian Rankin November 2019
 #
 # This file contains code to plot different paths, and plot them.
@@ -27,7 +27,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# plot2DGeoGraph
+## plot2DGeoGraph
 # This assumes that the graph is given a geometric graph
 # with 2d points, if it is not, this function may fail.
 # This function is not effcient
@@ -69,7 +69,7 @@ class data_linewidth_plot():
         self.timer.add_callback(lambda : self.fig.canvas.draw_idle())
         self.timer.start()
 
-# plot2DPath
+## plot2DPath
 # This function plots a 2D path with arrows showing directionality
 # @param pts - a list of 2D points along the path
 # @param color - the color of the path when plotted.
@@ -93,7 +93,7 @@ def plot2DPath(path, color='red', line_style='solid', head_width=0.75, label='',
 
     return line
 
-# plot2DGeoPath
+## plot2DGeoPath
 # plot a geometric path given as a list of geometric nodes
 # @param path - a list of GeometricNode(s) in order.
 # @param color - the color of the path when plotted.
@@ -107,7 +107,7 @@ def plot2DGeoPath(path, color='red'):
 
     plt.plot(points[:,0], points[:,1], color=color)
 
-# plotHomotopyPath
+## plotHomotopyPath
 # plot a geometric path given as a list of geometric nodes
 # @param path - a list of GeometricNode(s) in order.
 # @param color - the color of the path when plotted.
@@ -121,7 +121,7 @@ def plotHomotopyPath(path, color='red'):
 
     plt.plot(points[:,0], points[:,1], color=color)
 
-# plotEdgesFromNode
+## plotEdgesFromNode
 # This function is given a node and plots edges coming from that node.
 # @param n - the node
 # @param color - the color of the edges.

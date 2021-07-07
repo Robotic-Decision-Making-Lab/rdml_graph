@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# HSignature.py
+## @package HSignature.py
 # Written Ian Rankin - January 2020
 #
 # A basic structure to handle HSignatures
@@ -33,21 +33,21 @@ import sys
 
 class HSignature(object):
 
-    # @overide
+    ## @overide
     # @param edge - the HEdge that should be added to the H signature to update
     #               to a new state
     # @return - True if valid edge crossing, false if the crossing is invalid (loop)
     def edge_cross(self, edge):
         raise NotImplementedError()
 
-    # cross
+    ## cross
     # A function to add a crossing to the HSignature
     # @param id - the id of the feature
     # @param value - the sign of the crossing (+1, 0, -1) 0, makes no sense to be given
     def cross(self, id, value):
         raise NotImplementedError()
 
-    # compute_line_segment
+    ## compute_line_segment
     # This function turns the current HSignature into the h signature for a
     # line-segment
     # @param pt_a - the first point of the line segment (numpy)
@@ -55,18 +55,18 @@ class HSignature(object):
     def compute_line_segment(self, pt_a, pt_b, features, ray_angle=np.pi/2):
         raise NotImplementedError()
 
-    # ensure, correct copying of the signatures
+    ## ensure, correct copying of the signatures
     def copy(self):
         raise NotImplementedError()
 
-    # concatination
+    ## concatination
     # Note concationation for HSignatures may not be commutative (a+b)!=(b+a)
     # For Homotopy signatures (a+b)!=(b+a)
     # For Homology signatures a+b=b+a
     def __add__(self, other):
         raise NotImplementedError()
 
-    # inverse concatination
+    ## inverse concatination
     def __sub__(self, other):
         raise NotImplementedError()
 
