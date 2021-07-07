@@ -2,6 +2,10 @@
 *.gv
 *.gv.pdf
 
+# ignore doc folders
+doc/html/
+doc/latex/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

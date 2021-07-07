@@ -21,6 +21,17 @@ From the root directory of rdml_graph:
 pip install -e . --user
 ```
 
+## Documentation
+
+Doxygen documentation is used for the library. This allows creation of an easy
+to use html files. To generate the documentation...
+```
+sudo apt-get install doxygen
+cd doc
+doxygen Doxyfile
+```
+
+
 ## Usage
 
 ```
