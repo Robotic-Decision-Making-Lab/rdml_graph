@@ -13,7 +13,7 @@ setup(name='rdml_graph',
       author_email='rankini@oregonstate.edu',
       license='None',
       packages=['rdml_graph'],
-      install_requires=['numpy>=1.3.0','matplotlib>=2.0.0', 'scipy>=1.0.0', 'tqdm>=3.0.0', 'shapely>=1.0.0', 'graphviz>=0.16.0', 'pdb>=1.0.0'],
+      install_requires=['numpy>=1.3.0','matplotlib>=2.0.0', 'scipy>=1.0.0', 'tqdm>=3.0.0', 'shapely>=1.0.0', 'graphviz>=0.16.0', 'pdb>=1.0.0', 'haversine>=2.3.0'],
       extras_require={'Saving graphs': ["pickle"]},
       python_requires='>=2.7',
       zip_safe=False)
