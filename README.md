@@ -21,6 +21,11 @@ From the root directory of rdml_graph:
 pip install -e . --user
 ```
 
+For full features also run
+```
+sudo apt-get install doxygen graphviz
+```
+
 ## Documentation
 
 Doxygen documentation is used for the library. This allows creation of an easy
