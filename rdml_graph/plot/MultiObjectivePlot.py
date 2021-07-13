@@ -32,11 +32,17 @@ from rdml_graph.plot import plot2DPath
 # @param paths - [opt] list of 2d numpy paths
 # @param info_names - [opt] list of names for information fields
 # @param path_names - [opt] list of names for the paths
+# @param x_ticks - [opt] the x ticks of the image (numpy (n,))
+# @param y_ticks - [opt] the y ticks of the image (numpy (n,))
 # @param fig - [opt] the input figure
 def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
-        cmap='viridis', radius=None, legend=True, fig= None):
+        cmap='viridis', radius=None, x_ticks=None, y_ticks=None, legend=True, fig= None):
     if fig is None:
         fig =plt.figure(constrained_layout=True)
+    if x_ticks is None:
+        x_ticks = np.arange(0, info_field.shape[0])
+    if y_ticks is None:
+        y_ticks = np.arange(0, info_field.shape[1])
 
 
     num_info = info_field.shape[2]
@@ -72,7 +78,8 @@ def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
             ax.imshow(info_field[:,:,i].transpose(), \
                         vmin=np.min(info_field[:,:,i]), \
                         vmax=np.max(info_field[:,:,i]), \
-                        origin='lower', cmap=cmap)
+                        origin='lower', cmap=cmap, \
+                        extent=[x_ticks[0], x_ticks[-1], y_ticks[0], y_ticks[-1]])
             ps = []
 
             for j, path in enumerate(paths):
