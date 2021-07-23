@@ -181,6 +181,13 @@ class MaskedEvaluator(PathEvaluator):
 
         min_x_idx = math.ceil((min_x - self.x_ticks[0]) / self.x_scale)
         max_x_idx = math.ceil((max_x - self.x_ticks[0]) / self.x_scale)
+        # ensure the indicies are within the information field
+        min_x_idx = max(0, min_x_idx)
+        max_x_idx = min(self.info_field.shape[0], max_x_idx)
+        if min_x_idx > self.info_field.shape[0]:
+            return np.zeros(len(self.chan))
+        elif max_x_idx < 0:
+            return np.zeros(len(self.chan))
 
         x_range = np.arange((min_x_idx*self.x_scale)+self.x_ticks[0], \
                 ((max_x_idx+1)*self.x_scale)+self.x_ticks[0]-0.01, self.x_scale)
@@ -209,6 +216,13 @@ class MaskedEvaluator(PathEvaluator):
             min_y = math.ceil((max(min_y_arr[i], self.y_ticks[0])-self.y_ticks[0]) / self.y_scale)
             max_y = math.ceil((min(max_y_arr[i], self.y_ticks[-1]+self.y_scale)\
                                 -self.y_ticks[0]) / self.y_scale)
+            min_y = max(min_y, 0)
+            max_y = min(max_y, self.info_field.shape[1])
+            if min_y > self.info_field.shape[1]:
+                continue
+            elif max_y < 0:
+                continue
+
             #print('min_y: '+str(min_y)+' max_y: '+str(max_y))
             # min_max_pts = np.array([[x, min_y_arr[i]], [x, max_y_arr[i]]])
             # plt.scatter(min_max_pts[:,0], min_max_pts[:,1])
