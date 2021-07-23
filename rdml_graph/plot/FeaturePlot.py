@@ -16,9 +16,10 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-## @package FeaturePlot.py
+# FeaturePlot.py
 # Written Ian Rankin April 2019
 #
+## @package FeaturePlot
 # A set of function for plotting homotopy feature points.
 
 import numpy as np

@@ -16,9 +16,10 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-## @package MultiObjectivePlot.py
+# MultiObjectivePlot.py
 # Written Ian Rankin - April 2021
 #
+## @file MultiObjectivePlot
 # A set of code to quickly plot multi-objective information fields and paths
 
 import numpy as np

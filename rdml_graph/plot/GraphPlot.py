@@ -16,9 +16,10 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-## @package GraphPlot.py
+# GraphPlot.py
 # Written Ian Rankin November 2019
 #
+## @package GraphPlot
 # This file contains code to plot different paths, and plot them.
 
 from rdml_graph.core import Node
