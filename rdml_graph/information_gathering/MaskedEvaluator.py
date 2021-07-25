@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# MaskedEvaluator.py
+## @package MaskedEvaluator.py
 # Written Ian Rankin January 2021
 #
 # Similar to the PathEvaluatorWithRadius in Evaluator.py, this code is also path
@@ -28,10 +28,12 @@
 
 import numpy as np
 from rdml_graph.information_gathering import PathEvaluator
+import math
+
 import pdb
 
 
-# parameterizeLine
+## parameterizeLine
 # parameterize line using the equation ax + by + c = 0
 # @param pt1 - the first point
 # @param pt2 - the second point
@@ -52,7 +54,7 @@ def parameterizeLine(pt1, pt2):
 
 class MaskedEvaluator(PathEvaluator):
 
-    # constructor
+    ## constructor
     # @param info_field - numpy array (x,y,channels) OR (x,y)
     # @param x_ticks - (should be even ticks.)
     # @param y_ticks - (should be even ticks.)
@@ -110,15 +112,15 @@ class MaskedEvaluator(PathEvaluator):
         if isTop:
             y_mins = np.where(np.logical_and(x > line_low_loc, x < line_high_loc), -(a*x + c) / b, \
                     np.where(x < line_low_loc, min_pt[1] +  \
-                                            np.sqrt(np.max(self.radius**2 - (min_pt[0]-x)**2, 0)), \
+                                            np.sqrt(np.maximum(self.radius**2 - (min_pt[0]-x)**2, 0)), \
                                        max_pt[1] + \
-                                            np.sqrt(np.max(self.radius**2 - (max_pt[0]-x)**2, 0))))
+                                            np.sqrt(np.maximum(self.radius**2 - (max_pt[0]-x)**2, 0))))
         else:
             y_mins = np.where(np.logical_and(x > line_low_loc, x < line_high_loc), -(a*x + c) / b, \
                     np.where(x < line_low_loc, min_pt[1] -  \
-                                            np.sqrt(np.max(self.radius**2 - (min_pt[0]-x)**2, 0)), \
+                                            np.sqrt(np.maximum(self.radius**2 - (min_pt[0]-x)**2, 0)), \
                                        max_pt[1] - \
-                                            np.sqrt(np.max(self.radius**2 - (max_pt[0]-x)**2, 0))))
+                                            np.sqrt(np.maximum(self.radius**2 - (max_pt[0]-x)**2, 0))))
 
         return y_mins
 
@@ -149,7 +151,23 @@ class MaskedEvaluator(PathEvaluator):
         # if pt1[0] == pt2[0]:
         #     pdb.set_trace()
 
+        # upper_line = np.append(upper_min_per[np.newaxis,:], upper_max_per[np.newaxis, :], axis=0)
+        # line = np.append(pt1[np.newaxis,:], pt2[np.newaxis, :], axis=0)
+        # lower_line = np.append(lower_min_per[np.newaxis,:], lower_max_per[np.newaxis, :], axis=0)
+        #
+        #
+        # import matplotlib.pyplot as plt
+        #plt.figure()
 
+        #plt.scatter(upper_min_per[0][np.newaxis], upper_min_per[1][np.newaxis])
+        #plt.scatter(upper_max_per[0][np.newaxis], upper_max_per[1][np.newaxis])
+        #plt.scatter(lower_min_per[0][np.newaxis], lower_min_per[1][np.newaxis])
+        #plt.scatter(lower_max_per[0][np.newaxis], lower_max_per[1][np.newaxis])
+        # plt.plot(upper_line[:,0], upper_line[:,1])
+        # plt.plot(line[:,0], line[:,1])
+        # plt.plot(lower_line[:,0], lower_line[:,1])
+        # plt.xlim([self.x_ticks[0], self.x_ticks[-1]])
+        # plt.ylim([self.y_ticks[0], self.y_ticks[-1]])
 
 
         upper_param = parameterizeLine(upper_min_per, upper_max_per)
@@ -161,8 +179,15 @@ class MaskedEvaluator(PathEvaluator):
         min_x = max(min_pt[0] - self.radius, self.x_ticks[0])
         max_x = min(max_pt[0] + self.radius, self.x_ticks[-1]+self.x_scale)
 
-        min_x_idx = round((min_x - self.x_ticks[0]) / self.x_scale)
-        max_x_idx = round((max_x - self.x_ticks[0]) / self.x_scale)
+        min_x_idx = math.ceil((min_x - self.x_ticks[0]) / self.x_scale)
+        max_x_idx = math.ceil((max_x - self.x_ticks[0]) / self.x_scale)
+        # ensure the indicies are within the information field
+        min_x_idx = max(0, min_x_idx)
+        max_x_idx = min(self.info_field.shape[0], max_x_idx)
+        if min_x_idx > self.info_field.shape[0]:
+            return np.zeros(len(self.chan))
+        elif max_x_idx < 0:
+            return np.zeros(len(self.chan))
 
         x_range = np.arange((min_x_idx*self.x_scale)+self.x_ticks[0], \
                 ((max_x_idx+1)*self.x_scale)+self.x_ticks[0]-0.01, self.x_scale)
@@ -187,9 +212,20 @@ class MaskedEvaluator(PathEvaluator):
         # plt.show()
 
         for i, x in enumerate(range(min_x_idx, max_x_idx)):
-            min_y = round((max(min_y_arr[i], self.y_ticks[0])-self.y_ticks[0]) / self.y_scale)
-            max_y = round((min(max_y_arr[i], self.y_ticks[-1]+self.y_scale)\
+            #print('min_y_arr[i]: ' + str(min_y_arr[i])+ ' max_y_arr[i]: '+str(max_y_arr[i]))
+            min_y = math.ceil((max(min_y_arr[i], self.y_ticks[0])-self.y_ticks[0]) / self.y_scale)
+            max_y = math.ceil((min(max_y_arr[i], self.y_ticks[-1]+self.y_scale)\
                                 -self.y_ticks[0]) / self.y_scale)
+            min_y = max(min_y, 0)
+            max_y = min(max_y, self.info_field.shape[1])
+            if min_y > self.info_field.shape[1]:
+                continue
+            elif max_y < 0:
+                continue
+
+            #print('min_y: '+str(min_y)+' max_y: '+str(max_y))
+            # min_max_pts = np.array([[x, min_y_arr[i]], [x, max_y_arr[i]]])
+            # plt.scatter(min_max_pts[:,0], min_max_pts[:,1])
 
 
             shaped_mask = np.repeat(cur_mask[x,min_y:max_y, np.newaxis]==1, \
@@ -218,7 +254,7 @@ class MaskedEvaluator(PathEvaluator):
         return scores
 
 
-    # @override
+    ## @override
     # getScore, gets the score of path given within the budget
     # @param path - the path as 2d numpy array (n x 2)
     # @param budget - the budget of the path, (typically path length)
@@ -234,5 +270,6 @@ class MaskedEvaluator(PathEvaluator):
 
             scores += self.getSegmentAlongX(pt1, pt2, mask)
 
+        #print(mask)
 
         return scores * self.scales

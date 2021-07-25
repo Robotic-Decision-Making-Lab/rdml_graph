@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# DecisionLearner.py
+## @package DecisionLearner.py
 # Written Ian Rankin - April 2021
 #
 # Set of functions to learn decision tree's
@@ -31,7 +31,7 @@ import pdb
 
 
 
-
+## learn_decision_tree from the data in parameter X
 # @param X - the input data
 # REQUIRED
 # @param importance_func - the importance of different attributes
@@ -40,17 +40,17 @@ import pdb
 #       type - func(X, importance_func, types, parent)
 #
 # OPTIONAL
-# # @param plurality_func - return the leaf node for a particular part of the tree
+# @param plurality_func - [opt] return the leaf node for a particular part of the tree
 # @param same_func - checks if the data input is all the same and spliting
 #               can stop.
-# @param types - a list of types of the input tree to use with the attribute function
-# @param with_labels - defines if it is a classification or regression problem with labels on X
-# @param max_depth - the max_depth to allow the tree to go
+# @param types - [opt] a list of types of the input tree to use with the attribute function
+# @param with_labels - [opt] defines if it is a classification or regression problem with labels on X
+# @param max_depth - [opt] the max_depth to allow the tree to go
 #
 # FOR RECURSION (DON'T USE)
-# @param cur_depth - sets the current depth of the tree
-# @param parent - the parent of the node to learn.
-# @param parent_samples - the samples of the parent node
+# @param cur_depth - [DO NOT USE] sets the current depth of the tree
+# @param parent - [DO NOT USE] the parent of the node to learn.
+# @param parent_samples - [DO NOT USE] the samples of the parent node
 #
 # RETURN
 # @return the root of the sub-tree of decision nodes OR the leaf of the tree
@@ -58,7 +58,6 @@ def learn_decision_tree(X, \
         types, \
         importance_func, \
         attribute_func= default_attribute_func, \
-        \
         max_depth=float('inf'),\
         plurality_func=class_plurality, \
         same_func=same_class, \
@@ -81,8 +80,12 @@ def learn_decision_tree(X, \
         # find best case
         n = attribute_func(X, importance_func, types, parent, id)
         if n is None:
-            print('Attribute function returned None, and I do not know why, debug this!')
-            pdb.set_trace()
+            #print('Attribute function returned None, and I do not know why, debug this!')
+            #pdb.set_trace()
+            print('\n\n\nX: ' + str(X))
+            return plurality_func(X), id
+        n.samples = X
+        n.types = types
         splits = n.separate(X, with_label=with_labels)
 
         for i, sub_X in enumerate(splits):

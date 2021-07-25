@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# BasicSamplingFunctions.py
+## @package BasicSamplingFunctions.py
 # Written Ian Rankin March 2020
 #
 #
@@ -27,7 +27,7 @@ import shapely.geometry as geo
 from ..core import GeometricNode
 from ..core import Edge
 from ..homotopy import HEdge
-from ..homotopy import HomologySignature
+from ..homotopy import HomologySignature, HomotopySignature
 
 ########################## Sampling functions for PRM's
 
@@ -46,6 +46,7 @@ def contains_list(geoPt, obstacles):
             return True
     return False
 
+## sample points inside of a bounding polygon and outside of obstacles
 # @param map - a dictionary with needed parameters for sampling with obstacles
 #           bounding - the bounding polygon (shaply)
 #           obs - a list of polygon obstacles ([shaply, ...])
@@ -79,7 +80,7 @@ def sample2DPolygon(map, num_samples, idStart=0):
 
 ########################## Collision checking algorithms
 
-# no collision
+## no collision
 # a simple function to always indicate there are no collisions for the PRM
 # to grow.
 # @param u - one of the input nodes.
@@ -88,7 +89,7 @@ def sample2DPolygon(map, num_samples, idStart=0):
 def noCollision(u , v, map):
     return False
 
-# no collision
+## polygon collision check
 # a simple function to always indicate there are no collisions for the PRM
 # to grow.
 # @param u - one of the input nodes.
@@ -106,7 +107,7 @@ def polygonCollision(u, v, map):
 
 ######################### Edge connection functions
 
-# EdgeConnection
+## EdgeConnection
 # Creates a connection between node u to node v.
 # Default version just connects the two using an Edge object
 # @param parent - parent node of connection
@@ -122,7 +123,7 @@ def EdgeConnection(parent, child, map, cost = None):
     return cost
 
 
-# HEdgeConn
+## HEdgeConn
 # Creates a connection between parent and child node using a Homotopy Edge
 # @param parent - parent node of connection
 # @param child - child node of connection.
@@ -134,14 +135,29 @@ def HEdgeConn(parent, child, map, cost = None):
     if cost is None:
         cost = np.linalg.norm(parent.pt - child.pt, ord=2)
 
-    # if 'ray_angle' in map:
-    #     ray_angle = map['ray_angle']
-    # else:
-    #     ray_angle = np.pi/2
-    # if 'h_type' in map and map['h_type'].lower() == 'homotopy':
-    #     h_sign =
-
     h_sign = HomologySignature(map['hazards'].shape[0])
+    if 'ray_angle' in map:
+        parent.addEdge(HEdge(parent, child, h_sign, cost=cost, \
+                        features=map['hazards'], ray_angle=map['ray_angle']))
+    else:
+        parent.addEdge(HEdge(parent, child, h_sign, cost=cost,\
+                            features=map['hazards']))
+
+    return cost
+
+## HomotopyEdgeConn
+# Creates a connection between parent and child node using a Homotopy Edge
+# @param parent - parent node of connection
+# @param child - child node of connection.
+# @param map - the input map MUST have map['features'] defined as a 2d numpy array
+# @param cost - the cost of the connection (if None assume it must caluclate the cost)
+#
+# @return - cost of edge.
+def HomotopyEdgeConn(parent, child, map, cost = None):
+    if cost is None:
+        cost = np.linalg.norm(parent.pt - child.pt, ord=2)
+
+    h_sign = HomotopySignature()
     if 'ray_angle' in map:
         parent.addEdge(HEdge(parent, child, h_sign, cost=cost, \
                         features=map['hazards'], ray_angle=map['ray_angle']))

@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# StochasticOptimizer.py
+## @package StochasticOptimizer.py
 # Written Dylan Jones, revised by Ian Rankin April 2020
 #
 # Path of waypoints optimized by performing stochastic gradient ascent.
@@ -33,7 +33,7 @@ from rdml_graph.information_gathering import PathEvaluator
 import shapely.geometry as geo
 import shapely.ops as ops
 
-# Class for using stocastic optimization for updating a path
+## Class for using stocastic optimization for updating a path
 #   - pert_size:    [x_size, y_size] is the standard deviation for pertubation in the x and y
 #   - num_perts:    number of pertubation to use when calculating the gradient
 #   - num_its:      number of iterations before stopping optimization

@@ -15,15 +15,16 @@
 # FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
-#
-# State.py
+
+## @package State.py
 # Written Ian Rankin February 2020
 #
 # A basic class definition of an abstract state for search algorithms
 # Each must define its successor function.
 
+## The generic State object for searches.
 class State(object):
-    # A default successor Function
+    ## A default successor Function
     # Abstract function
     #
     # @return - [(successor state, cost)] a list of tuples
@@ -32,7 +33,7 @@ class State(object):
         return []
 
 
-    # getLabel
+    ## getLabel
     # An optional redefined getLabel function for visualization or other generation.
     def getLabel(self, data=None):
         return str(self)

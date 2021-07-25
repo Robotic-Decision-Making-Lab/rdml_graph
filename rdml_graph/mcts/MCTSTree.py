@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# MCTSTree.py
+## @package MCTSTree.py
 # Written Ian Rankin February 2020
 # Based on code written by Graeme Best, and also code written by Seth McCammon
 #
@@ -30,9 +30,10 @@ import pdb
 
 import numpy as np
 
+## MCTSTree
+# The search tree for MCTS
 class MCTSTree(SearchState):
-    # Constructor
-
+    ## Constructor
     def __init__(self, state, rCost, parent, actor_number=0):
         super(MCTSTree, self).__init__(state, rCost=rCost, hCost=0, parent=parent)
 
@@ -43,13 +44,13 @@ class MCTSTree(SearchState):
         self.num_updates = 0
         self.actor_number = actor_number
 
-    # reward
+    ## reward
     # reward is an average of all total rewards propagated through the tree.
     # @return - reward estimate of current state.
     def reward(self):
         return self.sum_reward / self.num_updates
 
-    # backpropReward
+    ## backpropReward
     # This function back-propogates reward up tree.
     # @param reward - the amount of the reward.
     # @param actor_number - the actor being rewarded.
@@ -73,7 +74,7 @@ class MCTSTree(SearchState):
         if self.parent is not None:
             self.parent.backpropReward(reward, actor_number)
 
-    # expandNode
+    ## expandNode
     # expands the current node at the given index.
     # If idx is none, then a random unpicked child is selected.
     # @param idx - the index of the unpicked child to expand (normaly random)
@@ -93,7 +94,7 @@ class MCTSTree(SearchState):
         return child
 
 
-    # successor
+    ## successor
     # successor function for states that removes children over budget.
     # @param budget - the max budget of the successor function.
     #

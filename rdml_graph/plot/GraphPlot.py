@@ -19,6 +19,7 @@
 # GraphPlot.py
 # Written Ian Rankin November 2019
 #
+## @package GraphPlot
 # This file contains code to plot different paths, and plot them.
 
 from rdml_graph.core import Node
@@ -27,7 +28,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# plot2DGeoGraph
+## plot2DGeoGraph
 # This assumes that the graph is given a geometric graph
 # with 2d points, if it is not, this function may fail.
 # This function is not effcient
@@ -37,12 +38,44 @@ def plot2DGeoGraph(G, color='blue'):
     for n in G:
         plotEdgesFromNode(n, color)
 
-# plot2DPath
+
+# CODE From stack overflow: https://stackoverflow.com/questions/19394505/expand-the-line-with-specified-width-in-data-unit
+class data_linewidth_plot():
+    def __init__(self, x, y, **kwargs):
+        self.ax = kwargs.pop("ax", plt.gca())
+        self.fig = self.ax.get_figure()
+        self.lw_data = kwargs.pop("linewidth", 1)
+        self.lw = 1
+        #self.fig.canvas.draw()
+
+        self.ppd = 72./self.fig.dpi
+        self.trans = self.ax.transData.transform
+        self.linehandle, = self.ax.plot([],[],**kwargs)
+        if "label" in kwargs: kwargs.pop("label")
+        self.line, = self.ax.plot(x, y, **kwargs)
+        self.line.set_color(self.linehandle.get_color())
+        self._resize()
+        self.cid = self.fig.canvas.mpl_connect('draw_event', self._resize)
+
+    def _resize(self, event=None):
+        lw =  ((self.trans((1, self.lw_data))-self.trans((0, 0)))*self.ppd)[1]
+        if lw != self.lw:
+            self.line.set_linewidth(lw)
+            self.lw = lw
+            self._redraw_later()
+
+    def _redraw_later(self):
+        self.timer = self.fig.canvas.new_timer(interval=10)
+        self.timer.single_shot = True
+        self.timer.add_callback(lambda : self.fig.canvas.draw_idle())
+        self.timer.start()
+
+## plot2DPath
 # This function plots a 2D path with arrows showing directionality
 # @param pts - a list of 2D points along the path
 # @param color - the color of the path when plotted.
 # @param head_width - the width of the arrow head
-def plot2DPath(path, color='red', line_style='solid', head_width=0.5, label='', radius=None):
+def plot2DPath(path, color='red', line_style='solid', head_width=0.75, label='', radius=None):
     line = None
     for i in range(1, len(path)):
         diff = path[i] - path[i-1]
@@ -52,12 +85,16 @@ def plot2DPath(path, color='red', line_style='solid', head_width=0.5, label='', 
                 label=label)
 
     if radius is not None:
-        plt.plot(path[:,0], path[:,1], color=color, alpha=0.3, \
-            linewidth=radius*2, solid_capstyle='round')
+        #plt.plot(path[:,0], path[:,1], color=color, alpha=0.3, \
+        #    linewidth=radius*2, solid_capstyle='round')
+        l = data_linewidth_plot(path[:,0], path[:,1], color=color, alpha=0.3, \
+                               linewidth=radius, solid_capstyle='round')
+        pass
+
 
     return line
 
-# plot2DGeoPath
+## plot2DGeoPath
 # plot a geometric path given as a list of geometric nodes
 # @param path - a list of GeometricNode(s) in order.
 # @param color - the color of the path when plotted.
@@ -71,7 +108,7 @@ def plot2DGeoPath(path, color='red'):
 
     plt.plot(points[:,0], points[:,1], color=color)
 
-# plotHomotopyPath
+## plotHomotopyPath
 # plot a geometric path given as a list of geometric nodes
 # @param path - a list of GeometricNode(s) in order.
 # @param color - the color of the path when plotted.
@@ -85,7 +122,7 @@ def plotHomotopyPath(path, color='red'):
 
     plt.plot(points[:,0], points[:,1], color=color)
 
-# plotEdgesFromNode
+## plotEdgesFromNode
 # This function is given a node and plots edges coming from that node.
 # @param n - the node
 # @param color - the color of the edges.

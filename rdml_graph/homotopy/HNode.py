@@ -16,10 +16,24 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# HNode.py
+## @package HNode.py
 # Written Ian Rankin - February 2020
 #
-# Homotopy augumented node.
+
+#
+
+from rdml_graph.core import State
+from rdml_graph.core import Node
+from rdml_graph.core import TreeNode
+from rdml_graph.core import Edge
+from rdml_graph.homotopy import HSignature
+
+#from numba import njit
+import numpy as np
+
+import pdb
+
+## # Homotopy or homology augumented node.
 # This is a set of nodes built on-top of a standard
 # Node and graph, but has a different successor function
 #
@@ -29,47 +43,50 @@
 # Based on work by following paper:
 # S. Bhattacharya, M. Likhachev, V. Kumar (2012) Topological constraints in
 #       search-based robot path planning
-#
-
-from rdml_graph.core import State
-from rdml_graph.core import Node
-from rdml_graph.core import Edge
-from rdml_graph.homotopy import HSignature
-
-import numpy as np
-
-import pdb
-
-
-class HNode(State):
-    # constructor
+class HNode(TreeNode):
+    ## constructor
     # @param node - the input Node for h-augmented graph. (Either homotopy or homology)
     # @param h_sign - the input H signature.
-    # @param parent - [optional] the edge from the parent HNode
+    # @param parent - [optional] the parent HNode
     # @param root - [optional] the root node of the homotopy graph.
-    def __init__(self, n, h_sign, parentEdge=None, root=None):
+    def __init__(self, n, h_sign, parent=None, root=None):
+        super(HNode, self).__init__(-2, parent)
         self.node = n
         self.h_sign = h_sign
-        self.parentEdge = parentEdge
         self.root = root
+        self.e = None
 
-    # successor function for Homotopy node.
+    ## successor function for Homotopy node.
     def successor(self):
-        result = []
+        if self.e is not None:
+            return [(e.c, e.getCost()) for e in self.e]
+
+        self.e = []
+        # self.e = [Edge(self, HNode(n=edge.c, h_sign=self.h_sign.copy(), parent=self, root=self.root), edge.getCost()) \
+        #     for edge in self.node.e if (self.h_sign.copy()).edge_cross(edge)]
         for edge in self.node.e:
             newHSign = self.h_sign.copy()
             goodHSign = newHSign.edge_cross(edge)
 
             if goodHSign:
                 succ = HNode(n=edge.c, h_sign=newHSign,\
-                                parentEdge=edge, root=self.root)
-                result += [(succ, edge.getCost())]
+                                parent=self, root=self.root)
+                self.e.append(Edge(self, succ, edge.getCost()))
         #pdb.set_trace()
-        return result
+        return [(e.c, e.getCost()) for e in self.e]
+
+    ## get path to the root
+    def get_parent_path(self):
+        # base case
+        if self.parent is None:
+            return [self]
+        else:
+            return self.parent.get_parent_path() + [self]
+
 
     ################## operator overloading
 
-    # ==
+    ## ==
     # equals checks other is the same class and then checks node and h-signature
     # for equality.
     def __eq__(self, other):
@@ -78,17 +95,17 @@ class HNode(State):
         return self.node == other.node and self.h_sign == other.h_sign and \
                 (self.root is None or other.root is None or self.root == other.root)
 
-    # !=
+    ## !=
     # opposite of equals
     def __ne__(self, other):
         return not self == other
 
-    # str()
+    ## str()
     # prints out info about the currnet Homotopy Node
     def __str__(self):
-        return 'HNode(h-sign='+ str(self.h_sign) +', n=' + str(self.node) + ')'
+        return 'HNode(h-sign='+ str(self.h_sign) +', n=' + str(self.node.id) + ')'
 
-    # hash function overload
+    ## hash function overload
     # This hash takes into account both the node hash (should be defined),
     # and the h signatures hash (also defined).
     # parent edge is not considered.
@@ -96,3 +113,42 @@ class HNode(State):
     # already explored.
     def __hash__(self):
         return hash((self.node, self.h_sign))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #

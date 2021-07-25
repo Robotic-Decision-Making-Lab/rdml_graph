@@ -24,3 +24,6 @@ from .utilities import *
 
 from . import parallel
 from .parallel import *
+
+from . import gis
+from .gis import *

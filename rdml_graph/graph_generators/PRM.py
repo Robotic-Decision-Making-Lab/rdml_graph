@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# PRM.py
+## @package PRM.py
 # Written Ian Rankin - February 2020
 #
 # A set of functions that generate a Probabilistic RoadMap (PRM).
@@ -32,7 +32,7 @@ from .BasicSamplingFunctions import sample2DUniform, noCollision, EdgeConnection
 
 import pdb
 
-# PRM
+## PRM
 # Generates a Probabilistic RoadMap (PRM) of the sample space.
 # The exact sample space can be determined by setting different sample functions,
 # collision functions, and connection functions.

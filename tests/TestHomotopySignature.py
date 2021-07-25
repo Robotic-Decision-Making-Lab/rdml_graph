@@ -80,9 +80,12 @@ e6 = gr.HEdge(n, n5, gr.HomotopySignature(), features=features)
 print(e5)
 print(e6)
 
+h1 = gr.HomotopySignature([1,4,-5,2])
+h2 = gr.HomotopySignature([1,4,-5,2])
+h3 = gr.HomotopySignature([1,4,5,2])
 
-
-
+print(h1 == h2)
+print(h2 == h3)
 
 
 

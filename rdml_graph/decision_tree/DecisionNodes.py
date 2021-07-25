@@ -16,7 +16,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# DecisionNodes.py
+## @package DecisionNodes.py
 # Written Ian Rankin - March 2021
 
 from rdml_graph.core import TreeNode, Edge
@@ -26,22 +26,31 @@ import pdb
 
 
 
-# While it currently does nothing, this leaves me with the option to add something
+## While it currently does nothing, this leaves me with the option to add something
 # to all decision node types. (Potentially a function for explanation etc.)
 class DecisionNode(TreeNode):
+    ## constructor
     # @param id - the id of the decision node (needs to be a unique integer)
     # @param parent - the parent of the decision node
-    def __init__(self, id, parent):
+    def __init__(self, id, parent, samples=[], types=[]):
         super(DecisionNode, self).__init__(id, parent)
         self.idx = None # Should be overriden by non-abstract classes
         self.samples=samples
+        self.types=types
 
-    # set_node
+    ## @var idx
+    # The index of the feature inputs the decision node is using
+    ## @var samples
+    # A list of the samples used to generate the decision node
+    ## @var types
+    # A list of strings that describe what type each feature in the input is.
+
+    ## set_node
     # This function sets the connector nodes for
     def set_node(self, edge_num, node):
         self.e[edge_num].c = node
 
-    # traverses the tree to get to the leaf node.
+    ## traverses the tree to get to the leaf node.
     def traverse(self, input):
         next = self.get_next(input)
         if isinstance(next, DecisionNode):
@@ -49,6 +58,7 @@ class DecisionNode(TreeNode):
         else:
             return next
 
+    ## seperate
     # @override
     # @param X - the input data
     # @param with_label - set true if the input data includes
@@ -68,7 +78,19 @@ class DecisionNode(TreeNode):
         # end for loop over X
         return splits
 
-    # This function returns the next node in the tree given the input (or a leaf object)
+    # @override
+    def dfs_equals(self, a, b):
+        if isinstance(a, tuple):
+            return b == a[1]
+        elif isinstance(a, list):
+            for a_item in a:
+                if self.dfs_equals(a_item, b):
+                    return True
+            return False
+        else:
+            return a == b
+
+    ## This function returns the next node in the tree given the input (or a leaf object)
     # this is not super effcient, but fairly elegant.
     # @param input - given the current input return the output
     #
@@ -80,7 +102,7 @@ class DecisionNode(TreeNode):
         # category not listed
         raise ValueError('Given input ' + str(input) +' decision node: ' + str(self.e))
 
-    # A set of code to get visualization code for a tree.
+    ## A set of code to get visualization code for a tree.
     # This uses the graphviz python library to generate a Digraph object for tree.
     # @oaram labels - boolean for if the tree should inlcude lables.
     # @param t - a Digraph object to start with (leave if creating a new viz)
@@ -129,6 +151,12 @@ class CategoryEdge(DecisionEdge):
     def __contains__(self, item):
         return item in self.categories
 
+    def __eq__(self, other):
+        if isinstance(other, FloatEdge):
+            return id(self) == id(other)
+        else:
+            return False
+
 class FloatEdge(DecisionEdge):
     def __init__(self, parent, child, value, larger=True):
         super(FloatEdge, self).__init__(parent, child)
@@ -140,11 +168,17 @@ class FloatEdge(DecisionEdge):
         return not (bool(item > self.value) ^ bool(self.larger))
 
 
-# A bi-decision decision node
+    def __eq__(self, other):
+        if isinstance(other, FloatEdge):
+            return self.value == other.value and self.larger == other.larger and id(self.p) == id(other.p)
+        else:
+            return False
+
+## A bi-decision decision node
 # All values greater than value are in the second edge.
 class FloatDecision(DecisionNode):
-    def __init__(self, id, parent, idx, value):
-        super(DecisionNode, self).__init__(id, parent)
+    def __init__(self, id, parent, idx, value, samples=[], types=[]):
+        super(FloatDecision, self).__init__(id, parent, samples, types)
         self.idx = idx
 
         self.e = [  FloatEdge(self, None, value, False), \
@@ -157,17 +191,34 @@ class FloatDecision(DecisionNode):
         self.e[0].c = node
 
     def get_plot_label(self, data=None):
-        s = 'idx: ' + str(self.idx) + ' > ' + str(self.e[0].value)
+
+        if data is None:
+            s = 'idx: ' + str(self.idx)
+        elif 'feature_idx' in data:
+            s = str(data['feature_idx'][self.idx])
+        elif 'feature_labels' in data:
+            s = data['feature_labels'][self.idx]
+        else:
+            s = 'idx: ' + str(self.idx)
+
+        s = s + ' > ' + str(self.e[0].value)
         return s
+
+    def __str__(self):
+        o = 'FloatDecision: ' + str(self.id) + ' idx: ' + str(self.idx)
+
+        o += ' > ' + str(self.e[0].value)
+        return o
 
 
 class CategoryDecision(DecisionNode):
+    ## constructor
     # @param id - the id of the decision node (needs to be a unique integer)
     # @param parent - the parent of the decision node
     # @param idx - the index in the input values of the categories
     # @param categories - a list of lists specifying the desired categories
-    def __init__(self, id, parent, idx, categories):
-        super(DecisionNode, self).__init__(id, parent)
+    def __init__(self, id, parent, idx, categories, samples=[], types=[]):
+        super(CategoryDecision, self).__init__(id, parent, samples, types)
         self.idx = idx
 
         self.e = [CategoryEdge(self, None, cat) for cat in categories]
@@ -178,15 +229,17 @@ class CategoryDecision(DecisionNode):
 
         if data is None:
             s = 'idx: ' + str(self.idx) + s
-        elif 'idx_labels' in data:
-            s = data['idx_labels'][self.idx] + s
+        elif 'feature_idx' in data:
+            s = str(data['feature_idx'][self.idx]) + s
+        elif 'feature_labels' in data:
+            s = data['feature_labels'][self.idx] + s
         else:
             s = 'idx: ' + str(self.idx) + s
 
         return s
 
     def __str__(self):
-        o = 'CategoryDecision: ' + str(id) + ' idx: ' + str(self.idx) + ' categoies:'
+        o = 'CategoryDecision: ' + str(self.id) + ' idx: ' + str(self.idx) + ' categories:'
 
         for edge in self.e:
             o += ' ' + str(edge.categories)
