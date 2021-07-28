@@ -138,9 +138,9 @@ def ticTacToeReward(listOfStates, budget, data):
 start = TicTacToeState(agentTurn=1)
 start.board[1][1] = 1.0
 
-solution, reward, root = gr.MCTS(start, 50, ticTacToeReward, actor_number=0, \
+solution, reward, data = gr.MCTS(start, 50, ticTacToeReward, actor_number=0, \
                             solutionFunc=gr.mostSimulations, output_tree=True)
-
+root = data['root']
 t = root.get_viz(labels=True)
 t.view()
 

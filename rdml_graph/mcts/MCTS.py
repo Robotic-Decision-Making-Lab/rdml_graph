@@ -16,10 +16,11 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-## @package MCTS.py
+# MCTS.py
 # Written Ian Rankin February 2020
 # Based on code written by Graeme Best, and also code written by Seth McCammon
 #
+## @file MCTS
 # An implementation of the monte-carlo tree search algorithm
 #
 
@@ -44,18 +45,23 @@ import pdb
 # @param solutionFunction - (root, data)
 # @param data - persistent data across the MCTS.
 # @param actor_number - the starting actor number.
-# @param multi_obj_dim - the dimension of the multi-objective reward values
+# @param multi_obj_dim - [opt]the dimension of the multi-objective reward values
+# @param output_tree - [opt (False)] sets whether to output the root of the full mcts tree
+# @param get_all_seq - [opt] sets whether to output every reward sequence
 #
-# @return - solution, reward, opt[root_of_tree]
+# @return - solution, reward, opt[data]
 #           solution - list of states of best path (including start state)
 #           reward - float value of best reward.
+#           data - has possible values of ['root', 'all_paths', 'all_rewards', 'all_actors', 'solutionSeq', 'solutionReward']
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
             rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, \
-            actor_number=0, multi_obj_dim=1, output_tree=False):
+            actor_number=0, multi_obj_dim=1, output_tree=False, get_all_seq=False):
     # Set the root of the search tree.
     root = MCTSTree(start, 0, None)
     root.unpicked_children = root.successor(budget)
 
+    if get_all_seq:
+        all_sequences = [None] * max_iterations
     if multi_obj_dim < -1:
         multi_obj_dim = -multi_obj_dim
         all_values = True
@@ -98,7 +104,8 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
             # perform rollout to the end of a possible sequence.
             sequence = rolloutFunc(current, budget, data)
             rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
-
+            if get_all_seq:
+                all_sequences[i] = (sequence, rolloutReward, rewardActorNum)
 
             if multi_obj_dim > 1:
                 optimal.check_and_add(rolloutReward, sequence)
@@ -111,31 +118,32 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
             ######## BACK-PROPOGATE
             current.backpropReward(rolloutReward, rewardActorNum)
         except KeyboardInterrupt:
+            if get_all_seq:
+                del all_sequences[i:]
             break
     # end main for loop
 
     ######## SOLUTION
+    other = {}
 
     if all_values:
-        multi_obj_dim = -multi_obj_dim
-
-        front_rewards, front_paths = optimal.get()
         bestSeq, bestReward = [], 0
         solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
-        if output_tree:
-            return front_paths, front_rewards, solutionSeq, solutionReward, root
-        else:
-            return front_paths, front_rewards, solutionSeq, solutionReward
-    elif multi_obj_dim > 1:
+        other['solutionSeq'] = solutionSeq
+        other['solutionReward'] = solutionReward
+    if output_tree:
+        other['root'] = root
+    if get_all_seq:
+        other['all_paths'] = [sol[0] for sol in all_sequences]
+        other['all_rewards'] = np.array([sol[1] for sol in all_sequences])
+        other['all_actors'] = [sol[2] for sol in all_sequences]
+
+    #### return the final solution path
+    if multi_obj_dim > 1:
+        # multi-objective return
         front_rewards, front_paths = optimal.get()
-        if output_tree:
-            return front_paths, front_rewards, root
-        else:
-            return front_paths, front_rewards
+        return front_paths, front_rewards, other
     else:
-        solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
-        if output_tree:
-            return solutionSeq, solutionReward, root
-        else:
-            return solutionSeq, solutionReward
+        solution, reward = solutionFunc(root, bestSeq, bestReward, data)
+        return solution, reward, other
 # End MCTS
