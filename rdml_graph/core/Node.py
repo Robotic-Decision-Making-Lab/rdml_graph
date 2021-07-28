@@ -117,6 +117,26 @@ class TreeNode(Node):
     def dfs_equals(self, a, b):
         return a == b
 
+    ## getRevPath
+    # This function works its way to up the root of the tree
+    # to return the list of all states in path.
+    # @return a list of nodes along the tree to root [0] is the current node.
+    def getRevPath(self):
+        if self.parent is None:
+            return [self]
+
+        return [self] + self.parent.getRevPath()
+
+    ## getPath
+    # This function works its way to up the search tree to the root node
+    # to return the list of all states in path.
+    # @return a list of nodes along the tree to root [0] is the root
+    def getPath(self):
+        if self.parent is None:
+            return [self]
+
+        return self.parent.getPath() + [self]
+
     ## depth first search
     # returns the full path to the output location.
     # @param n - the input node
