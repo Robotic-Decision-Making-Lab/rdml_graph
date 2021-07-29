@@ -14,10 +14,10 @@ y_axis = 70
 info_field = np.ones((x_axis,y_axis, 2)) * np.array([2,3])
 eval = gr.CudaEvaluator(info_field, \
                     np.arange(-x_axis,x_axis,2), np.arange(0,y_axis), \
-                    radius=1.5)
+                    radius=10)
 evalCPU = gr.MaskedEvaluator(info_field, \
                     np.arange(-x_axis,x_axis,2), np.arange(0,y_axis), \
-                    radius=1.5)
+                    radius=10)
 
 #path = np.array([[3.1,4.2], [8, 5], [13,12], [-10,13], [-15, -5]])
 
