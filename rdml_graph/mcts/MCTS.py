@@ -54,7 +54,7 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
             actor_number=0, multi_obj_dim=1, output_tree=False):
     # Set the root of the search tree.
     root = MCTSTree(start, 0, None)
-    root.unpicked_children = root.successor(budget)
+    #root.unpicked_children = root.successor(budget)
 
     if multi_obj_dim < -1:
         multi_obj_dim = -multi_obj_dim
@@ -76,10 +76,13 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
             # Check all possibilties of selection.
 
             while True:
+                if not current.expanded:
+                    current.unpicked_children = current.successor(budget)
+                    current.expanded = True
                 if len(current.unpicked_children) > 0:
                     ######## Expansion
                     child = current.expandNode()
-                    child.unpicked_children = child.successor(budget)
+                    #child.unpicked_children = child.successor(budget)
 
                     current = child
 

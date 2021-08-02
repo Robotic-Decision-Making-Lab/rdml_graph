@@ -42,6 +42,7 @@ class MCTSTree(SearchState):
         self.best_reward = -np.inf
         self.sum_reward = 0
         self.num_updates = 0
+        self.expanded = False
         self.actor_number = actor_number
 
     ## reward
