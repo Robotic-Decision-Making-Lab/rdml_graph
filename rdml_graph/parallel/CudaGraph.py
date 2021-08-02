@@ -30,7 +30,14 @@ def cuda_rand_traversal(G, start_N, budget):
     return paths
 
 
-
+## random traversal of a graph to generate the list of paths on a graph
+# @param A - the input connection graph (in the form of list of edges) (n x edges)
+# @param costs - the cost with a parallel shape to A (n x edges)
+# @param num_edges - the list of the number of edges (n,)
+# @param paths[out] - the list of paths (n, len_paths)
+# @param start_locs - the start indicies of traversal
+# @param budgets - list of budgets allowed for the travesal (n,)
+# @param rng_states - the rng_states for each core (n, )
 @cuda.jit
 def kern_rand_travesal(A, costs, num_edges, paths, start_locs, budgets, \
         rng_states):
