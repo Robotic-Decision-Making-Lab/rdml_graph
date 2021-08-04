@@ -111,6 +111,15 @@ class TreeNode(Node):
     # the parent Node (no edge)
 
 
+    ## get path to the root
+    def get_parent_path(self):
+        # base case
+        if self.parent is None:
+            return [self]
+        else:
+            return self.parent.get_parent_path() + [self]
+
+
     ## Designed to be overloaded for checking if it is equals in a DFS.
     def dfs_equals(self, a, b):
         return a == b
@@ -168,7 +177,7 @@ class TreeNode(Node):
         # directional graph
         # a bit strange, but only import if needed.
         from graphviz import Digraph
-                
+
         if t is None:
             t = Digraph('T')
 

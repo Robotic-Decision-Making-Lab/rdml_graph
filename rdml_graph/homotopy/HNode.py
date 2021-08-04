@@ -29,6 +29,8 @@ from rdml_graph.core import Edge
 from rdml_graph.homotopy import HSignature
 
 #from numba import njit
+from rdml_graph.parallel import dev_rand_int
+from numba import cuda
 import numpy as np
 
 import pdb
@@ -75,13 +77,7 @@ class HNode(TreeNode):
         #pdb.set_trace()
         return [(e.c, e.getCost()) for e in self.e]
 
-    ## get path to the root
-    def get_parent_path(self):
-        # base case
-        if self.parent is None:
-            return [self]
-        else:
-            return self.parent.get_parent_path() + [self]
+
 
 
     ################## operator overloading
@@ -116,8 +112,64 @@ class HNode(TreeNode):
 
 
 
+    ################ parallel speedup code
+
+    @staticmethod
+    def para_get_rep(sequence):
+        path = [hn.node.pt for hn in sequence]
+        return np.array(path, dtype=np.float32)
 
 
+    @staticmethod
+    def para_propogate(parallel_data, states, length_states, budget):
+        threads_per_block = 64
+        blocks = len(length_states) % threads_per_block
+
+        kern_rand_travesal_and_path[blocks, threads_per_block](\
+                        A = parallel_data[0], \
+                        costs= parallel_data[1], \
+                        num_edges= parallel_data[2], \
+                        paths=states,\
+                        start_locs= ,\
+                        cur_lengths=length_states,\
+                        points=parallel_data[4],\
+                        budget=budget, \
+                        rng_states = parallel_data[5])
+        return states, cur_lengths
+
+
+
+
+## random traversal of a graph to generate the list of paths on a graph
+# @param A - the input connection graph (in the form of list of edges) (n x edges)
+# @param costs - the cost with a parallel shape to A (n x edges)
+# @param num_edges - the list of the number of edges (n,)
+# @param paths[out] - the list of paths (n, len_paths)
+# @param start_locs - the start indicies of traversal
+# @param budgets - list of budgets allowed for the travesal (n,)
+# @param rng_states - the rng_states for each core (n, )
+@cuda.jit
+def kern_rand_travesal_and_path(A, costs, num_edges, paths, start_locs, cur_lengths, \
+        points, budget, rng_states):
+    n = cuda.grid(1)
+
+    if n < start_locs.shape[0]:
+        # traverse
+        length = cur_lengths[n]
+        cur_node = start_locs[n]
+
+        for i in range(paths.shape[1]):
+            if num_edges[cur_node] == 0:
+                break
+            rand_num = dev_rand_int(rng_states, n, 0, num_edges[cur_node])
+
+            length += costs[cur_node, rand_num]
+            cur_node = A[cur_node, rand_num]
+            paths[n, cur_lengths[n], :] = points[cur_node,:]
+            cur_lengths[n] += 1
+
+            if length >= budgets[n]:
+                break
 
 
 
