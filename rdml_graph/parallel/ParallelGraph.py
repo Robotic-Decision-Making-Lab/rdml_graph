@@ -31,7 +31,7 @@ def get_connection_graph(G):
 
     A       = np.ones((len(G), max_num_edges), dtype=np.int32) * -1
     costs   = np.ones((len(G), max_num_edges), dtype=np.float32) * -1
-    num_edges = np.empty(len(G))
+    num_edges = np.empty(len(G), dtype=np.int32)
 
     for n in G:
         edges, n_costs = get_edges(n)

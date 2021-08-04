@@ -32,6 +32,8 @@ from rdml_graph.mcts import UCBSelection, randomRollout, bestAvgReward
 from rdml_graph.mcts.ParetoFront import ParetoFront
 from rdml_graph.parallel.ParallelGraph import get_connection_graph
 
+from numba import cuda
+
 import pdb
 
 
@@ -69,7 +71,7 @@ def MCTS_graph(   start, G, max_iterations, rewardFunc, budget=1.0, selection=UC
         bestReward = -np.inf
         bestSeq = None
 
-    parallel_info, propogated_paths = setup_multi(G, max_depth)
+    parallel_data, propogated_paths = setup_multi(G, max_depth)
 
     # Main loop of MCTS
     for i in tqdm.tqdm(range(max_iterations)):
@@ -101,20 +103,10 @@ def MCTS_graph(   start, G, max_iterations, rewardFunc, budget=1.0, selection=UC
                     current = selection(current, budget, data)
             # end selection expansion while loop.
 
-            # Parallel expansion and rollout.
-            ##### TODO move into HNode code!
-            lengths = np.ones(len(current.unpicked_children)) * budget
-            start_locs = np.zeros(len(current.unpicked_children))
-            for i, node in current.unpicked_children:
-                para_rep = start.para_get_rep(node.getPath())
-                propogated_paths[i, :para_rep.shape[0], :] = para_rep
-                lenghts[i] = para_rep.shape[0]
-                start_locs[i] = node.state.node.id # great line of code Ian....
+            #### Parallel expansion and rollout.
+            propogated_paths, lengths = \
+                start.para_propogate(parallel_data, current.unpicked_children, propogated_paths, budget)
 
-            propogated_paths, lenghts = \
-                start.para_propogate(parallel_data, propogated_paths, lengths, budget)
-
-            pdb.set_trace()
 
 
 
@@ -174,19 +166,19 @@ def MCTS_graph(   start, G, max_iterations, rewardFunc, budget=1.0, selection=UC
 
 def setup_multi(G, max_path_depth=40):
     A, costs, num_edges = get_connection_graph(G)
-    pts = np.array([n.node.pt for n in G], dtype=np.float32)
+    pts = np.array([n.pt for n in G], dtype=np.float32)
 
 
     threads_per_block = 64
     # max call at once is the size of the threads.
-    blocks = len(A.shape[1]) % threads_per_block
+    blocks = A.shape[1] % threads_per_block
     rng_states = cuda.random.create_xoroshiro128p_states( \
             threads_per_block * blocks, seed=1)
 
     paths = np.ones((A.shape[1], max_path_depth, 2)) * -1
     A = cuda.to_device(A)
     costs = cuda.to_device(costs)
-    num_edges = cuda.to_device(costs)
+    num_edges = cuda.to_device(num_edges)
     rng_states = cuda.to_device(rng_states)
     pts = cuda.to_device(pts)
 

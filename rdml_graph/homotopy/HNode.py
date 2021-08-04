@@ -121,21 +121,30 @@ class HNode(TreeNode):
 
 
     @staticmethod
-    def para_propogate(parallel_data, states, length_states, budget):
+    def para_propogate(parallel_data, unpicked_children, paths, budget):
+        lengths = np.ones(len(unpicked_children), dtype=np.int) * budget
+        start_ids = np.empty(len(unpicked_children), dtype=np.int)
+        for i, node in enumerate(unpicked_children):
+            para_rep = HNode.para_get_rep(node.getPath())
+            paths[i, :para_rep.shape[0], :] = para_rep
+            lengths[i] = para_rep.shape[0]
+            start_ids[i] = node.state.node.id # great line of code Ian....
+
+
         threads_per_block = 64
-        blocks = len(length_states) % threads_per_block
+        blocks = len(lengths) % threads_per_block
 
         kern_rand_travesal_and_path[blocks, threads_per_block](\
-                        A = parallel_data[0], \
-                        costs= parallel_data[1], \
-                        num_edges= parallel_data[2], \
-                        paths=states,\
-                        start_locs= ,\
-                        cur_lengths=length_states,\
-                        points=parallel_data[4],\
-                        budget=budget, \
-                        rng_states = parallel_data[5])
-        return states, cur_lengths
+                        parallel_data[0], \
+                        parallel_data[1], \
+                        parallel_data[2], \
+                        paths,\
+                        start_ids,\
+                        lengths,\
+                        parallel_data[3],\
+                        budget, \
+                        parallel_data[4])
+        return paths, lengths
 
 
 
@@ -165,10 +174,11 @@ def kern_rand_travesal_and_path(A, costs, num_edges, paths, start_locs, cur_leng
 
             length += costs[cur_node, rand_num]
             cur_node = A[cur_node, rand_num]
-            paths[n, cur_lengths[n], :] = points[cur_node,:]
+            paths[n, cur_lengths[n], 0] = points[cur_node,0]
+            paths[n, cur_lengths[n], 1] = points[cur_node,1]
             cur_lengths[n] += 1
 
-            if length >= budgets[n]:
+            if length >= budget:
                 break
 
 
