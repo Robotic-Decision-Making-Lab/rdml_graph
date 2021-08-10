@@ -37,6 +37,14 @@ def reward_func(sequence, budget, data):
 
     return score, 0
 
+def multi_reward_func(propogated_paths, budget, lengths, data):
+    eval = data[0]
+
+    scores = eval.getScoreMulti(propogated_paths, lengths, budget)
+
+    return scores, 0
+
+
 
 def main():
     dim = 3
@@ -52,10 +60,15 @@ def main():
     #### Generate info_field and eval
     info_field = gr.random_multi_field2d((map['width'], map['height']),\
                                             dim, num_gauss=np.array([5,7,9]))
-    eval = gr.MaskedEvaluator(info_field, \
+    # eval = gr.MaskedEvaluator(info_field, \
+    #                 np.arange(map['width']), \
+    #                 np.arange(map['height']), \
+    #                 radius=4)
+    eval = gr.CudaEvaluator(info_field, \
                     np.arange(map['width']), \
                     np.arange(map['height']), \
                     radius=4)
+
 
     start_homotopy = gr.HNode(start, \
                               gr.HomotopySignature(), \
@@ -66,7 +79,7 @@ def main():
                             G = G, \
                             max_iterations=400, \
                             budget=50, \
-                            rewardFunc=reward_func, \
+                            rewardFunc=multi_reward_func, \
                             selection=gr.paretoUCBSelection, \
                             data=(eval,), \
                             multi_obj_dim=dim,\

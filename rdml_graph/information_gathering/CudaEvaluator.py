@@ -35,7 +35,7 @@ class CudaEvaluator(PathEvaluator):
     #         , if left as None all indcies are ignored. (if info_field has only)
     #          one dimminsion, then this argument is ignored.
     def __init__(self, info_field, x_ticks, y_ticks, radius, budget=float('inf'),\
-                    normalize=True, expected_val=None, channels=None):
+                    normalize=True, expected_val=None, channels=None, max_num_paths=30):
         # handle single dimminsion info_fields for backwards compatability
         if len(info_field.shape) == 2:
             self.info_field = info_field[:,:, np.newaxis]
@@ -74,16 +74,77 @@ class CudaEvaluator(PathEvaluator):
             self.scales = 1 / (self.expected_val*(budget+radius*2)*2*radius*2)
 
         self.reward_arr = np.empty((len(self.chan), self.info_field.shape[0]*self.info_field.shape[1]))
-
+        self.multi_reward = np.empty((max_num_paths, \
+                                      self.info_field.shape[0], self.info_field.shape[1], \
+                                      len(self.chan)))
 
         # device memory
         self.info_field = cuda.to_device(self.info_field)
         self.reward_arr = cuda.to_device(self.reward_arr)
+        self.multi_reward = cuda.to_device(self.multi_reward)
         self.chan = cuda.to_device(self.chan)
         self.x_ticks = cuda.to_device(self.x_ticks)
         self.y_ticks = cuda.to_device(self.y_ticks)
 
 
+
+
+
+# info_field, \
+# x_ticks, \
+# y_ticks, \
+# chans, \
+# paths, \
+# lengths,\
+# reward_arr, \
+# size_to_call_for_sum, \
+# x_scale, \
+# y_scale, \
+# radius, \
+# func_to_call):
+
+    ## @override
+    # getScoreMulti, gets the score of path given within the budget
+    # @param path - the path as 2d numpy array (n x 2)
+    # @param budget - the budget of the path, (typically path length)
+    def getScoreMulti(self, paths, lengths, budget=float('inf')):
+        # force path along budget (TODO)
+        threads_per_block = 32
+        blocks = math.ceil(len(lengths)*self.info_field.shape[0]*self.info_field.shape[1] / threads_per_block)
+
+        #reward_arr = np.empty((self.info_field.shape[0], self.info_field.shape[1], len(self.chan)))
+        #reward_arr = np.empty((len(self.chan), self.info_field.shape[0]*self.info_field.shape[1]))
+        #reward_arr = np.ascontiguousarray(reward_arr)
+        paths_cuda = cuda.to_device(paths)
+
+
+        reward_sum_log = int(np.ceil(np.log(self.info_field.shape[0]*self.info_field.shape[1]) / np.log(16)))
+
+        multi_path_eval_kern[threads_per_block, blocks]( \
+                        self.info_field, \
+                        self.x_ticks, \
+                        self.y_ticks, \
+                        self.chan, \
+                        paths_cuda, \
+                        lengths, \
+                        self.multi_reward, \
+                        reward_sum_log, \
+                        self.x_scale, \
+                        self.y_scale, \
+                        self.radius, \
+                        RADIUS_DIST)
+
+        #
+        #
+        # score = np.empty(len(self.chan))
+        # #reward_arr_shaped = np.empty((self.info_field.shape[0], self.info_field.shape[1], len(self.chan)))
+        # for i in range(len(self.chan)):
+        #     # reward_arr_shaped[:,:,i] = np.reshape(reward_arr[i,:], \
+        #     #         (self.info_field.shape[0], self.info_field.shape[1]),\
+        #     #         order='C') # C, F, A
+        #     score[i] = sum_reduce(self.reward_arr[0, :])
+
+        #return score
 
     ## @override
     # getScore, gets the score of path given within the budget
@@ -225,9 +286,105 @@ def distance_from_path_kern(info_field, \
             #reward_arr[x_idx, y_idx, i] = multiplier #multiplier * info_field[x_idx, y_idx, chan]
             reward_arr[i, pos] = multiplier
 
+
+
+
 @cuda.reduce
 def sum_reduce(a,b):
     return a + b
+
+
+
+
+
+
+
+
+
+## cuda kernel for finding the info field cost
+# @param info_field - information field input (numpy field)
+# @param x_ticks - the x ticks
+# @param y_ticks - the y ticks
+# @param path - numpy path (num_paths, n, 2)
+# @param reward_arr - information for the array.
+#
+# @return the reward vector
+@cuda.jit
+def multi_path_eval_kern(   info_field, \
+                            x_ticks, \
+                            y_ticks, \
+                            chans, \
+                            paths, \
+                            lengths,\
+                            reward_arr, \
+                            size_to_call_for_sum, \
+                            x_scale, \
+                            y_scale, \
+                            radius, \
+                            func_to_call):
+    # thread id
+    tx = cuda.threadIdx.x
+    # block id in 1D grid
+    ty = cuda.blockIdx.x
+    # Block width, i.e. number of threads per block
+    bw = cuda.blockDim.x
+    # The flattened index
+    pos = tx + ty * bw
+    if pos < info_field.shape[0]*info_field.shape[1]*lengths.shape[0]:
+        num_rewards = info_field.shape[0]*info_field.shape[1]
+        p_i = int(pos / num_rewards)
+        path_pos = pos % num_rewards
+        x_idx = int(pos / info_field.shape[1])
+        y_idx = pos % info_field.shape[1]
+
+        x = x_ticks[x_idx] + (x_scale / 3)
+        y = y_ticks[y_idx] + (y_scale / 3)
+
+        min_dist = 999999999999
+        # find the minimum distance to the path
+        for i in range(1, lengths[p_i]):
+            dist = distance_from_line_seg(x,y,paths[p_i,i,0], paths[p_i,i,1], paths[p_i,i-1,0], paths[p_i,i-1,1])
+            if dist < min_dist:
+                min_dist = dist
+
+        # find the multiplier for function
+        if func_to_call == RADIUS_DIST:
+            multiplier = radius_dist(min_dist, radius)
+        else:
+            multiplier = 0
+
+        for i, chan in enumerate(chans):
+            reward_arr[p_i, x_idx, y_idx, i] = multiplier# * info_field[x_idx, y_idx, chan]
+            #reward_arr[p_i,i, pos] = multiplier
+
+
+
+        ###### SUM the reward arrays
+        # for i in range(size_to_call_for_sum):
+        #     cuda.syncthreads()
+        #
+        #     pos_diff = 16**(i)
+        #     #sum_idx = path_pos % pos_diff
+        #
+        #     if path_pos < math.ceil(num_rewards / (pos_diff*16)):
+        #         sum_idx = path_pos * pos_diff
+        #         outer_x = int(sum_idx / info_field.shape[1])
+        #         outer_y = sum_idx % info_field.shape[1]
+        #
+        #         cur_sum = 0
+        #
+        #         for j in range(1, 16):
+        #             sum_idx_sum = sum_idx + (j*pos_diff)
+        #             if sum_idx_sum < num_rewards:
+        #                 inner_x = int(sum_idx_sum / info_field.shape[1])
+        #                 inner_y = sum_idx_sum % info_field.shape[1]
+        #                 for k in range(len(chans)):
+        #                     reward_arr[p_i, outer_x, outer_y, k] += reward_arr[p_i, inner_x, inner_y, k]
+
+
+            i
+
+
 
 
 

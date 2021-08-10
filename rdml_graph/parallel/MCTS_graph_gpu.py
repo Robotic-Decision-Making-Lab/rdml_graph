@@ -107,13 +107,17 @@ def MCTS_graph(   start, G, max_iterations, rewardFunc, budget=1.0, selection=UC
             propogated_paths, lengths = \
                 start.para_propogate(parallel_data, current.unpicked_children, propogated_paths, budget)
 
+            pdb.set_trace()
 
+            rewards, actors = rewardFunc(propogated_paths, budget, lengths, data)
+
+            pdb.set_trace()
 
 
             ######## ROLLOUT
             # perform rollout to the end of a possible sequence.
-            sequence = rolloutFunc(current, budget, data)
-            rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
+            #sequence = rolloutFunc(current, budget, data)
+            #rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
 
 
             if multi_obj_dim > 1:
