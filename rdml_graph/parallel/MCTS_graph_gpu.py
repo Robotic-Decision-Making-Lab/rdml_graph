@@ -107,6 +107,9 @@ def MCTS_graph(   start, G, max_iterations, rewardFunc, budget=1.0, selection=UC
             propogated_paths, lengths = \
                 start.para_propogate(parallel_data, current.unpicked_children, propogated_paths, budget)
 
+            current.children = current.unpicked_children
+            current.unpicked_children = []
+
             pdb.set_trace()
 
             rewards, actors = rewardFunc(propogated_paths, budget, lengths, data)
@@ -118,18 +121,18 @@ def MCTS_graph(   start, G, max_iterations, rewardFunc, budget=1.0, selection=UC
             # perform rollout to the end of a possible sequence.
             #sequence = rolloutFunc(current, budget, data)
             #rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
+            for i in range(rewards.shape[0]):
+                current.children[i].updateBackpropSingle(rewards[i], actors[i])
 
-
-            if multi_obj_dim > 1:
-                optimal.check_and_add(rolloutReward, sequence)
-            else:
-                if rolloutReward > bestReward:
-                    bestReward = rolloutReward
-                    bestSeq = sequence
-            #pdb.set_trace()
+                if multi_obj_dim > 1:
+                    optimal.check_and_add(rolloutReward, sequence)
+                else:
+                    if rolloutReward > bestReward:
+                        bestReward = rolloutReward
+                        bestSeq = sequence
 
             ######## BACK-PROPOGATE
-            current.backpropReward(rolloutReward, rewardActorNum)
+            current.backpropRewardMulti(rewards, actors)
         except KeyboardInterrupt:
             break
     # end main for loop
