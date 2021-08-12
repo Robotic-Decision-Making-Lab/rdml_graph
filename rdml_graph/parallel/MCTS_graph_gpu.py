@@ -110,11 +110,8 @@ def MCTS_graph(   start, G, max_iterations, rewardFunc, budget=1.0, selection=UC
             current.children = current.unpicked_children
             current.unpicked_children = []
 
-            pdb.set_trace()
 
             rewards, actors = rewardFunc(propogated_paths, budget, lengths, data)
-
-            pdb.set_trace()
 
 
             ######## ROLLOUT
@@ -125,11 +122,11 @@ def MCTS_graph(   start, G, max_iterations, rewardFunc, budget=1.0, selection=UC
                 current.children[i].updateBackpropSingle(rewards[i], actors[i])
 
                 if multi_obj_dim > 1:
-                    optimal.check_and_add(rolloutReward, sequence)
+                    optimal.check_and_add(rewards[i], propogated_paths[i])
                 else:
-                    if rolloutReward > bestReward:
-                        bestReward = rolloutReward
-                        bestSeq = sequence
+                    if rewards[i] > bestReward:
+                        bestReward = rewards[i]
+                        bestSeq = propogated_paths[i]
 
             ######## BACK-PROPOGATE
             current.backpropRewardMulti(rewards, actors)

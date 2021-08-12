@@ -42,7 +42,7 @@ def multi_reward_func(propogated_paths, budget, lengths, data):
 
     scores = eval.getScoreMulti(propogated_paths, lengths, budget)
 
-    return scores, 0
+    return scores, np.zeros(scores.shape[0], dtype=np.int)
 
 
 

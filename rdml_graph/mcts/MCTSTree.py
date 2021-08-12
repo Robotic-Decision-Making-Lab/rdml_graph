@@ -83,23 +83,23 @@ class MCTSTree(SearchState):
     # @param rewards - the list of the rewards.
     # @param actor_number - the list of actors being rewarded.
     def backpropRewardMulti(self, rewards, actor_numbers):
-        cur_rewards = np.equal(actor_numbers, self.actor_numbers)
-        cur_rewards = rewards * ((cur_rewards * 2) - 1)
+        cur_rewards = np.equal(actor_numbers, self.actor_number)
+        cur_rewards = rewards * ((cur_rewards * 2) - 1)[:, np.newaxis]
 
         sum_rewards = np.sum(cur_rewards, axis=0)
         best_rewards = np.amax(cur_rewards, axis=0)
 
         self.sum_reward += sum_rewards
-        if isinstance(reward, np.ndarray):
+        if isinstance(rewards, np.ndarray):
             pass
         else:
-            if reward > self.best_reward:
-                self.best_reward = reward
+            if best_rewards > self.best_reward:
+                self.best_reward = np.maximum(self.best_reward, best_rewards)
 
         self.num_updates += cur_rewards.shape[0]
 
         if self.parent is not None:
-            self.parent.backpropReward(rewards, actor_numbers)
+            self.parent.backpropRewardMulti(rewards, actor_numbers)
 
     ## expandNode
     # expands the current node at the given index.

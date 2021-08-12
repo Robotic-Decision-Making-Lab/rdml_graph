@@ -90,19 +90,6 @@ class CudaEvaluator(PathEvaluator):
 
 
 
-# info_field, \
-# x_ticks, \
-# y_ticks, \
-# chans, \
-# paths, \
-# lengths,\
-# reward_arr, \
-# size_to_call_for_sum, \
-# x_scale, \
-# y_scale, \
-# radius, \
-# func_to_call):
-
     ## @override
     # getScoreMulti, gets the score of path given within the budget
     # @param path - the path as 2d numpy array (n x 2)
@@ -121,11 +108,14 @@ class CudaEvaluator(PathEvaluator):
         num_threads = 1024
         sum_per_thread = math.ceil(num_rewards / num_threads)
 
-        if sum_per_thread > 8:
+        scores = np.empty((lengths.shape[0], len(self.chan)))
+
+        if sum_per_thread < 8:
             sum_per_thread = 8
             num_threads = math.ceil(num_rewards / 8)
 
-        reward_sum_log = int(np.ceil(np.log(num_rewards) / np.log(16)))
+        reward_sum_log = int(np.ceil(np.log(num_rewards) / np.log(sum_per_thread)))
+        #reward_sum_log = 30
 
         multi_path_eval_kern[threads_per_block, blocks]( \
                         self.info_field, \
@@ -135,27 +125,24 @@ class CudaEvaluator(PathEvaluator):
                         paths_cuda, \
                         lengths, \
                         self.multi_reward, \
-                        reward_sum_log, \
                         self.x_scale, \
                         self.y_scale, \
                         self.radius, \
                         RADIUS_DIST)
 
 
-        num_blocks = paths.shape[0] * self.info_field.shape[2]
+        num_blocks = lengths.shape[0] * self.info_field.shape[2]
 
+        test_reward = self.multi_reward.copy_to_host()
+        #print(test_reward[0,5:15,5:15,0])
+        sum_rewards_kern[num_threads, num_blocks]( \
+                            self.multi_reward, \
+                            scores, \
+                            reward_sum_log, \
+                            self.info_field.shape[2], \
+                            sum_per_thread)
 
-
-        #
-        # score = np.empty(len(self.chan))
-        # #reward_arr_shaped = np.empty((self.info_field.shape[0], self.info_field.shape[1], len(self.chan)))
-        # for i in range(len(self.chan)):
-        #     # reward_arr_shaped[:,:,i] = np.reshape(reward_arr[i,:], \
-        #     #         (self.info_field.shape[0], self.info_field.shape[1]),\
-        #     #         order='C') # C, F, A
-        #     score[i] = sum_reduce(self.reward_arr[0, :])
-
-        #return score
+        return scores
 
     ## @override
     # getScore, gets the score of path given within the budget
@@ -310,43 +297,50 @@ def sum_reduce(a,b):
 @cuda.jit
 def sum_rewards_kern(   reward_arr, \
                         output_reward, \
-                        chans,\
+                        size_to_call_for_sum, \
+                        num_chans,\
                         num_to_sum):
     # thread id
-    idx = cuda.threadIdx.x
+    path_pos = cuda.threadIdx.x
     # block id in 1D grid
     ty = cuda.blockIdx.x
     # Block width, i.e. number of threads per block
     bw = cuda.blockDim.x
     # The flattened reward index
-    rew_idx = ty
 
-    ############# FIX HERE
-    num_rewards = reward_arr.shape[0] * reward_arr.shape[1]
+    if ty < num_chans * output_reward.shape[0]:
 
-    if idx <
+        k = ty % num_chans
+        p_i = int(ty / num_chans)
 
-    ###### SUM the reward arrays
-    for i in range(size_to_call_for_sum):
-        cuda.syncthreads()
+        num_rewards = reward_arr.shape[1] * reward_arr.shape[2]
 
-        pos_diff = num_to_sum**(i)
-        #sum_idx = path_pos % pos_diff
 
-        if path_pos < math.ceil(num_rewards / (pos_diff*num_to_sum)):
-            sum_idx = path_pos * pos_diff
-            outer_x = int(sum_idx / info_field.shape[1])
-            outer_y = sum_idx % info_field.shape[1]
+        ###### SUM the reward arrays
+        for i in range(size_to_call_for_sum):
+            pos_diff = num_to_sum**(i)
+            #sum_idx = path_pos % pos_diff
 
-            cur_sum = 0
+            if path_pos*pos_diff < num_rewards:
+                sum_idx = path_pos * pos_diff
+                outer_x = int(sum_idx / reward_arr.shape[2])
+                outer_y = sum_idx % reward_arr.shape[2]
 
-            for j in range(1, num_to_sum):
-                sum_idx_sum = sum_idx + (j*pos_diff)
-                if sum_idx_sum < num_rewards:
-                    inner_x = int(sum_idx_sum / info_field.shape[1])
-                    inner_y = sum_idx_sum % info_field.shape[1]
-                    for k in range(len(chans)):
-                        reward_arr[p_i, outer_x, outer_y, k] += reward_arr[p_i, inner_x, inner_y, k]
+
+                if sum_idx < num_rewards:
+                    for j in range(1, num_to_sum):
+                        sum_idx_sum = sum_idx + (j*pos_diff)
+                        if sum_idx_sum < num_rewards:
+                            inner_x = int(sum_idx_sum / reward_arr.shape[2])
+                            inner_y = sum_idx_sum % reward_arr.shape[2]
+
+                            reward_arr[p_i, outer_x, outer_y, k] += reward_arr[p_i, inner_x, inner_y, k]
+
+            # sync threads for summing
+            cuda.syncthreads()
+
+        if path_pos == 0:
+            output_reward[p_i, k] = reward_arr[p_i, 0, 0, k]
 
 
 
@@ -367,7 +361,6 @@ def multi_path_eval_kern(   info_field, \
                             paths, \
                             lengths,\
                             reward_arr, \
-                            size_to_call_for_sum, \
                             x_scale, \
                             y_scale, \
                             radius, \
@@ -384,8 +377,8 @@ def multi_path_eval_kern(   info_field, \
         num_rewards = info_field.shape[0]*info_field.shape[1]
         p_i = int(pos / num_rewards)
         path_pos = pos % num_rewards
-        x_idx = int(pos / info_field.shape[1])
-        y_idx = pos % info_field.shape[1]
+        x_idx = int(path_pos / info_field.shape[1])
+        y_idx = path_pos % info_field.shape[1]
 
         x = x_ticks[x_idx] + (x_scale / 3)
         y = y_ticks[y_idx] + (y_scale / 3)
@@ -404,32 +397,11 @@ def multi_path_eval_kern(   info_field, \
             multiplier = 0
 
         for i, chan in enumerate(chans):
-            reward_arr[p_i, x_idx, y_idx, i] = multiplier# * info_field[x_idx, y_idx, chan]
+            reward_arr[p_i, x_idx, y_idx, i] = multiplier * info_field[x_idx, y_idx, chan]
             #reward_arr[p_i,i, pos] = multiplier
 
 
 
-        ###### SUM the reward arrays
-        # for i in range(size_to_call_for_sum):
-        #     cuda.syncthreads()
-        #
-        #     pos_diff = 16**(i)
-        #     #sum_idx = path_pos % pos_diff
-        #
-        #     if path_pos < math.ceil(num_rewards / (pos_diff*16)):
-        #         sum_idx = path_pos * pos_diff
-        #         outer_x = int(sum_idx / info_field.shape[1])
-        #         outer_y = sum_idx % info_field.shape[1]
-        #
-        #         cur_sum = 0
-        #
-        #         for j in range(1, 16):
-        #             sum_idx_sum = sum_idx + (j*pos_diff)
-        #             if sum_idx_sum < num_rewards:
-        #                 inner_x = int(sum_idx_sum / info_field.shape[1])
-        #                 inner_y = sum_idx_sum % info_field.shape[1]
-        #                 for k in range(len(chans)):
-        #                     reward_arr[p_i, outer_x, outer_y, k] += reward_arr[p_i, inner_x, inner_y, k]
 
 
 
