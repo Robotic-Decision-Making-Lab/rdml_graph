@@ -26,6 +26,7 @@ import rdml_graph as gr
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
+import pdb
 
 
 def reward_func(sequence, budget, data):
@@ -47,27 +48,34 @@ def multi_reward_func(propogated_paths, budget, lengths, data):
 
 
 def main():
-    dim = 3
+    dim = 1
     map = {'width': 40, 'height': 40, 'hazards': np.empty((0,2))}
 
     start = gr.GeometricNode(0, np.array([10, 10]))
 
 
 
-    G = gr.PRM(map, 100, 6.0, connection=gr.HomotopyEdgeConn, initialNodes=[start])
+    G = gr.PRM(map, 100, 15, connection=gr.HomotopyEdgeConn, initialNodes=[start])
 
 
     #### Generate info_field and eval
-    info_field = gr.random_multi_field2d((map['width'], map['height']),\
-                                            dim, num_gauss=np.array([5,7,9]))
+    #info_field = gr.random_multi_field2d((map['width'], map['height']),\
+    #                                        dim, num_gauss=np.array([9,9,9]))
+    info_field = gr.random_field2d((map['width'], map['height']), 9)
     # eval = gr.MaskedEvaluator(info_field, \
     #                 np.arange(map['width']), \
     #                 np.arange(map['height']), \
     #                 radius=4)
+    x_ticks = np.arange(map['width']) - 20
+    y_ticks = np.arange(map['height']) - 20
+    field_names = ['1']
+    r = 2
+    budget = 80
     eval = gr.CudaEvaluator(info_field, \
-                    np.arange(map['width']), \
-                    np.arange(map['height']), \
-                    radius=4)
+                    x_ticks, \
+                    y_ticks, \
+                    budget=budget, \
+                    radius=r)
 
 
     start_homotopy = gr.HNode(start, \
@@ -77,17 +85,23 @@ def main():
     # generate alternative paths
     alternatives, rewards, data = gr.MCTS_graph(start_homotopy, \
                             G = G, \
-                            max_iterations=400, \
-                            budget=50, \
+                            max_iterations=16000, \
+                            budget=budget, \
                             rewardFunc=multi_reward_func, \
-                            selection=gr.paretoUCBSelection, \
+                            #selection=gr.paretoUCBSelection, \
+                            selection=gr.UCBSelection, \
+                            solutionFunc=gr.highestReward, \
                             data=(eval,), \
-                            multi_obj_dim=dim,\
+                            #multi_obj_dim=dim,\
                             output_tree=True)
 
 
+    print(rewards)
+    #print(alternatives)
     # visualize output path
-
+    fig, ps = gr.plot_multi(info_field[:,:,np.newaxis], [alternatives], field_names, legend=True, radius=r,\
+                            x_ticks=x_ticks, y_ticks=y_ticks)
+    plt.show()
 
 
 

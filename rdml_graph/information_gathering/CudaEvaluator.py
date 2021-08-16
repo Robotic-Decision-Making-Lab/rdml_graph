@@ -71,7 +71,8 @@ class CudaEvaluator(PathEvaluator):
         if budget == float('inf'):
             self.scales = np.ones(len(self.chan))
         else:
-            self.scales = 1 / (self.expected_val*(budget+radius*2)*2*radius*2)
+            num_pixels = (budget+radius*2)*2*radius
+            self.scales = 1 / (self.expected_val*num_pixels*2)
 
         self.reward_arr = np.empty((len(self.chan), self.info_field.shape[0]*self.info_field.shape[1]))
         self.multi_reward = np.empty((max_num_paths, \
@@ -142,7 +143,7 @@ class CudaEvaluator(PathEvaluator):
                             self.info_field.shape[2], \
                             sum_per_thread)
 
-        return scores
+        return scores * self.scales[np.newaxis, :]
 
     ## @override
     # getScore, gets the score of path given within the budget
@@ -180,7 +181,7 @@ class CudaEvaluator(PathEvaluator):
             #         order='C') # C, F, A
             score[i] = sum_reduce(self.reward_arr[0, :])
 
-        return score
+        return score * self.scales
 
 
 

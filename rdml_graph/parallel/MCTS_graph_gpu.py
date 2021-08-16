@@ -74,65 +74,71 @@ def MCTS_graph(   start, G, max_iterations, rewardFunc, budget=1.0, selection=UC
     parallel_data, propogated_paths = setup_multi(G, max_depth)
 
     # Main loop of MCTS
-    for i in tqdm.tqdm(range(max_iterations)):
-        try: # Allow keyboard input to interupt MCTS
-            current = root
+    with tqdm.tqdm(total=max_iterations) as pbar:
+        num_iter = 0
+        while num_iter < max_iterations:
+        #for i in tqdm.tqdm(range(max_iterations)):
+            try: # Allow keyboard input to interupt MCTS
+                current = root
 
-            ######### SELECTION and Expansion
-            # Check all possibilties of selection.
+                ######### SELECTION and Expansion
+                # Check all possibilties of selection.
 
-            while True:
-                if not current.expanded:
-                    current.unpicked_children = current.successor(budget)
-                    current.expanded = True
-                if len(current.unpicked_children) > 0:
-                    ######## Expansion
-                    # child = current.expandNode()
-                    # child.unpicked_children = child.successor(budget)
-                    #
-                    # current = child
+                while True:
+                    if not current.expanded:
+                        current.unpicked_children = current.successor(budget)
+                        current.expanded = True
+                    if len(current.unpicked_children) > 0:
+                        ######## Expansion
+                        # child = current.expandNode()
+                        # child.unpicked_children = child.successor(budget)
+                        #
+                        # current = child
 
-                    # once a node has been successfully expanded break out of selection loop.
-                    break
-                else:
-                    ######## Selection.
-                    if len(current.children) <= 0:
-                        # reached planning horizon, perform rollout on this node.
+                        # once a node has been successfully expanded break out of selection loop.
                         break
+                    else:
+                        ######## Selection.
+                        if len(current.children) <= 0:
+                            # reached planning horizon, perform rollout on this node.
+                            break
 
-                    current = selection(current, budget, data)
-            # end selection expansion while loop.
+                        current = selection(current, budget, data)
+                # end selection expansion while loop.
 
-            #### Parallel expansion and rollout.
-            propogated_paths, lengths = \
-                start.para_propogate(parallel_data, current.unpicked_children, propogated_paths, budget)
+                #### Parallel expansion and rollout.
+                propogated_paths, lengths = \
+                    start.para_propogate(parallel_data, current.unpicked_children, propogated_paths, budget)
 
-            current.children = current.unpicked_children
-            current.unpicked_children = []
-
-
-            rewards, actors = rewardFunc(propogated_paths, budget, lengths, data)
+                current.children = current.unpicked_children
+                current.unpicked_children = []
 
 
-            ######## ROLLOUT
-            # perform rollout to the end of a possible sequence.
-            #sequence = rolloutFunc(current, budget, data)
-            #rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
-            for i in range(rewards.shape[0]):
-                current.children[i].updateBackpropSingle(rewards[i], actors[i])
+                rewards, actors = rewardFunc(propogated_paths, budget, lengths, data)
 
-                if multi_obj_dim > 1:
-                    optimal.check_and_add(rewards[i], propogated_paths[i])
-                else:
-                    if rewards[i] > bestReward:
-                        bestReward = rewards[i]
-                        bestSeq = propogated_paths[i]
 
-            ######## BACK-PROPOGATE
-            current.backpropRewardMulti(rewards, actors)
-        except KeyboardInterrupt:
-            break
-    # end main for loop
+                ######## ROLLOUT
+                # perform rollout to the end of a possible sequence.
+                #sequence = rolloutFunc(current, budget, data)
+                #rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
+                for i in range(rewards.shape[0]):
+                    current.children[i].updateBackpropSingle(rewards[i], actors[i])
+
+                    if multi_obj_dim > 1:
+                        optimal.check_and_add(rewards[i], propogated_paths[i])
+                    else:
+                        if rewards[i] > bestReward:
+                            bestReward = rewards[i]
+                            bestSeq = propogated_paths[i]
+
+                pbar.update(len(current.children))
+                num_iter += len(current.children)
+
+                ######## BACK-PROPOGATE
+                current.backpropRewardMulti(rewards, actors)
+            except KeyboardInterrupt:
+                break
+        # end main for loop
 
     ######## SOLUTION
 
