@@ -24,3 +24,6 @@ from .utilities import *
 
 from . import gis
 from .gis import *
+
+from . import shap
+from .shap import *
