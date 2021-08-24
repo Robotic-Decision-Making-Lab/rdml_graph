@@ -11,23 +11,26 @@ from rdml_graph.shap import select_SHAP_idx
 
 ## select_alts_from_shap_diff
 # @param best_path_idx - the index of the best path selected
-# @param path_features - list of path features
 # @param shap_values - list of shapely values for each path features from the best path (numpy nxm)
 # @param num_paths - the number of paths to show. (includes best path)
 # @param selection_method - string ['random_less', 'worse_shap', 'similar_except']
-def select_alts_from_shap_diff(best_path_idx, shap_values, num_paths, selection_method='random_less'):
+#
+# @return alts_to_show (list), pertinent_features (list)
+def select_alts_from_shap_diff(best_path_idx, shap_values, num_paths, selection_method='random_less', isMax=True, exclude_func=None, data=None):
     best_path_shap = shap_values[best_path_idx]
     median_shap = np.median(shap_values, axis=0)
 
     shap_diff = best_path_shap - median_shap
     # Select the most pertinent features
-    pertinent_features = select_SHAP_idx(shap_diff, num_paths-1)
+    pertinent_features = select_SHAP_idx(shap_diff, num_paths-1, isMax=isMax)
 
     # Select the best alternatives to show for each pertinent feature.
     alts_to_show = [best_path_idx]
     for pert_feat in pertinent_features:
         alt_idx = -1
         greater = shap_diff[pert_feat] < 0
+        # if not isMax:
+        #     greater = not greater
 
 
         if selection_method == 'random_less':
@@ -38,7 +41,7 @@ def select_alts_from_shap_diff(best_path_idx, shap_values, num_paths, selection_
                                         shap_values, greater, set(alts_to_show))
         elif selection_method == 'similar_except':
             alt_idx = select_similar_except(best_path_idx, pert_feat, shap_values, \
-                                greater, set(alts_to_show))
+                                greater, set(alts_to_show), exclude_func=exclude_func, data=data)
 
         alts_to_show += [alt_idx]
 
@@ -102,7 +105,7 @@ def select_worse_shap(shap_idx, shap_values, greater=False, exclude_idx={}):
 # @param greater - [opt] set to false to invert and return indicies which are greater than
 # @param exclude - [opt] set of indicies to exclude
 # @param order - the order of the norm on the second feature (typically a 2 norm)
-def select_similar_except(sel_alt_idx, shap_idx, shap_values, greater=False, exclude_idx={}, order=2):
+def select_similar_except(sel_alt_idx, shap_idx, shap_values, greater=False, exclude_idx={}, order=2, exclude_func=None, data=None):
     selected_shap = shap_values[sel_alt_idx]
     scores = np.ones((shap_values.shape[0], 2))
 
@@ -115,6 +118,9 @@ def select_similar_except(sel_alt_idx, shap_idx, shap_values, greater=False, exc
 
             if feat_diff < 0.000001:
                 scores[idx, :] = -float('inf')
+            if exclude_func is not None:
+                if exclude_func(shap_values[idx], selected_shap, data):
+                    scores[idx, :] = -float('inf')
             else:
                 # find and set scores
                 scores[idx,0] = feat_diff

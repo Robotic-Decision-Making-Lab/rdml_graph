@@ -214,11 +214,14 @@ def SHAP_recurse(tree, U, V, xlist, clist, x, c, phi):
 # @param k_to_select - the number of indicies to select and return
 #
 # @return indicies to select []
-def select_SHAP_idx(SHAP_diff, k_to_select):
+def select_SHAP_idx(SHAP_diff, k_to_select, isMax=True):
     if k_to_select < 0:
         raise ValueError('select_SHAP_idx cannot handle less indicies then selected')
 
     sort_idx = np.argsort(SHAP_diff)
+    if not isMax:
+        sort_idx = sort_idx[::-1]
+        SHAP_diff = -SHAP_diff
 
     largest = len(sort_idx)-1
     smallest = 0

@@ -16,47 +16,19 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# @package PathUtils.py
+# other_utilities.py
 # Written Ian Rankin April 2021
 #
-# A set of function for handling paths
+# A set of random utilities that didn't have another home.
 
-
-import numpy as np
-from rdml_graph.core import Node
-from rdml_graph.homotopy import HNode
-
-
-## getWaypoints
-# get waypoints from a list of HNodes.
-# @param path - a list of homotopy nodes.
+## get_indicies_from
+# This function returns the elements in the parallel lists from the indicies
+# Just a convience function that means I don't have to think about it
+# @param indicies - the list or numpy array of indicies to downselect from
+# @param *parallel_lists - the list of lists to downselect elements from
 #
-# @return 2d numpy array of waypoints, (n x 2)
-def getWaypoints(path):
-    if len(path) < 1:
-        return np.empty((0, 2))
-    elif isinstance(path[0], HNode):
-        return getWaypointsHomotopy(path)
+# @return - the tuple of down selected indicies
+def get_indicies_from(indicies, *parallel_lists):
+    down_selected = [[lis[a] for a in indicies] for lis in parallel_lists]
 
-    pts = np.empty((len(path), 2))
-    for i, n in enumerate(path):
-        pts[i] = n.pt
-
-    return pts
-
-
-## getWaypoints
-# get waypoints from a list of HNodes.
-# @param path - a list of homotopy nodes.
-#
-# @return 2d numpy array of waypoints, (n x 2)
-def getWaypointsHomotopy(path):
-    if isinstance(path, HNode):
-        path = path.get_parent_path()
-
-
-    pts = np.empty((len(path), 2))
-    for i, homotopy in enumerate(path):
-        pts[i] = homotopy.node.pt
-
-    return pts
+    return tuple(down_selected)
