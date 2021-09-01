@@ -9,6 +9,7 @@ import rdml_graph as gr
 
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 import random
 
@@ -60,9 +61,9 @@ def main():
 
     y_pred = np.array(y_pred)
     #ax.contour3D(x_0, x_1, y_pred, 50, cmap='viridis', linewidth=0.5)
-    ax.scatter(x_0, x_1, y_pred, c=y_pred, cmap='viridis', linewidth=0.5)
+    #ax.scatter(x_0, x_1, y_pred, c=y_pred, cmap='viridis', linewidth=0.5)
     ax.scatter(x_0, x_1, y_actual, c=y_actual, cmap='magma', linewidth=0.5)
-    ax.scatter([x[0][0] for x in X], [x[0][1] for x in X], [x[1] for x in X], c=[x[1] for x in X], cmap='plasma', linewidth=1.0)
+    #ax.scatter([x[0][0] for x in X], [x[0][1] for x in X], [x[1] for x in X], c=[x[1] for x in X], cmap='plasma', linewidth=1.0)
 
     plt.show()
 

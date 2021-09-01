@@ -44,10 +44,15 @@ def main():
     print('TreeSHAP_int')
     shap_int = gr.TreeSHAP_INT(x, root)
 
-    print(prediction)
+
+    print('Algorithm 1')
     print(shap)
+    print('Algorithm 3')
     print(shap_int)
-    print(sum(shap))
+    print('Actual value: ' + str(f(x)))
+    print('prediction: ' + str(prediction))
+    print('Algorithm 1 output: ' + str(sum(shap)))
+    print('Algorithm 3 output: ' + str(sum(shap_int)))
 
 
 if __name__ == '__main__':
@@ -58,5 +63,8 @@ if __name__ == '__main__':
         #y_2 = x_in[2]
 
         return y_0 + y_1# + y_2
+
+    # def f(x_in):
+    #     return x_in[0]**2 + x_in[1]
 
     main()
