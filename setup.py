@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -14,7 +14,7 @@ setup(name='rdml_graph',
       license='MIT',
       packages=['rdml_graph', 'rdml_graph.core'],
       package_dir={"": "rdml_graph"},
-      packages=setuptools.find_packages(where="rdml_graph"),
+      packages=find_packages(where="rdml_graph"),
       install_requires=['numpy>=1.3.0','matplotlib>=2.0.0', 'scipy>=1.0.0', 'tqdm>=3.0.0', 'shapely>=1.0.0', 'graphviz>=0.16.0', 'haversine>=2.3.0', 'oyaml>=1.0.0'],
       extras_require={'Saving graphs': ["pickle"]},
       python_requires='>=2.7',
