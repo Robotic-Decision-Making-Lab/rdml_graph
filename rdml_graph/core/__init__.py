@@ -1,7 +1,7 @@
 from .State import State
+from .Edge import Edge
 from .Node import Node, TreeNode, GeometricNode
 from .SearchState import SearchState
-from .Edge import Edge
 from .GraphSearch import AStar, dijkstra, BFS, graph_goal_check,  \
             h_euclidean
 

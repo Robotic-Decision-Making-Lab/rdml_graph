@@ -1,5 +1,5 @@
 from . import core
-#from .core import *
+from .core import *
 
 from . import homotopy
 from .homotopy import *

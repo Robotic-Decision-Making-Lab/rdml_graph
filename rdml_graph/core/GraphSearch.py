@@ -24,7 +24,6 @@
 from rdml_graph.core import SearchState
 from rdml_graph.core import State
 import sys
-from rdml_graph.homotopy import HomologySignatureGoal
 # For the priority queue used by the AStar algorith.
 import heapq
 # For queue
