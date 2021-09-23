@@ -24,7 +24,7 @@
 # Particular designed to be extendable to allow different information to be
 # stored.
 
-from rdml_graph.core import Node
+#from rdml_graph.core import Node
 
 ## Rather a directed edge, but called an edge for short.
 # Contains the basic implementation for an edge.
