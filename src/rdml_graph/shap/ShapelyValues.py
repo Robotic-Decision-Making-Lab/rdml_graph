@@ -208,6 +208,40 @@ def SHAP_recurse(tree, U, V, xlist, clist, x, c, phi):
 
 
 
+## Select the shapely index with interesting features.
+# Only keep the indicies that have a certian percentage over (forced to select one)
+# This function selects the indicies of features with different shap values
+# @param shap - the vector of the given shap value
+# @param shap_diff - the difference of shap values for the given alt
+# @param max_select - the max number of features to select
+# @param min_select - the minumum number of features to select
+# @param
+def select_SHAP_dynamic(shap, shap_diff, max_select, min_select=1, \
+                        perc_to_select=0.05, isMax=True):
+    sort_idx = np.argsort(shap_diff)
+    if not isMax:
+        sort_idx = sort_idx[::-1]
+        shap_diff_cur = -shap_diff
+
+    largest = len(sort_idx)-1
+    selected = []
+    avg_shap = np.mean(shap)
+    if avg_shap == 0:
+        avg_shap = 1
+
+    while len(selected) < max_select and largets >= 0:
+        # check the value is within the percentage to select, if not reject.
+        # force to keep the min to select values.
+        if len(selected) > min_select and \
+                (shap_diff_cur[sort_idx[largest]] / avg_shap) < perc_to_select:
+            break
+
+        selected.append(sort_idx[largest])
+        largest -= 1
+
+    return selected
+
+
 ## select the shapely index by keeping the largest values first. If it is out of
 # positive values it moves to the smallest negative value. 0 values are ignored.
 # @param SHAP_diff - the difference of the average/median SHAP value
