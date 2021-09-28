@@ -48,6 +48,8 @@ import pdb
 # @param multi_obj_dim - [opt]the dimension of the multi-objective reward values
 # @param output_tree - [opt (False)] sets whether to output the root of the full mcts tree
 # @param get_all_seq - [opt] sets whether to output every reward sequence
+# @param iter_up_progress - [opt] the number of iterations to update the MCTS code
+# @param progress_func - [opt] the function to call to update on the current progress.
 #
 # @return - solution, reward, opt[data]
 #           solution - list of states of best path (including start state)
@@ -55,7 +57,8 @@ import pdb
 #           data - has possible values of ['root', 'all_paths', 'all_rewards', 'all_actors', 'solutionSeq', 'solutionReward']
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
             rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, \
-            actor_number=0, multi_obj_dim=1, output_tree=False, get_all_seq=False):
+            actor_number=0, multi_obj_dim=1, output_tree=False, get_all_seq=False, \
+            iter_up_progress=5, progress_func=None):
     # Set the root of the search tree.
     root = MCTSTree(start, 0, None)
     root.unpicked_children = root.successor(budget)
@@ -77,6 +80,8 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
     for i in tqdm.tqdm(range(max_iterations)):
         try: # Allow keyboard input to interupt MCTS
             current = root
+            if i % iter_up_progress == 0 and progress_func is not None:
+                progress_func(i / max_iterations)
 
             ######### SELECTION and Expansion
             # Check all possibilties of selection.
