@@ -27,3 +27,6 @@ from .gis import *
 
 from . import shap
 from .shap import *
+
+from . import gaussian_process
+from .gaussian_process import *
