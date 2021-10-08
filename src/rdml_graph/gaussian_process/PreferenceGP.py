@@ -231,7 +231,7 @@ def derv_discrete_loglike(F, dk, xi, uk, vk, sigma):
 # @param uk - index of the u parameters of the ordered pair
 # @param vk - index of the v parameters of the ordered pair
 # @param sigma - the sigma attached to the probid for discrete
-def derv_discrete_loglike(F, dk, xi, uk, vk, sigma):
+def derv_param_discrete_loglike(F, dk, xi, uk, vk, sigma):
     zk = relative_probit(F, dk, uk, vk, sigma)
 
     # calculate the derivative
@@ -422,8 +422,8 @@ def calc_grad_loglike_discrete_param(pairs, F, sigma_L):
     grad = np.zeros((len(F),))
 
     for dk, uk, vk in pairs:
-        grad[uk] += derv_discrete_loglike(F, dk, xi=uk, uk=uk, vk=vk, sigma=sigma_L)
-        grad[vk] += derv_discrete_loglike(F, dk, xi=vk, uk=uk, vk=vk, sigma=sigma_L)
+        grad[uk] += derv_param_discrete_loglike(F, dk, xi=uk, uk=uk, vk=vk, sigma=sigma_L)
+        grad[vk] += derv_param_discrete_loglike(F, dk, xi=vk, uk=uk, vk=vk, sigma=sigma_L)
 
     return grad
 
