@@ -88,7 +88,7 @@ class GP:
         else:
             self.X_train = np.append(self.X_train, X, axis=0)
             self.y_train = np.append(self.y_train, y, axis=0)
-            self.training_sigma = np.append(self.training_sigma, y, axis=0)
+            self.training_sigma = np.append(self.training_sigma, training_sigma, axis=0)
 
     ## clear_training
     # clears all training data from the GP
