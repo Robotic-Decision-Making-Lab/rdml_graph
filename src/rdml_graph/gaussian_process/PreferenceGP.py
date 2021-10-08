@@ -28,6 +28,9 @@ import collections
 from rdml_graph.gaussian_process import GP, covMatrix
 import scipy.optimize as op
 import scipy.stats as st
+
+import pdb
+
 SQ2_Pref_GP = np.sqrt(2)
 
 
@@ -109,10 +112,16 @@ class PreferenceGP(GP):
 
 
 
-    def optimize_parameters(self):
-        # TODO setup full vector
+    def calc_ll(self, args=None):
+        return -logliklihoodYXTh(self.y_train,
+                                self.F,
+                                self.W,
+                                self.K,
+                                self.sigma_L,
+                                self.invert_function)
 
-        dsigmaL = calc_evidence_derivative_likelihood(
+    def calc_grad_ll(self, args=None):
+        dSigmaL = calc_evidence_derivative_likelihood(
                                 self.y_train,
                                 self.F,
                                 self.W,
@@ -120,8 +129,21 @@ class PreferenceGP(GP):
                                 self.sigma_L,
                                 self.invert_function)
 
-        theta = [self.sigma_L]
-        dllTheta = [dsigmaL]
+        return np.array(dSigmaL)
+
+    def optimize_parameters(self):
+        # TODO setup full vector
+
+        print(self.calc_ll(None))
+        print(self.calc_grad_ll())
+
+        x0 = np.array(self.sigma_L)
+
+        theta = op.minimize(fun=self.calc_ll, x0=x0, jac=self.calc_grad_ll, method='Nelder-Mead')
+
+        print(theta)
+        print(theta.x)
+        #print(dllTheta)
 
 
 
@@ -145,7 +167,7 @@ class PreferenceGP(GP):
                                         self.sigma_L, # sigma on the liklihood function
                                         self.lambda_gp, # lambda on the newton update
                                         self.invert_function)
-            #self.optimize_parameters()
+            self.optimize_parameters()
 
 
         self.optimized = True
@@ -392,7 +414,27 @@ def calc_evidence_derivative_likelihood(pairs, F, W, K, sigma_L, invert_function
     tmp1 = invert_function(np.identity(len(K)) + np.matmul(K, W))
     term2 = -0.5 * np.trace(np.matmul(tmp1, np.matmul(K, partialW_sigma) ) )
 
-    return term1 + term2
+    return (term1 + term2) / len(pairs)
+
+
+## logliklihoodYXTh
+# calculates the log-likilihood confidtion on X and theta
+# p(Y|X,Theta)
+# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
+# @param F - the vector of f (estimated training sample outputs)
+# @param W - The W matrix
+# @param K - the covariance matrix
+def logliklihoodYXTh(pairs, F, W, K, sigmaL, invert_function=np.linalg.inv):
+    logpYF = 0
+    for dk, uk, vk in pairs:
+        logpYF += np.log(st.norm.cdf(relative_probit(F, dk, uk, vk, sigmaL)))
+
+    Kinv = invert_function(K)
+    term2 = 0.5 * np.matmul(np.matmul(np.transpose(F), Kinv), F)
+
+    term3 = 0.5 * np.log(np.linalg.det(np.identity(len(K)) + np.matmul(K, W)))
+
+    return logpYF - term2 - term3
 
 ## calc_grad_loglike_discrete
 # Calculate the gradient of the log-likelyhood
@@ -419,11 +461,11 @@ def calc_grad_loglike_discrete(pairs, F, sigma_L):
 #
 # @return grad log p(Y|F,thetaL) (n,) n is the length of F
 def calc_grad_loglike_discrete_param(pairs, F, sigma_L):
-    grad = np.zeros((len(F),))
+    grad = 0
 
     for dk, uk, vk in pairs:
-        grad[uk] += derv_param_discrete_loglike(F, dk, xi=uk, uk=uk, vk=vk, sigma=sigma_L)
-        grad[vk] += derv_param_discrete_loglike(F, dk, xi=vk, uk=uk, vk=vk, sigma=sigma_L)
+        grad += derv_param_discrete_loglike(F, dk, xi=uk, uk=uk, vk=vk, sigma=sigma_L)
+        grad += derv_param_discrete_loglike(F, dk, xi=vk, uk=uk, vk=vk, sigma=sigma_L)
 
     return grad
 
