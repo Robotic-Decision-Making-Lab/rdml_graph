@@ -54,6 +54,9 @@ def generate_fake_pairs(X, real_f, pair_i, data=None):
     pairs = [(get_dk(Y[pair_i], y),pair_i, i) for i, y in enumerate(Y)]
     return pairs
 
+
+
+
 ## PreferenceGP
 # A Gaussian Process implementation that handles ordered pairs of preferences
 # for the training data rather than direct absolute samples.
@@ -76,6 +79,8 @@ class PreferenceGP(GP):
         self.lambda_gp = 0.3
         # sigma on the likelihood function.
         self.sigma_L = 0.3
+        #self.sigma_L = 0.005
+
 
 
     ## add_training
@@ -112,47 +117,67 @@ class PreferenceGP(GP):
 
 
 
-    def calc_ll(self, args=None):
+    def calc_ll(self, x, *args):
+        sigma_L = x[0]
+
         return -logliklihoodYXTh(self.y_train,
                                 self.F,
                                 self.W,
                                 self.K,
-                                self.sigma_L,
+                                sigma_L,
                                 self.invert_function)
 
-    def calc_grad_ll(self, args=None):
+    def calc_grad_ll(self, x, args=None):
+        sigma_L = x[0]
+
         dSigmaL = calc_evidence_derivative_likelihood(
                                 self.y_train,
                                 self.F,
                                 self.W,
                                 self.K,
-                                self.sigma_L,
+                                sigma_L,
                                 self.invert_function)
 
-        return np.array(dSigmaL)
+        return -np.array(dSigmaL)
 
     def optimize_parameters(self):
         # TODO setup full vector
 
-        print(self.calc_ll(None))
-        print(self.calc_grad_ll())
+        #print(self.calc_ll(None))
+        #print(self.calc_grad_ll())
 
-        x0 = np.array(self.sigma_L)
+        x0 = np.array([self.sigma_L], dtype=np.float)
+        x = x0
 
-        theta = op.minimize(fun=self.calc_ll, x0=x0, jac=self.calc_grad_ll, method='Nelder-Mead')
-
-        print(theta)
-        print(theta.x)
-        #print(dllTheta)
-
-
+        for i in range(1):
+            print('STEP: '+str(i))
+            grad = self.calc_grad_ll(x)
+            value = self.calc_ll(x)
 
 
-    ## optimize
-    # Runs the optimization step required by the user preference GP.
-    def optimize(self):
+            print(grad)
+            print(value)
+            print(x)
+
+            x -= grad*0.2
+            # if x[0] <= 0.01:
+            #     x[0] = 0.01
+
+        #theta = op.minimize(fun=self.calc_ll, x0=x0, jac=self.calc_grad_ll, method='BFGS', options={'maxiter': 1})
+        #x = theta.x
+        #print(theta)
+
+        self.sigma_L = x[0]
+        print('SIGMA_L GRR;')
+        print(self.sigma_L)
+
+        #pdb.set_trace()
+
+
+
+    def findMode(self):
         # initial F estimate
-        self.F = np.random.random(len(self.X_train))
+        #self.F = np.random.random(len(self.X_train))
         X_train = self.X_train
         pairs = self.y_train
 
@@ -167,6 +192,19 @@ class PreferenceGP(GP):
                                         self.sigma_L, # sigma on the liklihood function
                                         self.lambda_gp, # lambda on the newton update
                                         self.invert_function)
+            # normalize F
+            self.F = self.F / np.linalg.norm(self.F, ord=np.inf)
+
+
+            #self.optimize_parameters()
+    ## optimize
+    # Runs the optimization step required by the user preference GP.
+    def optimize(self):
+
+        self.F = np.random.random(len(self.X_train))
+
+        for i in range(5):
+            self.findMode()
             self.optimize_parameters()
 
 
@@ -310,8 +348,67 @@ def derv2_discrete_loglike(F, dk, xi, xj, uk, vk, sigma):
     pdf_zk = st.norm.pdf(zk)
     cdf_zk = st.norm.cdf(zk)
 
-    paren = (zk * pdf_zk / cdf_zk) + ((pdf_zk*pdf_zk) / (cdf_zk*cdf_zk))
-    return -(dk*dk)*I1*I2*(1/(2*sigma*sigma)) * paren
+    # as zk -> -infinity then pdf_zk / cdf_zk goes to infinity
+    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D%2Cx-%3E-%E2%88%9E%5D
+    # As zk -> infinity then pdf_zk / cdf_zk goes to 0
+    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D%2Cx-%3E%E2%88%9E%5D
+    # this code checks for those states and inputs the appropriate values
+    #
+
+    if cdf_zk == 0:
+        if zk < 0:
+            pdf_cdf_zk = pdf_cdf_2 = float('inf')
+        else:
+            pdf_cdf_zk = pdf_cdf_2 = 0
+    else:
+        pdf_cdf_zk = pdf_zk / cdf_zk
+        pdf_cdf_2 = pdf_cdf_zk * pdf_cdf_zk
+
+    # when zk -> -infinity there is a -infinity + infinity limit for paren
+    # using wolfram this comes out as -infinity
+    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5Bx*Divide%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2Cerfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%5D%2Cx-%3E-%E2%88%9E%5D%2BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D
+    # This is handled in this code
+    # EDIT: Hmm, 0 seems to make it more stable... Not sure why, but it seems to
+    # be working.
+    if cdf_zk == 0 and zk < 0:
+        #paren = -float('inf')
+        paren = 0
+        #print('very large negative zk')
+        #pdb.set_trace()
+    else:
+        paren = (zk * pdf_cdf_zk) + (pdf_cdf_2)
+
+    w_ij = -(dk*dk)*I1*I2*(1/(2*sigma*sigma)) * paren
+
+    if np.isnan(w_ij):
+        pdb.set_trace()
+
+    return w_ij
+
+
+## calc_W_discrete
+# calculate the W matrix for the discrete relative pairs contribution
+# This is following the formulation given in Appendix B.1.1.6
+# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
+# @param F - the vector of f (estimated training sample outputs)
+# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
+#
+# @return W (n,n) n is the length of F
+def calc_W_discrete(pairs, F, sigma_L):
+    W = np.zeros((len(F), len(F)))
+
+    for dk, uk, vk in pairs:
+        W[uk, uk] -= derv2_discrete_loglike(F, dk, xi=uk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
+        W[uk, vk] -= derv2_discrete_loglike(F, dk, xi=uk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
+        W[vk, uk] -= derv2_discrete_loglike(F, dk, xi=vk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
+        W[vk, vk] -= derv2_discrete_loglike(F, dk, xi=vk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
+
+    #print('W before forcing nan to 0')
+    #print(W)
+    #W = np.nan_to_num(W, nan=0.0)
+
+    return W
+
 
 ## derv_W_discrete_sigma
 # Calculates the derivative of the of the second derivative of the discrete
@@ -356,24 +453,7 @@ def derv_W_discrete_sigma(F, dk, xi, xj, uk, vk, sigma):
 
 
 
-## calc_W_discrete
-# calculate the W matrix for the discrete relative pairs contribution
-# This is following the formulation given in Appendix B.1.1.6
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
-#
-# @return W (n,n) n is the length of F
-def calc_W_discrete(pairs, F, sigma_L):
-    W = np.zeros((len(F), len(F)))
 
-    for dk, uk, vk in pairs:
-        W[uk, uk] -= derv2_discrete_loglike(F, dk, xi=uk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
-        W[uk, vk] -= derv2_discrete_loglike(F, dk, xi=uk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
-        W[vk, uk] -= derv2_discrete_loglike(F, dk, xi=vk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
-        W[vk, vk] -= derv2_discrete_loglike(F, dk, xi=vk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
-
-    return W
 
 ## calc_W_discrete_derv_param
 # Calculates the derivative of the of the second derivative of the discrete
@@ -484,7 +564,12 @@ def calc_grad_loglike_discrete_param(pairs, F, sigma_L):
 def damped_newton_update(pairs_discrete, F, K, sigma_L, lamda, \
                             invert_function=np.linalg.inv):
     W = calc_W_discrete(pairs_discrete, F, sigma_L = sigma_L)
+    print('W:')
+    print(W)
     grad_ll = calc_grad_loglike_discrete(pairs_discrete, F, sigma_L=1)
+
+    print('grad_ll')
+    print(grad_ll)
 
     term1 = invert_function(K) + W - lamda*np.identity(len(W))
     term1_inv = invert_function(term1)

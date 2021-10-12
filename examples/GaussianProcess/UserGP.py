@@ -39,7 +39,7 @@ if __name__ == '__main__':
             gr.generate_fake_pairs(X_train, f_sin, 4)
 
 
-    #gp = gr.PreferenceGP(gr.RBF_kern, {'rbf_sigma': 1, 'rbf_l': 1})
+    gp = gr.PreferenceGP(gr.RBF_kern, {'rbf_sigma': 1, 'rbf_l': 0.5})
     #gp = gr.PreferenceGP(gr.periodic_kern, {'periodic_sigma': 1, 'periodic_l': 1, 'periodic_p': 20})
     #gp = gr.PreferenceGP(gr.linear_kern, {'linear_sigma': 5, 'linear_sigma_b': 5, 'linear_offset': 0.2})
     # gp = gr.PreferenceGP(
@@ -47,10 +47,12 @@ if __name__ == '__main__':
     #             {'rbf_sigma': 1, 'rbf_l': 1,
     #             'periodic_sigma': 1, 'periodic_l': 1, 'periodic_p': 10,
     #             'linear_sigma': 3, 'linear_sigma_b': 1, 'linear_offset': 0.3})
-    gp = gr.PreferenceGP(
-                lambda u,v, d : gr.RBF_kern(u,v,d) + gr.linear_kern(u,v,d),
-                {'rbf_sigma': 1, 'rbf_l': 1,
-                'linear_sigma': 3, 'linear_sigma_b': 1, 'linear_offset': 0.3})
+    # gp = gr.PreferenceGP(
+    #             lambda u,v, d : gr.RBF_kern(u,v,d) + gr.linear_kern(u,v,d),
+    #             {'rbf_sigma': 1, 'rbf_l': 1,
+    #             'linear_sigma': 3, 'linear_sigma_b': 1, 'linear_offset': 0.3})
+
+    gp.sigma_L = 1.0
 
     gp.add(X_train, pairs)
 
