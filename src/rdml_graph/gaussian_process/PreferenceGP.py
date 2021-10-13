@@ -69,11 +69,10 @@ def generate_fake_pairs(X, real_f, pair_i, data=None):
 class PreferenceGP(GP):
     ## constructor
     # @param cov_func - the covariance function to use
-    # @param cov_data - any data the covariance function needs.
     # @param mat_inv - [opt] the matrix inversion function to use. By default
     #                   just uses numpy.linalg.inv
-    def __init__(self, cov_func, cov_data, mat_inv=np.linalg.inv):
-        super(PreferenceGP, self).__init__(cov_func, cov_data, mat_inv)
+    def __init__(self, cov_func, mat_inv=np.linalg.inv):
+        super(PreferenceGP, self).__init__(cov_func, mat_inv)
 
         self.optimized = False
         self.lambda_gp = 0.3
@@ -181,7 +180,7 @@ class PreferenceGP(GP):
         X_train = self.X_train
         pairs = self.y_train
 
-        self.K = covMatrix(X_train, X_train, self.cov_func, self.cov_data)
+        self.K = covMatrix(X_train, X_train, self.cov_func)
 
         # TODO good way to check for convergence
         for i in range(20):
@@ -238,8 +237,8 @@ class PreferenceGP(GP):
         K = self.K
         W = self.W
 
-        covXX_test = covMatrix(X_test, X_train, self.cov_func, self.cov_data)
-        covTestTest = covMatrix(X_test, X_test, self.cov_func, self.cov_data)
+        covXX_test = covMatrix(X_test, X_train, self.cov_func)
+        covTestTest = covMatrix(X_test, X_test, self.cov_func)
 
         covX_testX = np.transpose(covXX_test)
 

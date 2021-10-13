@@ -35,12 +35,12 @@ import collections
 # @param cov_date - any data to pass to the covariance function
 #
 # @return the covariance matrix of the samples.
-def covMatrix(X, Y, cov_func, cov_data):
+def covMatrix(X, Y, cov_func):
     cov = np.empty((len(X), len(Y)))
 
     for i,x1 in enumerate(X):
         for j,x2 in enumerate(Y):
-            cov_ij = cov_func(x1, x2, cov_data)
+            cov_ij = cov_func(x1, x2)
             cov[i,j] = cov_ij
     return cov
 
@@ -57,12 +57,10 @@ def covMatrix(X, Y, cov_func, cov_data):
 class GP:
     ## Constructor
     # @param cov_func - the covariance function to use
-    # @param cov_data - [opt] any data the covariance function needs.
     # @param mat_inv - [opt] the matrix inversion function to use. By default
     #                   just uses numpy.linalg.inv
-    def __init__(self, cov_func, cov_data=None, mat_inv=np.linalg.inv):
+    def __init__(self, cov_func, mat_inv=np.linalg.inv):
         self.cov_func = cov_func
-        self.cov_data = cov_data
 
         self.invert_function = mat_inv
         self.X_train = None
@@ -103,14 +101,14 @@ class GP:
     def predict(self, X):
         #### This function treats Y as the training data
         Y = self.X_train
-        covXX = covMatrix(X, X, self.cov_func, self.cov_data)
-        covXY = covMatrix(X, Y, self.cov_func, self.cov_data)
+        covXX = covMatrix(X, X, self.cov_func)
+        covXY = covMatrix(X, Y, self.cov_func)
         covYX = np.transpose(covXY)
 
         error = np.zeros((len(Y), len(Y)))
         np.fill_diagonal(error, self.training_sigma)
 
-        covYY = covMatrix(Y, Y, self.cov_func, self.cov_data) + error
+        covYY = covMatrix(Y, Y, self.cov_func) + error
 
         covYYinv = self.invert_function(covYY)
 

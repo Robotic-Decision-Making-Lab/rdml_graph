@@ -39,10 +39,7 @@ if __name__ == '__main__':
     #gp = gr.GP(gr.RBF_kern, {'rbf_sigma': 1, 'rbf_l': 1})
     #gp = gr.GP(gr.periodic_kern, {'periodic_sigma': 1, 'periodic_l': 1, 'periodic_p': 20})
     #gp = gr.GP(gr.linear_kern, {'linear_sigma': 5, 'linear_sigma_b': 5, 'linear_offset': 0.2})
-    gp = gr.GP(lambda u,v, d : gr.RBF_kern(u,v,d) + gr.periodic_kern(u,v,d) + gr.linear_kern(u,v,d),
-                {'rbf_sigma': 1, 'rbf_l': 1,
-                'periodic_sigma': 1, 'periodic_l': 1, 'periodic_p': 10,
-                'linear_sigma': 3, 'linear_sigma_b': 1, 'linear_offset': 0.3})
+    gp = gr.GP(gr.RBF_kern(1,1)+gr.periodic_kern(1,1,10)+gr.linear_kern(3,1,0.3))
     gp.add(X_train, y_train, training_sigma=training_sigma)
 
     mu, sigma = gp.predict(X)
