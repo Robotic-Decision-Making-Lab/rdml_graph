@@ -42,6 +42,12 @@ def RBF_kern(u, v, cov_data):
 
     return sigma**2 * np.exp(-top / (2 * l * l))
 
+# class RBF_kern:
+#     def __init__(self, sigma, u, v)
+#
+#     def __call__(self, u, v, cov_data=None):
+#         if self.sigma is None:
+#             if cov_data is None
 
 ## periodic_kern
 # A periodic kernel for gaussian processes
@@ -70,7 +76,7 @@ def periodic_kern(u, v, cov_data):
 # @param cov_data - the input covariance data {'rbf_sigma', 'rbf_l'}
 #               linear_sigma, the sigma for the linear kernel
 #               linear_sigma_b, the additive sigma for the linear kernel
-#               linear_offset, the offcet value of the periodic kernel
+#               linear_offset, the offset value of the periodic kernel
 #
 # @return - a scalar value for the covariance between the two samples.
 def linear_kern(u, v, cov_data):

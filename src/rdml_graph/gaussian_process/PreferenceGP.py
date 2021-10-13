@@ -149,23 +149,23 @@ class PreferenceGP(GP):
         x0 = np.array([self.sigma_L], dtype=np.float)
         x = x0
 
-        for i in range(1):
-            print('STEP: '+str(i))
-            grad = self.calc_grad_ll(x)
-            value = self.calc_ll(x)
+        # for i in range(10):
+        #     print('STEP: '+str(i))
+        #     grad = self.calc_grad_ll(x)
+        #     value = self.calc_ll(x)
+        #
+        #
+        #     print(grad)
+        #     print(value)
+        #     print(x)
+        #
+        #     x -= grad*0.5
+        #     # if x[0] <= 0.01:
+        #     #     x[0] = 0.01
 
-
-            print(grad)
-            print(value)
-            print(x)
-
-            x -= grad*0.2
-            # if x[0] <= 0.01:
-            #     x[0] = 0.01
-
-        #theta = op.minimize(fun=self.calc_ll, x0=x0, jac=self.calc_grad_ll, method='BFGS', options={'maxiter': 1})
-        #x = theta.x
-        #print(theta)
+        theta = op.minimize(fun=self.calc_ll, x0=x0, jac=self.calc_grad_ll, method='Newton-CG', options={'maxiter': 5, 'disp': True})
+        x = theta.x
+        print(theta)
 
         self.sigma_L = x[0]
         print('SIGMA_L GRR;')
@@ -204,7 +204,14 @@ class PreferenceGP(GP):
         self.F = np.random.random(len(self.X_train))
 
         for i in range(5):
+            # if i != 0:
+            #     print('Optimize with find mode before and after:')
+            #     t1 = self.calc_ll([self.sigma_L])
             self.findMode()
+            # if i != 0:
+            #     t2 = self.calc_ll([self.sigma_L])
+            #     print(t1)
+            #     print(t2)
             self.optimize_parameters()
 
 
@@ -280,25 +287,7 @@ def derv_discrete_loglike(F, dk, xi, uk, vk, sigma):
     return I * dk * (1 / st.norm.pdf(zk)) * (1 / (SQ2_Pref_GP * sigma)) * st.norm.cdf(zk)
 
 
-## derv_param_discrete_loglike
-# Calculate the derivative of the discrete log liklihood with respect to the parameters
-# d / d(sigma) log p(d | f(u), f(v))
-#
-# xi, yk, vk, are indicies of the likelihood
-# @param F - the vector of F (estimated training sample outputs)
-# @param dk - the label for the given sample of uk, vk
-# @param xi - the index of f
-# @param uk - index of the u parameters of the ordered pair
-# @param vk - index of the v parameters of the ordered pair
-# @param sigma - the sigma attached to the probid for discrete
-def derv_param_discrete_loglike(F, dk, xi, uk, vk, sigma):
-    zk = relative_probit(F, dk, uk, vk, sigma)
 
-    # calculate the derivative
-    pdf_zk = st.norm.pdf(zk)
-    cdf_zk = st.norm.cdf(zk)
-
-    return -dk * pdf_zk / cdf_zk
 
 ## relative_probit
 # calculates the probit for the relative likelyhood function
@@ -311,12 +300,30 @@ def derv_param_discrete_loglike(F, dk, xi, uk, vk, sigma):
 def relative_probit(F, d, u, v, sigma):
     return (d * (F[u] - F[v])) / (SQ2_Pref_GP * sigma)
 
+def calc_pdf_o_cdf(pdf_zk, cdf_zk):
+    # as zk -> -infinity then pdf_zk / cdf_zk goes to infinity
+    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D%2Cx-%3E-%E2%88%9E%5D
+    # As zk -> infinity then pdf_zk / cdf_zk goes to 0
+    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D%2Cx-%3E%E2%88%9E%5D
+    # this code checks for those states and inputs the appropriate values
+    #
+
+    if cdf_zk == 0:
+        if zk < 0:
+            pdf_cdf_zk = pdf_cdf_2 = float('inf')
+        else:
+            pdf_cdf_zk = pdf_cdf_2 = 0
+    else:
+        pdf_cdf_zk = pdf_zk / cdf_zk
+        pdf_cdf_2 = pdf_cdf_zk * pdf_cdf_zk
+
+    return pdf_cdf_zk, pdf_cdf_2
 
 ## derv2_discrete_loglike
 # Calculates the second derivative of discrete log likelihood.
 #  d / (dF(xi)dF(xj)) ln(p(dk|F(u), F(v)))
 #
-# Appendix A.1.1.1
+# Appendix A.1.1.2
 # Assumes (f(vk), f(uk))
 # xi, yk, vk, are indicies of the likelihood
 # @param F - the vector of f (estimated training sample outputs)
@@ -348,21 +355,7 @@ def derv2_discrete_loglike(F, dk, xi, xj, uk, vk, sigma):
     pdf_zk = st.norm.pdf(zk)
     cdf_zk = st.norm.cdf(zk)
 
-    # as zk -> -infinity then pdf_zk / cdf_zk goes to infinity
-    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D%2Cx-%3E-%E2%88%9E%5D
-    # As zk -> infinity then pdf_zk / cdf_zk goes to 0
-    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D%2Cx-%3E%E2%88%9E%5D
-    # this code checks for those states and inputs the appropriate values
-    #
-
-    if cdf_zk == 0:
-        if zk < 0:
-            pdf_cdf_zk = pdf_cdf_2 = float('inf')
-        else:
-            pdf_cdf_zk = pdf_cdf_2 = 0
-    else:
-        pdf_cdf_zk = pdf_zk / cdf_zk
-        pdf_cdf_2 = pdf_cdf_zk * pdf_cdf_zk
+    pdf_cdf_zk, pdf_cdf_2 = calc_pdf_o_cdf(pdf_zk, cdf_zk)
 
     # when zk -> -infinity there is a -infinity + infinity limit for paren
     # using wolfram this comes out as -infinity
@@ -373,8 +366,6 @@ def derv2_discrete_loglike(F, dk, xi, xj, uk, vk, sigma):
     if cdf_zk == 0 and zk < 0:
         #paren = -float('inf')
         paren = 0
-        #print('very large negative zk')
-        #pdb.set_trace()
     else:
         paren = (zk * pdf_cdf_zk) + (pdf_cdf_2)
 
@@ -384,6 +375,66 @@ def derv2_discrete_loglike(F, dk, xi, xj, uk, vk, sigma):
         pdb.set_trace()
 
     return w_ij
+
+## derv2_discrete_loglike
+# Calculates the third derivative of discrete log likelihood.
+#  d / (dF(xi)dF(xj)F(xi)) ln(p(dk|F(u), F(v)))
+#
+# Appendix A.1.1.1
+# Assumes (f(vk), f(uk))
+# xi, yk, vk, are indicies of the likelihood
+# @param F - the vector of f (estimated training sample outputs)
+# @param dk - the label for the given sample of uk, vk
+# @param xi - the index of f
+# @param xj - the second index of f
+# @param uk - index of the u parameters of the ordered pair
+# @param vk - index of the v parameters of the ordered pair
+# @param sigma - the sigma attached to the probid for discrete
+def derv3_discrete_loglike(F, dk, xi, xj, xk, uk, vk, sigma):
+    # setup the indicator variables.
+    if xi == uk:
+        I1 = 1
+    elif xi == vk:
+        I1 = -1
+    else:
+        return 0
+
+    if xj == uk:
+        I2 = 1
+    elif xj == vk:
+        I2 = -1
+    else:
+        return 0
+
+    if xk == uk:
+        I3 = 1
+    elif xk == vk:
+        I3 = -1
+    else:
+        return 0
+
+    pdf_zk = st.norm.pdf(zk)
+    cdf_zk = st.norm.cdf(zk)
+
+    pdf_cdf_zk, pdf_cdf_2 = calc_pdf_o_cdf(pdf_zk, cdf_zk)
+
+
+    # when zk -> -infinity there is a -infinity + infinity limit for paren
+    # using wolfram this comes out as -infinity
+    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5Bx*Divide%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2Cerfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%5D%2Cx-%3E-%E2%88%9E%5D%2BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D
+    # This is handled in this code
+    # EDIT: Hmm, 0 seems to make it more stable... Not sure why, but it seems to
+    # be working.
+    if cdf_zk == 0 and zk < 0:
+        #paren = -float('inf')
+        paren = 0
+    else:
+        paren = pdf_cdf_zk - (dk*dk*pdf_cdf_zk) - (3*dk*pdf_cdf_2) - (2 * pdf_cdf_2 * pdf_zk)
+
+    return -(dk*dk*dk / (2*SQ2_Pref_GP*sigma*sigma*sigma))*I1*I2*I3*paren
+
+
+
 
 
 ## calc_W_discrete
@@ -403,102 +454,24 @@ def calc_W_discrete(pairs, F, sigma_L):
         W[vk, uk] -= derv2_discrete_loglike(F, dk, xi=vk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
         W[vk, vk] -= derv2_discrete_loglike(F, dk, xi=vk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
 
-    #print('W before forcing nan to 0')
-    #print(W)
-    #W = np.nan_to_num(W, nan=0.0)
-
     return W
 
 
-## derv_W_discrete_sigma
-# Calculates the derivative of the of the second derivative of the discrete
-# log likelihood with respect to the sigma parameter
-# dW / d(sigma) for the discrete W
-# @param F - the vector of f (estimated training sample outputs)
-# @param dk - the label for the given sample of uk, vk
-# @param xi - the index of f
-# @param xj - the second index of f
-# @param uk - index of the u parameters of the ordered pair
-# @param vk - index of the v parameters of the ordered pair
-# @param sigma - the sigma attached to the probid for discrete
-def derv_W_discrete_sigma(F, dk, xi, xj, uk, vk, sigma):
-    # setup the indicator variables.
-    if xi == uk:
-        I1 = 1
-    elif xi == vk:
-        I1 = -1
-    else:
-        return 0
-
-    if xj == uk:
-        I2 = 1
-    elif xj == vk:
-        I2 = -1
-    else:
-        return 0
-
-    zk = relative_probit(F, dk, uk, vk, sigma)
-
-    pdf_zk = st.norm.pdf(zk)
-    cdf_zk = st.norm.cdf(zk)
-
-
-    first_term = (dk*dk/(sigma**3))*((dk*pdf_zk / cdf_zk) + ((pdf_zk**2) / (cdf_zk**2)))
-    tmp = (-(cdf_zk**2) + (dk**2)*(cdf_zk**2) + 3*dk*pdf_zk*cdf_zk + 2*(pdf_zk**2))
-    tmp = tmp / (cdf_zk**3)
-    second_term = (1 / (2*sigma*sigma*sigma)) * dk*dk*zk*pdf_zk * tmp
-
-    return -I1*I2*(first_term - second_term)
 
 
 
 
 
 
-## calc_W_discrete_derv_param
-# Calculates the derivative of the of the second derivative of the discrete
-# log likelihood with respect to the sigma parameter
-# dW / d(sigma) for the discrete W
-# This is following the formulation given in Appendix B.2.3
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
-#
-# @return W (n,n) n is the length of F
-def calc_W_discrete_derv_param(pairs, F, sigma_L):
-    dW = np.zeros((len(F), len(F)))
-
-    for dk, uk, vk in pairs:
-        dW[uk, uk] += derv_W_discrete_sigma(F, dk, xi=uk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
-        dW[uk, vk] += derv_W_discrete_sigma(F, dk, xi=uk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
-        dW[vk, uk] += derv_W_discrete_sigma(F, dk, xi=vk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
-        dW[vk, vk] += derv_W_discrete_sigma(F, dk, xi=vk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
-
-    return dW
 
 
-## calc_evidence_derivative_likelihood
-# calculates the derivative of the evidence derivatives
-# d p(theta | Y, X) / dTheta
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param K - the covariance matrix
-# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
-# @param invert_function - [opt] the matrix invertion function to use.
-#
-# @return the derivative of the log liklihood with respect to the liklihood parameter
-def calc_evidence_derivative_likelihood(pairs, F, W, K, sigma_L, invert_function=np.linalg.inv):
-    term1 = calc_grad_loglike_discrete_param(pairs, F, sigma_L)
-    partialW_sigma = calc_W_discrete_derv_param(pairs, F, sigma_L)
 
-    tmp1 = invert_function(np.identity(len(K)) + np.matmul(K, W))
-    term2 = -0.5 * np.trace(np.matmul(tmp1, np.matmul(K, partialW_sigma) ) )
 
-    return (term1 + term2) / len(pairs)
+
 
 
 ## logliklihoodYXTh
-# calculates the log-likilihood confidtion on X and theta
+# calculates the log-likilihood conditioned on X and theta
 # p(Y|X,Theta)
 # @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
 # @param F - the vector of f (estimated training sample outputs)
@@ -534,6 +507,100 @@ def calc_grad_loglike_discrete(pairs, F, sigma_L):
 
     return grad
 
+
+########################################## calculate gradient of parameters
+
+
+#### Discrete relative
+
+## derv_W_discrete_sigma
+# Calculates the derivative of the of the second derivative of the discrete
+# log likelihood with respect to the sigma parameter
+# dW / d(sigma) for the discrete W
+# @param F - the vector of f (estimated training sample outputs)
+# @param dk - the label for the given sample of uk, vk
+# @param xi - the index of f
+# @param xj - the second index of f
+# @param uk - index of the u parameters of the ordered pair
+# @param vk - index of the v parameters of the ordered pair
+# @param sigma - the sigma attached to the probid for discrete
+def derv_W_discrete_sigma(F, dk, xi, xj, uk, vk, sigma):
+    # setup the indicator variables.
+    if xi == uk:
+        I1 = 1
+    elif xi == vk:
+        I1 = -1
+    else:
+        return 0
+
+    if xj == uk:
+        I2 = 1
+    elif xj == vk:
+        I2 = -1
+    else:
+        return 0
+
+    zk = relative_probit(F, dk, uk, vk, sigma)
+
+    pdf_zk = st.norm.pdf(zk)
+    cdf_zk = st.norm.cdf(zk)
+
+
+    pdf_cdf_zk, pdf_cdf_2 = calc_pdf_o_cdf(pdf_zk, cdf_zk)
+
+    first_term = (dk*dk/(sigma**3))*((dk*pdf_cdf_zk) + pdf_cdf_2)
+    tmp = (-(cdf_zk**2) + (dk**2)*(cdf_zk**2) + 3*dk*pdf_zk*cdf_zk + 2*(pdf_zk**2))
+    tmp = tmp / (cdf_zk**3)
+    if cdf_zk == 0:
+        #not sure this makes sense, but I think setting it to zero is the best option.
+        tmp = 0
+    else:
+        tmp = tmp / (cdf_zk**3)
+
+    second_term = (1 / (2*sigma*sigma*sigma)) * dk*dk*zk*pdf_zk * tmp
+
+    return -I1*I2*(first_term - second_term)
+
+## calc_evidence_derivative_likelihood
+# calculates the derivative of the evidence derivatives
+# d p(theta | Y, X) / dTheta
+# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
+# @param F - the vector of f (estimated training sample outputs)
+# @param K - the covariance matrix
+# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
+# @param invert_function - [opt] the matrix invertion function to use.
+#
+# @return the derivative of the log liklihood with respect to the liklihood parameter
+def calc_evidence_derivative_likelihood(pairs, F, W, K, sigma_L, invert_function=np.linalg.inv):
+    term1 = calc_grad_loglike_discrete_param(pairs, F, sigma_L)
+    partialW_sigma = calc_W_discrete_derv_param(pairs, F, sigma_L)
+
+    tmp1 = invert_function(np.identity(len(K)) + np.matmul(K, W))
+    term2 = -0.5 * np.trace(np.matmul(tmp1, np.matmul(K, partialW_sigma) ) )
+
+    return (term1 + term2) / len(pairs)
+
+## calc_W_discrete_derv_param
+# Calculates the derivative of the of the second derivative of the discrete
+# log likelihood with respect to the sigma parameter
+# dW / d(sigma) for the discrete W
+# This is following the formulation given in Appendix B.2.3
+# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
+# @param F - the vector of f (estimated training sample outputs)
+# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
+#
+# @return W (n,n) n is the length of F
+def calc_W_discrete_derv_param(pairs, F, sigma_L):
+    dW = np.zeros((len(F), len(F)))
+
+    for dk, uk, vk in pairs:
+        dW[uk, uk] += derv_W_discrete_sigma(F, dk, xi=uk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
+        dW[uk, vk] += derv_W_discrete_sigma(F, dk, xi=uk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
+        dW[vk, uk] += derv_W_discrete_sigma(F, dk, xi=vk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
+        dW[vk, vk] += derv_W_discrete_sigma(F, dk, xi=vk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
+
+    return dW
+
 ## calc_grad_loglike_discrete_param
 # @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
 # @param F - the vector of f (estimated training sample outputs)
@@ -549,6 +616,30 @@ def calc_grad_loglike_discrete_param(pairs, F, sigma_L):
 
     return grad
 
+## derv_param_discrete_loglike
+# Calculate the derivative of the discrete log liklihood with respect to the parameters
+# d / d(sigma) log p(d | f(u), f(v))
+#
+# xi, yk, vk, are indicies of the likelihood
+# @param F - the vector of F (estimated training sample outputs)
+# @param dk - the label for the given sample of uk, vk
+# @param xi - the index of f
+# @param uk - index of the u parameters of the ordered pair
+# @param vk - index of the v parameters of the ordered pair
+# @param sigma - the sigma attached to the probid for discrete
+def derv_param_discrete_loglike(F, dk, xi, uk, vk, sigma):
+    zk = relative_probit(F, dk, uk, vk, sigma)
+
+    # calculate the derivative
+    pdf_zk = st.norm.pdf(zk)
+    cdf_zk = st.norm.cdf(zk)
+
+    return -dk * pdf_zk / cdf_zk
+
+
+
+
+############################# Optimization functions
 
 ## damped_newton_update
 # this function performs the damped newton update for the preference learning
@@ -564,12 +655,12 @@ def calc_grad_loglike_discrete_param(pairs, F, sigma_L):
 def damped_newton_update(pairs_discrete, F, K, sigma_L, lamda, \
                             invert_function=np.linalg.inv):
     W = calc_W_discrete(pairs_discrete, F, sigma_L = sigma_L)
-    print('W:')
-    print(W)
+    #print('W:')
+    #print(W)
     grad_ll = calc_grad_loglike_discrete(pairs_discrete, F, sigma_L=1)
 
-    print('grad_ll')
-    print(grad_ll)
+    #print('grad_ll')
+    #print(grad_ll)
 
     term1 = invert_function(K) + W - lamda*np.identity(len(W))
     term1_inv = invert_function(term1)

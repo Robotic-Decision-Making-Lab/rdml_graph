@@ -52,7 +52,7 @@ if __name__ == '__main__':
     #             {'rbf_sigma': 1, 'rbf_l': 1,
     #             'linear_sigma': 3, 'linear_sigma_b': 1, 'linear_offset': 0.3})
 
-    gp.sigma_L = 1.0
+    gp.sigma_L = 0.5
 
     gp.add(X_train, pairs)
 
