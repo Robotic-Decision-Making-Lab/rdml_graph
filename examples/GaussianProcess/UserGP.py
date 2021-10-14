@@ -45,7 +45,7 @@ if __name__ == '__main__':
     #gp = gr.PreferenceGP(gr.RBF_kern(1,1)+gr.periodic_kern(1,1,10)+gr.linear_kern(3,1,0.3))
     #gp = gr.PreferenceGP(gr.RBF_kern(1,1)+gr.linear_kern(3,1,0.3))
 
-    gp.sigma_L = 0.5
+    gp.sigma_L = 1.0
 
     gp.add(X_train, pairs)
 
@@ -59,11 +59,15 @@ if __name__ == '__main__':
     sigma_to_plot = 1
 
     plt.gca().fill_between(X, mu-(sigma_to_plot*std), mu+(sigma_to_plot*std), color='#dddddd')
-    plt.plot(X, f_sin(X))
-    plt.scatter(X_train, f_sin(X_train))
+    Y_actual = f_sin(X)
+    Y_max = np.linalg.norm(Y_actual, ord=np.inf)
+    Y_actual = Y_actual / Y_max
+    plt.plot(X, Y_actual)
+    plt.scatter(X_train, f_sin(X_train) / Y_max)
     #plt.scatter(X_train, F)
 
     plt.title('Gaussian Process estimate (1 sigma)')
     plt.xlabel('x')
     plt.ylabel('y')
+    plt.legend(['Predicted function', 'Real function with samples'])
     plt.show()

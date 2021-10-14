@@ -5,7 +5,7 @@
 
 import numpy as np
 import rdml_graph as gr
-
+import pdb
 
 
 rbf = gr.RBF_kern(1, 1)
@@ -31,3 +31,14 @@ print(combined.get_param())
 x = np.array([0,1,4,5,6,7])
 
 print(combined.cov(x,x))
+
+rbf_test = gr.RBF_kern(1, 1)
+
+X = np.array([0,1,2,3,4.2,6,7])
+
+
+c = rbf_test.cov(X,X)
+print(c)
+
+print(rbf_test(0,1))
+pdb.set_trace()

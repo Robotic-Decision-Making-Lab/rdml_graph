@@ -53,7 +53,7 @@ class kernel_func:
     # @param Y - samples (n2, k)
     #
     # @return the covariance gradient tensor of the samples. [n1, n2, k]
-    def cov_grad(self, X, Y):
+    def cov_gradient(self, X, Y):
         cov = np.empty((len(X), len(Y), len(self)))
 
         for i,x1 in enumerate(X):
