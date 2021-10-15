@@ -129,14 +129,17 @@ class PreferenceGP(GP):
                                 sigma_L,
                                 self.invert_function)
 
-    def calc_grad_ll(self, x, args=None):
+    def calc_grad_ll(self, x, *args):
+        X_train = args[0]
+        y_train = args[1]
+
         sigma_L = x[0]
 
         self.cov_func.set_param(x[1:])
-        K = self.cov_func.cov(self.X_train, self.X_train)
-        W = calc_W_discrete(self.y_train, self.F, sigma_L = sigma_L)
+        K = self.cov_func.cov(X_train, X_train)
+        W = calc_W_discrete(y_train, self.F, sigma_L = sigma_L)
         dSigmaL = calc_evidence_derivative_likelihood(
-                                self.y_train,
+                                y_train,
                                 self.F,
                                 W,
                                 K,
@@ -145,11 +148,11 @@ class PreferenceGP(GP):
 
 
         grad = np.empty(len(self.cov_func))
-        dk_all = self.cov_func.cov_gradient(self.X_train, self.X_train)
+        dk_all = self.cov_func.cov_gradient(X_train, X_train)
         for k in range(len(self.cov_func)):
             dK = dk_all[:,:,k]
             grad[k] = derv_log_p_y_given_theta_for_theta(
-                                        self.y_train,
+                                        y_train,
                                         sigma_L,
                                         self.F,
                                         K,
@@ -163,7 +166,7 @@ class PreferenceGP(GP):
 
         return -theta
 
-    def optimize_parameters(self):
+    def optimize_parameters(self, x_train, y_train):
         # TODO setup full vector
 
         #print(self.calc_ll(None))
@@ -190,7 +193,7 @@ class PreferenceGP(GP):
         #     # if x[0] <= 0.01:
         #     #     x[0] = 0.01
 
-        theta = op.minimize(fun=self.calc_ll, x0=x0, jac=self.calc_grad_ll, method='BFGS', options={'maxiter': 5, 'disp': True})
+        theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, jac=self.calc_grad_ll, method='BFGS', options={'maxiter': 5, 'disp': True})
         x = theta.x
         print(theta)
 
@@ -202,16 +205,19 @@ class PreferenceGP(GP):
 
 
 
-    def findMode(self):
+    def findMode(self, x_train, y_train):
         # initial F estimate
         #self.F = np.random.random(len(self.X_train))
-        X_train = self.X_train
-        pairs = self.y_train
+        X_train = x_train
+        pairs = y_train
 
         self.K = covMatrix(X_train, X_train, self.cov_func)
 
+        # split dataset
+
+
         # TODO good way to check for convergence
-        for i in range(20):
+        for i in range(10):
             self.F, self.W = damped_newton_update(
                                         self.y_train, # input training pairs
                                         self.F, # estimated training values
@@ -230,16 +236,36 @@ class PreferenceGP(GP):
 
         self.F = np.random.random(len(self.X_train))
 
-        for i in range(3):
+        shuffle = np.arange(len(self.y_train))
+        np.random.shuffle(shuffle)
+
+        self.k_fold = 4
+        splits = np.array_split(shuffle, self.k_fold)
+
+
+        for i in range(self.k_fold):
             # if i != 0:
             #     print('Optimize with find mode before and after:')
             #     t1 = self.calc_ll([self.sigma_L])
-            self.findMode()
+            train_x = self.X_train
+
+            train_split = splits[0:i] + splits[(i+1):]
+            print(train_split)
+            t_split = np.empty(0, dtype=np.int)
+            for s in train_split:
+                t_split = np.append(t_split, s)
+
+            train_y = [self.y_train[idx] for idx in t_split]
+
+            valid_x = self.X_train
+            valid_y = [self.y_train[idx] for idx in splits[i]]
+
+            self.findMode(train_x, train_y)
             # if i != 0:
             #     t2 = self.calc_ll([self.sigma_L])
             #     print(t1)
             #     print(t2)
-            self.optimize_parameters()
+            self.optimize_parameters(valid_x, valid_y)
 
 
         self.optimized = True
