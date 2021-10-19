@@ -95,7 +95,7 @@ class PreferenceGP(GP):
     # @param training_sigma - [opt] sets the uncertianty in the training data
     #                          accepts scalars or a vector if each sample has
     #                          a different uncertianty.
-    def add(self, X, y, training_sigma=0):
+    def add(self, X, y, type='relative_discrete', training_sigma=0):
         if not isinstance(training_sigma, collections.Sequence):
             training_sigma = np.ones(len(y)) * training_sigma
 
