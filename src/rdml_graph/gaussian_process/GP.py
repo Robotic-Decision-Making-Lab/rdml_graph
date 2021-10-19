@@ -117,6 +117,7 @@ class GP:
         self.cov_predict = covXX -  np.matmul(np.matmul(covXY, covYYinv), covYX)
 
         sigmaX_Y = np.diagonal(self.cov_predict)
+        # just in case do to numerical instability a negative variance shows up
         sigmaX_Y = np.maximum(0, sigmaX_Y)
 
         return muX_Y, sigmaX_Y

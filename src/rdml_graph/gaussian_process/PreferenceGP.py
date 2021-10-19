@@ -193,7 +193,8 @@ class PreferenceGP(GP):
         #     # if x[0] <= 0.01:
         #     #     x[0] = 0.01
 
-        theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, jac=self.calc_grad_ll, method='BFGS', options={'maxiter': 5, 'disp': True})
+        #theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, jac=self.calc_grad_ll, method='BFGS', options={'maxiter': 5, 'disp': True})
+        theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, options={'maxiter': 50, 'disp': True})
         x = theta.x
         print(theta)
 
@@ -261,6 +262,7 @@ class PreferenceGP(GP):
             valid_y = [self.y_train[idx] for idx in splits[i]]
 
             self.findMode(train_x, train_y)
+            #self.findMode(self.X_train, self.y_train)
             # if i != 0:
             #     t2 = self.calc_ll([self.sigma_L])
             #     print(t1)
@@ -310,6 +312,10 @@ class PreferenceGP(GP):
         sigma = np.maximum(0, sigma)
 
         print(sigma)
+        norm = np.linalg.norm(mu, ord=np.inf)
+        mu = mu / norm
+        sigma = sigma / (norm*norm)
+
 
         return mu, sigma
 
@@ -353,7 +359,7 @@ def derv_discrete_loglike(F, dk, xi, uk, vk, sigma):
 # @param v - the index of the v element
 # @param sigma - the sigma attached to he relative likelyhood function.
 def relative_probit(F, d, u, v, sigma):
-    return (d * (F[u] - F[v])) / (SQ2_Pref_GP * sigma)
+    return (d * (F[v] - F[u])) / (SQ2_Pref_GP * sigma)
 
 def calc_pdf_o_cdf(pdf_zk, cdf_zk):
     # as zk -> -infinity then pdf_zk / cdf_zk goes to infinity
@@ -364,7 +370,7 @@ def calc_pdf_o_cdf(pdf_zk, cdf_zk):
     #
 
     if cdf_zk == 0:
-        if zk < 0:
+        if pdf_zk < 0.5:
             pdf_cdf_zk = pdf_cdf_2 = float('inf')
         else:
             pdf_cdf_zk = pdf_cdf_2 = 0
