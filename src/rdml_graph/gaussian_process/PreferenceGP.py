@@ -118,11 +118,13 @@ class PreferenceGP(GP):
 
     def calc_ll(self, x, *args):
         sigma_L = x[0]
+        X_train = args[0]
+        y_train = args[1]
 
         self.cov_func.set_param(x[1:])
-        K = self.cov_func.cov(self.X_train, self.X_train)
-        W = calc_W_discrete(self.y_train, self.F, sigma_L)
-        return -logliklihoodYXTh(self.y_train,
+        K = self.cov_func.cov(X_train, X_train)
+        W = calc_W_discrete(y_train, self.F, sigma_L)
+        return -logliklihoodYXTh(y_train,
                                 self.F,
                                 W,
                                 K,
@@ -135,6 +137,7 @@ class PreferenceGP(GP):
 
         sigma_L = x[0]
 
+        #x[2] = self.cov_func.get_param[1]
         self.cov_func.set_param(x[1:])
         K = self.cov_func.cov(X_train, X_train)
         W = calc_W_discrete(y_train, self.F, sigma_L = sigma_L)
@@ -194,13 +197,22 @@ class PreferenceGP(GP):
         #     #     x[0] = 0.01
 
         #theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, jac=self.calc_grad_ll, method='BFGS', options={'maxiter': 5, 'disp': True})
-        theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, options={'maxiter': 50, 'disp': True})
+
+        ll_pre = self.calc_ll(x0, x_train, y_train)
+        #print(ll_pre)
+
+        #bounds=[(0.0001, 100), (0.0001, 10), (0.001,30)],
+        bounds = [(0.1, 20) for i in range(len(x))]
+        theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, bounds=bounds, tol=0.01, options={'maxiter': 300, 'disp': False})
         x = theta.x
         print(theta)
 
         self.sigma_L = x[0]
         self.cov_func.set_param(x[1:])
-        print('SIGMA_L: ' + str(self.sigma_L))
+        #print('SIGMA_L: ' + str(self.sigma_L))
+
+        ll_post = self.calc_ll(x, x_train, y_train)
+        #print(ll_post)
 
         #pdb.set_trace()
 
@@ -210,7 +222,7 @@ class PreferenceGP(GP):
         # initial F estimate
         #self.F = np.random.random(len(self.X_train))
         X_train = x_train
-        pairs = y_train
+        #pairs = y_train
 
         self.K = covMatrix(X_train, X_train, self.cov_func)
 
@@ -220,7 +232,7 @@ class PreferenceGP(GP):
         # TODO good way to check for convergence
         for i in range(10):
             self.F, self.W = damped_newton_update(
-                                        self.y_train, # input training pairs
+                                        y_train, # input training pairs
                                         self.F, # estimated training values
                                         self.K, # covariance of training data
                                         self.sigma_L, # sigma on the liklihood function
@@ -230,45 +242,45 @@ class PreferenceGP(GP):
             self.F = self.F / np.linalg.norm(self.F, ord=np.inf)
 
 
-            #self.optimize_parameters()
     ## optimize
     # Runs the optimization step required by the user preference GP.
-    def optimize(self):
-
+    # @param optimize_hyperparameter - [opt] sets whether to optimize the hyperparameters
+    def optimize(self, optimize_hyperparameter=False):
         self.F = np.random.random(len(self.X_train))
 
-        shuffle = np.arange(len(self.y_train))
-        np.random.shuffle(shuffle)
+        if optimize_hyperparameter:
+            shuffle = np.arange(len(self.y_train))
+            np.random.shuffle(shuffle)
 
-        self.k_fold = 4
-        splits = np.array_split(shuffle, self.k_fold)
+            self.k_fold = 2
+            splits = np.array_split(shuffle, self.k_fold)
 
 
-        for i in range(self.k_fold):
-            # if i != 0:
-            #     print('Optimize with find mode before and after:')
-            #     t1 = self.calc_ll([self.sigma_L])
-            train_x = self.X_train
+            for i in range(self.k_fold):
+                # if i != 0:
+                #     print('Optimize with find mode before and after:')
+                #     t1 = self.calc_ll([self.sigma_L])
+                train_x = self.X_train
 
-            train_split = splits[0:i] + splits[(i+1):]
-            print(train_split)
-            t_split = np.empty(0, dtype=np.int)
-            for s in train_split:
-                t_split = np.append(t_split, s)
+                train_split = splits[0:i] + splits[(i+1):]
+                t_split = np.empty(0, dtype=np.int)
+                for s in train_split:
+                    t_split = np.append(t_split, s)
 
-            train_y = [self.y_train[idx] for idx in t_split]
+                train_y = [self.y_train[idx] for idx in t_split]
 
-            valid_x = self.X_train
-            valid_y = [self.y_train[idx] for idx in splits[i]]
+                valid_x = self.X_train
+                valid_y = [self.y_train[idx] for idx in splits[i]]
 
-            self.findMode(train_x, train_y)
-            #self.findMode(self.X_train, self.y_train)
-            # if i != 0:
-            #     t2 = self.calc_ll([self.sigma_L])
-            #     print(t1)
-            #     print(t2)
-            self.optimize_parameters(valid_x, valid_y)
+                self.findMode(train_x, train_y)
+                #self.findMode(self.X_train, self.y_train)
+                # if i != 0:
+                #     t2 = self.calc_ll([self.sigma_L])
+                #     print(t1)
+                #     print(t2)
+                self.optimize_parameters(valid_x, valid_y)
 
+        self.findMode(self.X_train, self.y_train)
 
         self.optimized = True
 
@@ -311,10 +323,10 @@ class PreferenceGP(GP):
         sigma = np.diagonal(self.cov)
         sigma = np.maximum(0, sigma)
 
-        print(sigma)
-        norm = np.linalg.norm(mu, ord=np.inf)
-        mu = mu / norm
-        sigma = sigma / (norm*norm)
+        #print(sigma)
+        # norm = np.linalg.norm(mu, ord=np.inf)
+        # mu = mu / norm
+        # sigma = sigma / (norm*norm)
 
 
         return mu, sigma

@@ -42,12 +42,11 @@ if __name__ == '__main__':
     gp = gr.PreferenceGP(gr.RBF_kern(1, 0.5))
     #gp = gr.PreferenceGP(gr.periodic_kern(1,1,20))
     #gp = gr.PreferenceGP(gr.linear_kern(5, 5, 0.2))
-    #gp = gr.PreferenceGP(gr.RBF_kern(1,1)+gr.periodic_kern(1,1,10)+gr.linear_kern(3,1,0.3))
+    #gp = gr.PreferenceGP(gr.RBF_kern(1,1)+gr.periodic_kern(1,1,0)+gr.linear_kern(3,1,0.3))
     #gp = gr.PreferenceGP(gr.RBF_kern(1,1)+gr.linear_kern(3,1,0.3))
 
-    gp.sigma_L = 1.0
-
     gp.add(X_train, pairs)
+    gp.optimize(optimize_hyperparameter=True)
 
 
 
