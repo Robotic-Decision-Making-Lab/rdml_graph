@@ -59,12 +59,20 @@ class GP:
     # @param cov_func - the covariance function to use
     # @param mat_inv - [opt] the matrix inversion function to use. By default
     #                   just uses numpy.linalg.inv
-    def __init__(self, cov_func, mat_inv=np.linalg.inv):
+    # @param mean_func - [opt] a function that modifies the normal 0 mean GP
+    #                   this simply adds the GP estimate to the given function.
+    #                   must be able to take vectorized inputs.
+    def __init__(self, cov_func, mat_inv=np.linalg.inv, mean_func=None):
         self.cov_func = cov_func
 
         self.invert_function = mat_inv
         self.X_train = None
         self.y_train = None
+
+        if mean_func is None:
+            self.mean_func = lambda x : 0
+        else:
+            self.mean_func = mean_func
 
 
     ## add_training
@@ -78,6 +86,8 @@ class GP:
     def add(self, X, y, training_sigma=0):
         if not isinstance(training_sigma, collections.Sequence):
             training_sigma = np.ones(len(y)) * training_sigma
+
+        y = y - self.mean_func(X)
 
         if self.X_train is None:
             self.X_train = X
@@ -99,6 +109,9 @@ class GP:
     #
     # @return an array of output values (n)
     def predict(self, X):
+        if self.X_train is None:
+            return np.zeros(len(X))
+
         #### This function treats Y as the training data
         Y = self.X_train
         covXX = covMatrix(X, X, self.cov_func)
@@ -120,7 +133,7 @@ class GP:
         # just in case do to numerical instability a negative variance shows up
         sigmaX_Y = np.maximum(0, sigmaX_Y)
 
-        return muX_Y, sigmaX_Y
+        return muX_Y + self.mean_func, sigmaX_Y
 
     ## () operator
     # This is just a wrapper around the predict function.

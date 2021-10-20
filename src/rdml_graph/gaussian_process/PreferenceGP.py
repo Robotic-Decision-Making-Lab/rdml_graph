@@ -43,6 +43,22 @@ def get_dk(u, v):
     else:
         return -1 # probably handle it this way... I could also probably just return 0
 
+## gen_pairs_from_idx
+# This function is given the best index selected from a user selection
+# and generates the pairs needed to be passed to a preference GP
+# @param best_idx - the index that was determined to be best of the given indicies
+# @param indicies - the list of indicies the best_idx is better than.
+#                   best_idx is allowed to be indicies without breaking anything
+#
+# @return - list of pairs [(dk, uk, vk), ...]
+def gen_pairs_from_idx(best_idx, indicies):
+    pairs = []
+    for idx in indicies:
+        if idx != best_idx:
+            pairs.append((get_dk(1,0), best_idx, idx))
+
+    return pairs
+
 ## generate_fake_pairs
 # generates a set of pairs of data from faked data
 # helper function for fake input data
@@ -294,6 +310,9 @@ class PreferenceGP(GP):
     #
     # @return an array of output values (n)
     def predict(self, X):
+        if self.X_train is None:
+            return np.zeros(len(X))
+
         # lazy optimization of GP
         if not self.optimized:
             self.optimize()
@@ -305,6 +324,7 @@ class PreferenceGP(GP):
         K = self.K
         W = self.W
 
+        pdb.set_trace()
         covXX_test = covMatrix(X_test, X_train, self.cov_func)
         covTestTest = covMatrix(X_test, X_test, self.cov_func)
 
