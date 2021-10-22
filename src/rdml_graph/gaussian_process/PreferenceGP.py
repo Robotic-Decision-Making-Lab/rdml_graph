@@ -126,7 +126,7 @@ class PreferenceGP(GP):
 
             self.X_train = np.append(self.X_train, X, axis=0)
             self.y_train = self.y_train + y
-            self.training_sigma = np.append(self.training_sigma, y, axis=0)
+            #self.training_sigma = np.append(self.training_sigma, y, axis=0)
         self.optimized = False
 
 
@@ -255,7 +255,11 @@ class PreferenceGP(GP):
                                         self.lambda_gp, # lambda on the newton update
                                         self.invert_function)
             # normalize F
-            self.F = self.F / np.linalg.norm(self.F, ord=np.inf)
+            F_norm = np.linalg.norm(self.F, ord=np.inf)
+            self.F = self.F / F_norm
+
+        # normalize W
+        self.W = calc_W_discrete(y_train, self.F, sigma_L = self.sigma_L)
 
 
     ## optimize
@@ -311,7 +315,11 @@ class PreferenceGP(GP):
     # @return an array of output values (n)
     def predict(self, X):
         if self.X_train is None:
-            return np.zeros(len(X))
+            cov = self.cov_func.cov(X,X)
+            sigma = np.diagonal(cov)
+            # just in case do to numerical instability a negative variance shows up
+            sigma = np.maximum(0, sigma)
+            return np.zeros(len(X)), sigma
 
         # lazy optimization of GP
         if not self.optimized:
@@ -324,7 +332,6 @@ class PreferenceGP(GP):
         K = self.K
         W = self.W
 
-        pdb.set_trace()
         covXX_test = covMatrix(X_test, X_train, self.cov_func)
         covTestTest = covMatrix(X_test, X_test, self.cov_func)
 

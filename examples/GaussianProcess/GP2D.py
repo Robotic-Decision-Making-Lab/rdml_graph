@@ -16,10 +16,10 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-# User2DGP.py
+# GP2D.py
 # Written Ian Rankin - September 2021
 #
-# An example usage of a preference Gaussian process with 2D inputs.
+# An example usage of a simple Gaussian process with 2D inputs.
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,8 +33,7 @@ def f_sin(x, data=None):
     return 2 * np.cos(np.pi * (x[:,0]-2)) * np.exp(-(0.9*x[:,0])) + 1.5 * np.cos(np.pi * (x[:,1]-2)) * np.exp(-(1.2*x[:,1]))
 
 def f_lin(x, data=None):
-    #return x[:,0]*x[:,1]
-    return x[:,0]+x[:,1]
+    return x[:,0]*x[:,1]
 
 
 
@@ -45,45 +44,39 @@ if __name__ == '__main__':
     bounds = [(0,7), (0,7)]
 
     num_train_pts = 50
-    num_alts = 4
 
     train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
     train_Y = f_sin(train_X)
 
-    gp = gr.PreferenceGP(gr.RBF_kern(2.0,3.0))
+    gp = gr.GP(gr.RBF_kern(1,0.8))
 
 
-    for i in tqdm.tqdm(range(50)):
+    for i in tqdm.tqdm(range(20)):
         train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
-        train_Y = f_lin(train_X)
+        train_Y = f_sin(train_X)
 
-        selected_idx, UCB, best_value = gp.ucb_selection(train_X, num_alts)
+        selected_idx, UCB, best_value = gp.ucb_selection(train_X, 5)
 
-        best_idx = np.argmax(train_Y[selected_idx])
-
-        pairs = gr.gen_pairs_from_idx(best_idx, np.arange(num_alts, dtype=np.int))
         #print(selected_idx)
         #print(UCB)
         #print(train_X[selected_idx])
         #pdb.set_trace()
-        gp.add(train_X[selected_idx], pairs)
+        gp.add(train_X[selected_idx], train_Y[selected_idx])
         #gp.add(train_X, train_Y)
 
 
-    #gp.optimize(optimize_hyperparameter=True)
 
     x = np.linspace(bounds[0][0], bounds[0][1], num_side)
     y = np.linspace(bounds[1][0], bounds[1][1], num_side)
 
     X, Y = np.meshgrid(x,y)
     points = np.vstack([X.ravel(), Y.ravel()]).transpose()
-    z = f_lin(points)
-    z_norm = np.linalg.norm(z, ord=np.inf)
-    z = z / z_norm
+    z = f_sin(points)
     Z = np.reshape(z, (num_side, num_side))
 
     z_predicted, z_sigma = gp.predict(points)
     Z_pred = np.reshape(z_predicted, (num_side, num_side))
+
 
     fig = plt.figure()
     ax = plt.axes(projection='3d')
@@ -93,8 +86,5 @@ if __name__ == '__main__':
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
-
-    print(gp.X_train)
-    print(gp.F)
 
     plt.show()

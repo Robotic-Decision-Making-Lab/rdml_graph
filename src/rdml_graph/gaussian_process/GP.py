@@ -106,6 +106,17 @@ class GP:
         self.y_train = None
 
 
+    ## ucb_selection
+    # Active learning with an upper condfidence bound.
+    # This is designed to selected samples that have the best chance of being
+    # the max point, as well as the one single point that is the highest mean point.
+    # @param candidate_pts - list of candidate points to select from.
+    # @param num_alts - the number of alternatives to select.
+    # @param ucb_scaler
+    #
+    # @return [highest_mean, highest_ucb, next highest ucb, ...],
+    #          ucb values for candidate_pts,
+    #          value of the best point.
     def ucb_selection(self, candidate_pts, num_alts, ucb_scaler=1):
         mu, variance = self.predict(candidate_pts)
         UCB = mu + ucb_scaler*np.sqrt(variance)
