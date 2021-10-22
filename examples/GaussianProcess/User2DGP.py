@@ -25,6 +25,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import rdml_graph as gr
+import tqdm
 import pdb
 
 def f_sin(x, data=None):
@@ -47,17 +48,21 @@ if __name__ == '__main__':
     train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
     train_Y = f_sin(train_X)
 
-    gp = gr.GP(gr.RBF_kern(1,0.7))
+    gp = gr.GP(gr.RBF_kern(1,0.8))
 
 
-    for i in range(1):
+    for i in tqdm.tqdm(range(20)):
         train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
         train_Y = f_sin(train_X)
 
         selected_idx, UCB, best_value = gp.ucb_selection(train_X, 5)
 
-        pdb.set_trace()
+        #print(selected_idx)
+        #print(UCB)
+        #print(train_X[selected_idx])
+        #pdb.set_trace()
         gp.add(train_X[selected_idx], train_Y[selected_idx])
+        #gp.add(train_X, train_Y)
 
 
 

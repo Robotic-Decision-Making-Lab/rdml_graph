@@ -87,7 +87,7 @@ class PreferenceGP(GP):
     # @param cov_func - the covariance function to use
     # @param mat_inv - [opt] the matrix inversion function to use. By default
     #                   just uses numpy.linalg.inv
-    def __init__(self, cov_func, mat_inv=np.linalg.inv):
+    def __init__(self, cov_func, mat_inv=np.linalg.pinv):
         super(PreferenceGP, self).__init__(cov_func, mat_inv)
 
         self.optimized = False

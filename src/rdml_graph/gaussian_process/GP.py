@@ -63,7 +63,7 @@ class GP:
     # @param mean_func - [opt] a function that modifies the normal 0 mean GP
     #                   this simply adds the GP estimate to the given function.
     #                   must be able to take vectorized inputs.
-    def __init__(self, cov_func, mat_inv=np.linalg.inv, mean_func=None):
+    def __init__(self, cov_func, mat_inv=np.linalg.pinv, mean_func=None):
         self.cov_func = cov_func
 
         self.invert_function = mat_inv
@@ -162,7 +162,6 @@ class GP:
 
         covYY = covMatrix(Y, Y, self.cov_func) + error
 
-        pdb.set_trace()
         covYYinv = self.invert_function(covYY)
 
         muX_Y = np.matmul(covXY, np.matmul(covYYinv, self.y_train))
