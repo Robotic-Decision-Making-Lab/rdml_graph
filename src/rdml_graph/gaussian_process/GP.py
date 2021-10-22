@@ -25,6 +25,7 @@
 import numpy as np
 import collections
 
+import pdb
 
 ## get covariance matrix
 # calculate the covariance matrix between the samples given in X
@@ -104,13 +105,51 @@ class GP:
         self.X_train = None
         self.y_train = None
 
+
+    def ucb_selection(self, candidate_pts, num_alts, ucb_scaler=1):
+        mu, variance = self.predict(candidate_pts)
+        UCB = mu + ucb_scaler*np.sqrt(variance)
+
+        best_idx = np.argmax(mu)
+
+        selected_idx = np.argpartition(UCB, -num_alts)[-num_alts:]
+        #selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
+
+        ######### CHECK if the best candidate is already in the list, if it is move to
+        # the front of the list
+        found_one_idx = False
+        for i, idx in enumerate(selected_idx):
+            if idx == best_idx:
+                found_one_idx = True
+                tmp = selected_idx[i]
+                selected_idx[i] = selected_idx[0]
+                selected_idx[0] = selected_idx[i]
+                break
+        # If the best path is not in the list of selected candidate, then remove worst
+        # candidate UCB and put the best at the front.
+        if not found_one_idx:
+            worst_idx = np.argmin(UCB[selected_idx])
+            selected_idx[worst_idx] = selected_idx[0]
+            selected_idx[0] = best_idx
+
+        ######### Sort the other selected indicies to ensure
+        # the array looks like this [best_mean, largest_UCB, next_largest_UCB,...]
+        selected_idx[1:] = (selected_idx[np.argsort(UCB[selected_idx[1:]])])[::-1]
+
+        return selected_idx, UCB, mu[best_idx]
+
+
     ## Predicts the output of the GP at new locations
     # @param X - the input test samples (n,k).
     #
     # @return an array of output values (n)
     def predict(self, X):
         if self.X_train is None:
-            return np.zeros(len(X))
+            cov = self.cov_func.cov(X,X)
+            sigma = np.diagonal(cov)
+            # just in case do to numerical instability a negative variance shows up
+            sigma = np.maximum(0, sigma)
+            return np.zeros(len(X)), sigma
 
         #### This function treats Y as the training data
         Y = self.X_train
@@ -123,6 +162,7 @@ class GP:
 
         covYY = covMatrix(Y, Y, self.cov_func) + error
 
+        pdb.set_trace()
         covYYinv = self.invert_function(covYY)
 
         muX_Y = np.matmul(covXY, np.matmul(covYYinv, self.y_train))
@@ -133,7 +173,7 @@ class GP:
         # just in case do to numerical instability a negative variance shows up
         sigmaX_Y = np.maximum(0, sigmaX_Y)
 
-        return muX_Y + self.mean_func, sigmaX_Y
+        return muX_Y + self.mean_func(X), sigmaX_Y
 
     ## () operator
     # This is just a wrapper around the predict function.
