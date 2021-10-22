@@ -62,7 +62,7 @@ if __name__ == '__main__':
     Y_max = np.linalg.norm(Y_actual, ord=np.inf)
     Y_actual = Y_actual / Y_max
     plt.plot(X, Y_actual)
-    plt.scatter(X_train, f_sin(X_train) / Y_max)
+    plt.scatter(X_train, gp.F)
     #plt.scatter(X_train, F)
 
     plt.title('Gaussian Process estimate (1 sigma)')

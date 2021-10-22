@@ -44,31 +44,53 @@ if __name__ == '__main__':
     num_side = 25
     bounds = [(0,7), (0,7)]
 
-    num_train_pts = 50
+    num_train_pts = 10
     num_alts = 4
 
+    utility_f = f_lin
+
+    #train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
+    #train_Y = f_sin(train_X)
+
+    #gp = gr.PreferenceGP(gr.RBF_kern(0.2,0.5)*gr.linear_kern(0.2, 0.1, 0))
+    #gp = gr.PreferenceGP(gr.linear_kern(0.3, 0.1, 0.0))
+    gp = gr.PreferenceGP(gr.RBF_kern(2.0, 3.5))
+
+
     train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
-    train_Y = f_sin(train_X)
+    train_Y = utility_f(train_X)#f_lin(train_X)
 
-    gp = gr.PreferenceGP(gr.RBF_kern(2.0,3.0))
+    pairs = []
+    for i in range(len(train_X)):
+        pairs += gr.generate_fake_pairs(train_X, utility_f, i)
+    gp.add(train_X, pairs)
 
+    # for i in tqdm.tqdm(range(10)):
+    #     train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
+    #     train_Y = utility_f(train_X)#f_lin(train_X)
+    #
+    #     selected_idx, UCB, best_value = gp.ucb_selection(train_X, num_alts)
+    #
+    #     best_idx = np.argmax(train_Y[selected_idx])
+    #
+    #     #pairs = gr.gen_pairs_from_idx(best_idx, np.arange(num_alts, dtype=np.int))
+    #     pairs = gr.ranked_pairs_from_fake(train_X[selected_idx], utility_f)
+    #
+    #     print(pairs)
+    #     print(train_Y[selected_idx])
+    #     print(train_X[selected_idx])
+    #     #best_idx = np.argmax(train_Y)
+    #     #pairs = gr.gen_pairs_from_idx(best_idx, np.arange(num_alts, dtype=np.int))
+    #     #print(selected_idx)
+    #     #print(UCB)
+    #     #print(train_X[selected_idx])
+    #     #pdb.set_trace()
+    #     #print(train_Y[selected_idx])
+    #
+    #     #gp.add(train_X[selected_idx], pairs)
+    #     gp.add(train_X[selected_idx], pairs)
 
-    for i in tqdm.tqdm(range(50)):
-        train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
-        train_Y = f_lin(train_X)
-
-        selected_idx, UCB, best_value = gp.ucb_selection(train_X, num_alts)
-
-        best_idx = np.argmax(train_Y[selected_idx])
-
-        pairs = gr.gen_pairs_from_idx(best_idx, np.arange(num_alts, dtype=np.int))
-        #print(selected_idx)
-        #print(UCB)
-        #print(train_X[selected_idx])
-        #pdb.set_trace()
-        gp.add(train_X[selected_idx], pairs)
-        #gp.add(train_X, train_Y)
-
+    print(gp.y_train)
 
     #gp.optimize(optimize_hyperparameter=True)
 
@@ -77,19 +99,23 @@ if __name__ == '__main__':
 
     X, Y = np.meshgrid(x,y)
     points = np.vstack([X.ravel(), Y.ravel()]).transpose()
-    z = f_lin(points)
+    z = utility_f(points)
     z_norm = np.linalg.norm(z, ord=np.inf)
     z = z / z_norm
     Z = np.reshape(z, (num_side, num_side))
 
     z_predicted, z_sigma = gp.predict(points)
+    ucb_pred = z_predicted + np.sqrt(z_sigma)*1
     Z_pred = np.reshape(z_predicted, (num_side, num_side))
+    UCB_pred = np.reshape(ucb_pred, (num_side, num_side))
 
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     #ax.contour3D(X, Y, Z_pred, 50, cmap='binary')
     ax.plot_wireframe(X, Y, Z, color= 'black')
+    ax.plot_wireframe(X, Y, UCB_pred, color= 'red')
     ax.plot_surface(X, Y, Z_pred, rstride=1, cstride=1, cmap='magma', edgecolor='none')
+    ax.scatter(gp.X_train[:,0], gp.X_train[:,1], gp.F)
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')

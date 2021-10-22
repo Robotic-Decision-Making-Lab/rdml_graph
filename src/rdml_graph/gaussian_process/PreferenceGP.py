@@ -59,6 +59,21 @@ def gen_pairs_from_idx(best_idx, indicies):
 
     return pairs
 
+## ranked_pairs_from_fake
+# generates a all of the ranked pairs from fake inputs
+#
+def ranked_pairs_from_fake(X, fake_f):
+    y = fake_f(X)
+
+    y_sorted_idx = np.argsort(y)
+
+    pairs = []
+    for i in range(len(y)):
+        for j in range(i+1, len(y)):
+            pairs.append((get_dk(y[i], y[j]), i, j))
+
+    return pairs
+
 ## generate_fake_pairs
 # generates a set of pairs of data from faked data
 # helper function for fake input data
