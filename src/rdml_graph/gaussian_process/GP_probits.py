@@ -84,7 +84,7 @@ class ProbitBase:
     # @param F - the input data samples
     #
     # @return P(y|F)
-    def likelihood(self, y, f):
+    def likelihood(self, y, F):
         raise NotImplementedError('likelihood not implemented')
 
     ## log_likelihood
@@ -93,8 +93,8 @@ class ProbitBase:
     # @param F - the input data samples
     #
     # @return log P(y|F)
-    def log_likelihood(self, y, f):
-        return np.log(self.likelihood(y,f))
+    def log_likelihood(self, y, F):
+        return np.log(self.likelihood(y,F))
 
     ## posterior_likelihood
     # TODO - not quite sure what this does.
@@ -159,9 +159,45 @@ class PreferenceProbit(ProbitBase):
     # @return - the values for the u and v of y numpy (n,2) [[]]
     def derv_log_likelyhood(self, y, F):
         pdf_cdf_ratio, pdf_cdf_ratio2 = calc_pdf_cdf_ratio(self.z_k(y, F))
-        derv_ll = y[:,0] * pdf_cdf_ratio * self._isqrt2sig
+        derv_ll_pairs = y[:,0] * pdf_cdf_ratio * self._isqrt2sig
+        derv_ll = np.zeros(len(F))
 
-        return np.array([derv_ll, -derv_ll])
+        # SPEEDUP?: Vectorize this summation process?
+        for i in range(len(y)):
+            derv_ll[y[i,1]] += derv_ll_pairs[i]
+            derv_ll[y[i,2]] -= derv_ll_pairs[i]
+
+        return derv_ll
+
+    ## calc_W
+    # caclulate the W matrix
+    # Calculates the second derivative of discrete log likelihood.
+    # @param y - the given set of labels for the probit
+    #              this is given as a list of [(dk, u, v), ...]
+    #  d / (dF(xi)dF(xj)) ln(p(dk|F(u), F(v)))
+    #
+    # Appendix A.1.1.2
+    # Assumes (f(vk), f(uk))
+    # xi, yk, vk, are indicies of the likelihood
+    # @param F - the vector of f (estimated training sample outputs)
+    def calc_W(self, y, F):
+        z = self.z_k(y, F)
+        pdf_cdf_ratio, pdf_cdf_ratio2 = calc_pdf_cdf_ratio(z)
+
+        paren_pairs = np.where(np.logical_and(z < 0, np.isinf(pdf_cdf_ratio)), 0, \
+                        (z * pdf_cdf_ratio) + pdf_cdf_ratio2)
+        d2_ll_pairs = -(y[:,0]*y[:,0])*paren_pairs*self._i2var
+
+        W = np.zeros((len(F), len(F)))
+        # Speedup?: Vectorize this process???
+        for i in range(len(y)):
+            W[y[i,1], y[i,1]] +=  d2_ll_pairs[i]
+            W[y[i,1], y[i,2]] += -d2_ll_pairs[i]
+            W[y[i,2], y[i,1]] += -d2_ll_pairs[i]
+            W[y[i,2], y[i,2]] +=  d2_ll_pairs[i]
+
+        return W
+
 
     ## derivatives
     # Calculates the derivatives of the probit with the given input data
@@ -175,8 +211,8 @@ class PreferenceProbit(ProbitBase):
     #       py - log P(y|x,theta) for the given probit
     def derivatives(self, y, F):
         py = self.log_likelihood(y, F)
-
         dpy_df = self.derv_log_likelyhood(y, F)
+        W = self.calc_W(y, F)
 
         return W, dpy_df, py
 
@@ -187,8 +223,9 @@ class PreferenceProbit(ProbitBase):
     # @param F - the input data samples
     #
     # @return P(y|F)
-    def likelihood(self, y, f):
-        raise NotImplementedError('likelihood not implemented')
+    def likelihood(self, y, F):
+        z = self.z_k(y, F)
+        return std_norm_cdf(z)
 
     ## posterior_likelihood
     # TODO - not quite sure what this does.
