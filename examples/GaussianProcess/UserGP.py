@@ -39,7 +39,7 @@ if __name__ == '__main__':
             gr.generate_fake_pairs(X_train, f_sin, 4)
 
 
-    gp = gr.PreferenceGP(gr.RBF_kern(0.3, 0.7))
+    gp = gr.PreferenceGP(gr.RBF_kern(0.5, 0.7))
     #gp = gr.PreferenceGP(gr.periodic_kern(1.2,0.3,5))
     #gp = gr.PreferenceGP(gr.linear_kern(0.2, 0.2, 0.2))
     #gp = gr.PreferenceGP(gr.RBF_kern(0.2,1)+gr.periodic_kern(1,0.2,0)+gr.linear_kern(0.2,0.1,0.3))

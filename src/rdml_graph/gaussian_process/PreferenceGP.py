@@ -138,8 +138,8 @@ class PreferenceGP(GP):
 
         term3 = 0.5 * np.log(np.linalg.det(np.identity(len(K)) + np.matmul(K, W)))
 
-        return logpYF
-        #return logpYF - term2 - term3
+        #return logpYF
+        return logpYF - term2 - term3
 
 
     def optimize_parameters(self, x_train, y_train):
