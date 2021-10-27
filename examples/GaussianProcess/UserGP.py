@@ -39,15 +39,17 @@ if __name__ == '__main__':
             gr.generate_fake_pairs(X_train, f_sin, 4)
 
 
-    gp = gr.PreferenceGP(gr.RBF_kern(1, 0.5))
-    #gp = gr.PreferenceGP(gr.periodic_kern(1,1,20))
-    #gp = gr.PreferenceGP(gr.linear_kern(5, 5, 0.2))
-    #gp = gr.PreferenceGP(gr.RBF_kern(1,1)+gr.periodic_kern(1,1,0)+gr.linear_kern(3,1,0.3))
-    #gp = gr.PreferenceGP(gr.RBF_kern(1,1)+gr.linear_kern(3,1,0.3))
+    gp = gr.PreferenceGP(gr.RBF_kern(0.3, 0.7))
+    #gp = gr.PreferenceGP(gr.periodic_kern(1.2,0.3,5))
+    #gp = gr.PreferenceGP(gr.linear_kern(0.2, 0.2, 0.2))
+    #gp = gr.PreferenceGP(gr.RBF_kern(0.2,1)+gr.periodic_kern(1,0.2,0)+gr.linear_kern(0.2,0.1,0.3))
+    #gp = gr.PreferenceGP(gr.RBF_kern(0.1,1)*gr.linear_kern(0.3,0.2,0.3))
 
     gp.add(X_train, pairs)
-    gp.optimize(optimize_hyperparameter=True)
 
+    gp.optimize(optimize_hyperparameter=True)
+    print('gp.calc_ll()')
+    print(gp.calc_ll())
 
 
     X = np.arange(-0.5, 8, 0.1)

@@ -94,7 +94,7 @@ class ProbitBase:
     #
     # @return log P(y|F)
     def log_likelihood(self, y, F):
-        return np.log(self.likelihood(y,F))
+        return np.sum(np.log(self.likelihood(y,F)))
 
     ## posterior_likelihood
     # TODO - not quite sure what this does.
@@ -164,8 +164,8 @@ class PreferenceProbit(ProbitBase):
 
         # SPEEDUP?: Vectorize this summation process?
         for i in range(len(y)):
-            derv_ll[y[i,1]] += derv_ll_pairs[i]
-            derv_ll[y[i,2]] -= derv_ll_pairs[i]
+            derv_ll[y[i,1]] -= derv_ll_pairs[i]
+            derv_ll[y[i,2]] += derv_ll_pairs[i]
 
         return derv_ll
 
@@ -191,10 +191,10 @@ class PreferenceProbit(ProbitBase):
         W = np.zeros((len(F), len(F)))
         # Speedup?: Vectorize this process???
         for i in range(len(y)):
-            W[y[i,1], y[i,1]] +=  d2_ll_pairs[i]
-            W[y[i,1], y[i,2]] += -d2_ll_pairs[i]
-            W[y[i,2], y[i,1]] += -d2_ll_pairs[i]
-            W[y[i,2], y[i,2]] +=  d2_ll_pairs[i]
+            W[y[i,1], y[i,1]] += -d2_ll_pairs[i]
+            W[y[i,1], y[i,2]] +=  d2_ll_pairs[i]
+            W[y[i,2], y[i,1]] +=  d2_ll_pairs[i]
+            W[y[i,2], y[i,2]] += -d2_ll_pairs[i]
 
         return W
 

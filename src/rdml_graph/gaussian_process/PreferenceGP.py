@@ -25,65 +25,16 @@
 
 import numpy as np
 import collections
-from rdml_graph.gaussian_process import GP, covMatrix
+from rdml_graph.gaussian_process import GP
+from rdml_graph.gaussian_process import PreferenceProbit, ProbitBase
+from rdml_graph.gaussian_process import k_fold_half
+
 import scipy.optimize as op
 import scipy.stats as st
 
 import pdb
 
-SQ2_Pref_GP = np.sqrt(2)
-
-
-
-def get_dk(u, v):
-    if u > v:
-        return -1
-    elif u < v:
-        return 1
-    else:
-        return -1 # probably handle it this way... I could also probably just return 0
-
-## gen_pairs_from_idx
-# This function is given the best index selected from a user selection
-# and generates the pairs needed to be passed to a preference GP
-# @param best_idx - the index that was determined to be best of the given indicies
-# @param indicies - the list of indicies the best_idx is better than.
-#                   best_idx is allowed to be indicies without breaking anything
-#
-# @return - list of pairs [(dk, uk, vk), ...]
-def gen_pairs_from_idx(best_idx, indicies):
-    pairs = []
-    for idx in indicies:
-        if idx != best_idx:
-            pairs.append((get_dk(1,0), best_idx, idx))
-
-    return pairs
-
-## ranked_pairs_from_fake
-# generates a all of the ranked pairs from fake inputs
-#
-def ranked_pairs_from_fake(X, fake_f):
-    y = fake_f(X)
-
-    y_sorted_idx = np.argsort(y)
-
-    pairs = []
-    for i in range(len(y)):
-        for j in range(i+1, len(y)):
-            pairs.append((get_dk(y[i], y[j]), i, j))
-
-    return pairs
-
-## generate_fake_pairs
-# generates a set of pairs of data from faked data
-# helper function for fake input data
-# @param X - the inputs to the function
-# @param real_f - the real function to estimate
-def generate_fake_pairs(X, real_f, pair_i, data=None):
-    Y = real_f(X, data=data)
-
-    pairs = [(get_dk(Y[pair_i], y),pair_i, i) for i, y in enumerate(Y)]
-    return pairs
+#SQ2_Pref_GP = np.sqrt(2)
 
 
 
@@ -102,14 +53,24 @@ class PreferenceGP(GP):
     # @param cov_func - the covariance function to use
     # @param mat_inv - [opt] the matrix inversion function to use. By default
     #                   just uses numpy.linalg.inv
-    def __init__(self, cov_func, mat_inv=np.linalg.pinv):
+    def __init__(self, cov_func, normalize_gp=True, mat_inv=np.linalg.pinv):
         super(PreferenceGP, self).__init__(cov_func, mat_inv)
 
         self.optimized = False
-        self.lambda_gp = 0.3
+        self.lambda_gp = 0.1
+
+        self.normalize_gp = normalize_gp
+
         # sigma on the likelihood function.
-        self.sigma_L = 1.0
-        #self.sigma_L = 0.005
+        #self.sigma_L = 1.0
+        self.probits = [PreferenceProbit(sigma = 3.0)]
+        self.probit_idxs = {'relative_discrete': 0}
+
+        self.y_train = [None] * len(self.probits)
+        self.X_train = None
+
+        self.delta_f = 0.002 # set the convergence to stop
+        self.maxloops = 100
 
 
 
@@ -132,73 +93,54 @@ class PreferenceGP(GP):
 
         if self.X_train is None:
             self.X_train = X
-            self.y_train = y
-            self.training_sigma = training_sigma
+            len_X = 0
         else:
-            # reset index
             len_X = len(self.X_train)
-            y = [(d, u+len_X, v+len_X) for d, u, v in y]
-
             self.X_train = np.append(self.X_train, X, axis=0)
-            self.y_train = self.y_train + y
-            #self.training_sigma = np.append(self.training_sigma, y, axis=0)
+
+
+        if type == 'relative_discrete':
+            if self.y_train[self.probit_idxs[type]] is None:
+                self.y_train[self.probit_idxs[type]] = np.array(y)
+            else:
+                # reset index of pairwise comparisons
+                y = [(d, u+len_X, v+len_X) for d, u, v in y]
+
+                self.y_train = self.y_train + y
+
+
         self.optimized = False
 
 
 
+    def calc_ll(self):
+        K = self.cov_func.cov(self.X_train, self.X_train)
+        W, dpy_df, logpYF = self.derivatives(self.y_train, self.F)
 
-    def calc_ll(self, x, *args):
-        sigma_L = x[0]
-        X_train = args[0]
-        y_train = args[1]
+        Kinv = self.invert_function(K)
+        term2 = 0.5 * np.matmul(np.matmul(np.transpose(self.F), Kinv), self.F)
 
-        self.cov_func.set_param(x[1:])
+        term3 = 0.5 * np.log(np.linalg.det(np.identity(len(K)) + np.matmul(K, W)))
+
+        return logpYF - term2 - term3
+
+    def calc_ll_param(self, hyperparameters, X_train, y_train):
+        sigma_L = hyperparameters[0]
+
+        self.probits[self.probit_idxs['relative_discrete']].set_sigma(sigma_L)
+        self.cov_func.set_param(hyperparameters[1:])
         K = self.cov_func.cov(X_train, X_train)
-        W = calc_W_discrete(y_train, self.F, sigma_L)
-        return -logliklihoodYXTh(y_train,
-                                self.F,
-                                W,
-                                K,
-                                sigma_L,
-                                self.invert_function)
 
-    def calc_grad_ll(self, x, *args):
-        X_train = args[0]
-        y_train = args[1]
+        W, dpy_df, logpYF = self.derivatives(y_train, self.F)
 
-        sigma_L = x[0]
+        Kinv = self.invert_function(K)
+        term2 = 0.5 * np.matmul(np.matmul(np.transpose(self.F), Kinv), self.F)
 
-        #x[2] = self.cov_func.get_param[1]
-        self.cov_func.set_param(x[1:])
-        K = self.cov_func.cov(X_train, X_train)
-        W = calc_W_discrete(y_train, self.F, sigma_L = sigma_L)
-        dSigmaL = calc_evidence_derivative_likelihood(
-                                y_train,
-                                self.F,
-                                W,
-                                K,
-                                sigma_L,
-                                self.invert_function)
+        term3 = 0.5 * np.log(np.linalg.det(np.identity(len(K)) + np.matmul(K, W)))
 
+        return logpYF
+        #return logpYF - term2 - term3
 
-        grad = np.empty(len(self.cov_func))
-        dk_all = self.cov_func.cov_gradient(X_train, X_train)
-        for k in range(len(self.cov_func)):
-            dK = dk_all[:,:,k]
-            grad[k] = derv_log_p_y_given_theta_for_theta(
-                                        y_train,
-                                        sigma_L,
-                                        self.F,
-                                        K,
-                                        dK,
-                                        W, \
-                                    self.invert_function)
-
-        liklihood_theta = np.array([dSigmaL])
-        theta = np.append(liklihood_theta, grad, axis=0)
-        #theta = liklihood_theta
-
-        return -theta
 
     def optimize_parameters(self, x_train, y_train):
         # TODO setup full vector
@@ -206,7 +148,7 @@ class PreferenceGP(GP):
         #print(self.calc_ll(None))
         #print(self.calc_grad_ll())
 
-        x0 = np.array([self.sigma_L], dtype=np.float)
+        x0 = np.array([self.probits[0].sigma], dtype=np.float)
         x0 = np.append(x0, self.cov_func.get_param(), axis=0)
         x = x0
 
@@ -229,92 +171,117 @@ class PreferenceGP(GP):
 
         #theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, jac=self.calc_grad_ll, method='BFGS', options={'maxiter': 5, 'disp': True})
 
-        ll_pre = self.calc_ll(x0, x_train, y_train)
-        #print(ll_pre)
+        ll_pre = self.calc_ll_param(x0, x_train, y_train)
+        print('ll_pre = ' + str(ll_pre))
 
         #bounds=[(0.0001, 100), (0.0001, 10), (0.001,30)],
-        bounds = [(0.1, 20) for i in range(len(x))]
-        theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, bounds=bounds, tol=0.01, options={'maxiter': 300, 'disp': False})
+        bounds = [(0.1, 7) for i in range(len(x))]
+        calc_ll = lambda x, *args : -self.calc_ll_param(x, args[0], args[1])
+        theta = op.minimize(fun=calc_ll, args=(x_train, y_train), x0=x0, bounds=bounds, tol=0.01, options={'maxiter': 300, 'disp': False})
         x = theta.x
         print(theta)
 
-        self.sigma_L = x[0]
+        self.probits[0].set_sigma(x[0])
         self.cov_func.set_param(x[1:])
         #print('SIGMA_L: ' + str(self.sigma_L))
 
-        ll_post = self.calc_ll(x, x_train, y_train)
-        #print(ll_post)
+        ll_post = self.calc_ll_param(x, x_train, y_train)
+        print('ll_post = ' + str(ll_post))
 
-        #pdb.set_trace()
+    ## derivatives
+    # Calculates the derivatives for all of the given probits.
+    # @param y - the given set of labels for the probit
+    #              this is given as a list of [(dk, u, v), ...]
+    # @param F - the input data samples
+    #
+    # @return - W, dpy_df, py
+    #       W - is the second order derivative of the probit with respect to F
+    #       dpy_df - the derivative of log P(y|x,theta) with respect to F
+    #       py - log P(y|x,theta) for the given probit
+    def derivatives(self, y, F):
+        W = np.zeros((len(F), len(F)))
+        grad_ll = np.zeros(len(F))
+        log_likelihood = 0
 
+        for j, probit in enumerate(self.probits):
+            W_local, dpy_df_local, py_local = probit.derivatives(y[j], self.F)
+            W += W_local
+            grad_ll += dpy_df_local
+            log_likelihood += py_local
 
+        return W, grad_ll, log_likelihood
 
+    ## findMode
+    # This function calculates the mode of the F vector by using the
     def findMode(self, x_train, y_train):
-        # initial F estimate
-        #self.F = np.random.random(len(self.X_train))
         X_train = x_train
-        #pairs = y_train
 
-        self.K = covMatrix(X_train, X_train, self.cov_func)
+        self.K = self.cov_func.cov(X_train, X_train)
 
-        # split dataset
-
+        # check convergence using f_error (the max change in the f vector)
+        f_error = self.delta_f + 1 # force at least one iteration to be used
+        n_loops = 0
 
         # TODO good way to check for convergence
-        for i in range(10):
-            self.F, self.W = damped_newton_update(
-                                        y_train, # input training pairs
+        while f_error > self.delta_f:
+            self.W, self.grad_ll, self.log_likelihood = \
+                                            self.derivatives(y_train, self.F)
+
+            F_new = damped_newton_update(
                                         self.F, # estimated training values
                                         self.K, # covariance of training data
-                                        self.sigma_L, # sigma on the liklihood function
+                                        self.W, # The W matrix (d2py/ d2df)
+                                        self.grad_ll, # The gradient of the log likelihood
                                         self.lambda_gp, # lambda on the newton update
                                         self.invert_function)
+
             # normalize F
-            F_norm = np.linalg.norm(self.F, ord=np.inf)
-            self.F = self.F / F_norm
+            if self.normalize_gp:
+                F_norm = np.linalg.norm(F_new, ord=np.inf)
+                F_new = F_new / F_norm
+
+            # check for convergence and add noise if there is an error
+            df = np.abs((F_new - self.F))
+            if n_loops > 0 and df.max() > f_error:
+                print("Laplace error increase, adding noise")
+                F_new = F_new + np.random.normal(0, df.max()/10.0, F_new.shape)
+            f_error = np.max(df)
+            #print('f_error: ' + str(f_error))
+
+            self.F = F_new
+
+            if n_loops % 50 == 0 and n_loops != 0:
+                self.F = np.random.random(len(self.X_train))
+
+            n_loops += 1
+            if n_loops > self.maxloops:
+                print('WARNING: maximum loops in findMode exceeded. Returning current solution')
+                break
 
         # normalize W
-        self.W = calc_W_discrete(y_train, self.F, sigma_L = self.sigma_L)
+        self.W, self.grad_ll, self.log_likelihood = \
+                                        self.derivatives(y_train, self.F)
 
 
     ## optimize
     # Runs the optimization step required by the user preference GP.
     # @param optimize_hyperparameter - [opt] sets whether to optimize the hyperparameters
     def optimize(self, optimize_hyperparameter=False):
-        self.F = np.random.random(len(self.X_train))
-
         if optimize_hyperparameter:
-            shuffle = np.arange(len(self.y_train))
-            np.random.shuffle(shuffle)
+            self.F = np.random.random(len(self.X_train))
+            split_y = k_fold_half(self.y_train)
 
-            self.k_fold = 2
-            splits = np.array_split(shuffle, self.k_fold)
-
-
-            for i in range(self.k_fold):
-                # if i != 0:
-                #     print('Optimize with find mode before and after:')
-                #     t1 = self.calc_ll([self.sigma_L])
+            for i in range(len(split_y)):
                 train_x = self.X_train
-
-                train_split = splits[0:i] + splits[(i+1):]
-                t_split = np.empty(0, dtype=np.int)
-                for s in train_split:
-                    t_split = np.append(t_split, s)
-
-                train_y = [self.y_train[idx] for idx in t_split]
+                train_y = split_y[i]
 
                 valid_x = self.X_train
-                valid_y = [self.y_train[idx] for idx in splits[i]]
+                valid_y = split_y[1-i]
 
                 self.findMode(train_x, train_y)
-                #self.findMode(self.X_train, self.y_train)
-                # if i != 0:
-                #     t2 = self.calc_ll([self.sigma_L])
-                #     print(t1)
-                #     print(t2)
                 self.optimize_parameters(valid_x, valid_y)
 
+        self.F = np.random.random(len(self.X_train))
         self.findMode(self.X_train, self.y_train)
 
         self.optimized = True
@@ -347,8 +314,8 @@ class PreferenceGP(GP):
         K = self.K
         W = self.W
 
-        covXX_test = covMatrix(X_test, X_train, self.cov_func)
-        covTestTest = covMatrix(X_test, X_test, self.cov_func)
+        covXX_test = self.cov_func.cov(X_test, X_train)
+        covTestTest = self.cov_func.cov(X_test, X_test)
 
         covX_testX = np.transpose(covXX_test)
 
@@ -375,481 +342,26 @@ class PreferenceGP(GP):
 
 
 
-
-
-
-## derv_discrete_loglike
-# Calculates the first derivative of log likelihood.
-# Appendix A.1.1.1.1
-# Assumes (f(vk), f(uk))
-#
-# xi, yk, vk, are indicies of the likelihood
-# @param F - the vector of F (estimated training sample outputs)
-# @param dk - the label for the given sample of uk, vk
-# @param xi - the index of f
-# @param uk - index of the u parameters of the ordered pair
-# @param vk - index of the v parameters of the ordered pair
-# @param sigma - the sigma attached to the probid for discrete
-def derv_discrete_loglike(F, dk, xi, uk, vk, sigma):
-    if xi == uk:
-        I = 1
-    elif xi == vk:
-        I = -1
-    else:
-        return 0
-
-    zk = relative_probit(F, dk, uk, vk, sigma)
-    return I * dk * (1 / st.norm.pdf(zk)) * (1 / (SQ2_Pref_GP * sigma)) * st.norm.cdf(zk)
-
-
-
-
-## relative_probit
-# calculates the probit for the relative likelyhood function
-# Lrel
-# @param F - the vector of F (estimated training sample outputs)
-# @param d - the label of the ordered pair
-# @param u - the index of the u element
-# @param v - the index of the v element
-# @param sigma - the sigma attached to he relative likelyhood function.
-def relative_probit(F, d, u, v, sigma):
-    return (d * (F[v] - F[u])) / (SQ2_Pref_GP * sigma)
-
-def calc_pdf_o_cdf(pdf_zk, cdf_zk):
-    # as zk -> -infinity then pdf_zk / cdf_zk goes to infinity
-    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D%2Cx-%3E-%E2%88%9E%5D
-    # As zk -> infinity then pdf_zk / cdf_zk goes to 0
-    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D%2Cx-%3E%E2%88%9E%5D
-    # this code checks for those states and inputs the appropriate values
-    #
-
-    if cdf_zk == 0:
-        if pdf_zk < 0.5:
-            pdf_cdf_zk = pdf_cdf_2 = float('inf')
-        else:
-            pdf_cdf_zk = pdf_cdf_2 = 0
-    else:
-        pdf_cdf_zk = pdf_zk / cdf_zk
-        pdf_cdf_2 = pdf_cdf_zk * pdf_cdf_zk
-
-    return pdf_cdf_zk, pdf_cdf_2
-
-## derv2_discrete_loglike
-# Calculates the second derivative of discrete log likelihood.
-#  d / (dF(xi)dF(xj)) ln(p(dk|F(u), F(v)))
-#
-# Appendix A.1.1.2
-# Assumes (f(vk), f(uk))
-# xi, yk, vk, are indicies of the likelihood
-# @param F - the vector of f (estimated training sample outputs)
-# @param dk - the label for the given sample of uk, vk
-# @param xi - the index of f
-# @param xj - the second index of f
-# @param uk - index of the u parameters of the ordered pair
-# @param vk - index of the v parameters of the ordered pair
-# @param sigma - the sigma attached to the probid for discrete
-def derv2_discrete_loglike(F, dk, xi, xj, uk, vk, sigma):
-    # setup the indicator variables.
-    if xi == uk:
-        I1 = 1
-    elif xi == vk:
-        I1 = -1
-    else:
-        return 0
-
-    if xj == uk:
-        I2 = 1
-    elif xj == vk:
-        I2 = -1
-    else:
-        return 0
-
-    zk = relative_probit(F, dk, uk, vk, sigma)
-
-    # calculate the derivative
-    pdf_zk = st.norm.pdf(zk)
-    cdf_zk = st.norm.cdf(zk)
-
-    pdf_cdf_zk, pdf_cdf_2 = calc_pdf_o_cdf(pdf_zk, cdf_zk)
-
-    # when zk -> -infinity there is a -infinity + infinity limit for paren
-    # using wolfram this comes out as -infinity
-    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5Bx*Divide%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2Cerfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%5D%2Cx-%3E-%E2%88%9E%5D%2BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D
-    # This is handled in this code
-    # EDIT: Hmm, 0 seems to make it more stable... Not sure why, but it seems to
-    # be working.
-    if cdf_zk == 0 and zk < 0:
-        #paren = -float('inf')
-        paren = 0
-    else:
-        paren = (zk * pdf_cdf_zk) + (pdf_cdf_2)
-
-    w_ij = -(dk*dk)*I1*I2*(1/(2*sigma*sigma)) * paren
-
-    if np.isnan(w_ij):
-        pdb.set_trace()
-
-    return w_ij
-
-## derv2_discrete_loglike
-# Calculates the third derivative of discrete log likelihood.
-#  d / (dF(xi)dF(xj)F(xi)) ln(p(dk|F(u), F(v)))
-#
-# Appendix A.1.1.1
-# Assumes (f(vk), f(uk))
-# xi, yk, vk, are indicies of the likelihood
-# @param F - the vector of f (estimated training sample outputs)
-# @param dk - the label for the given sample of uk, vk
-# @param xi - the index of f
-# @param xj - the second index of f
-# @param xk - the third index to differentiate with resepect to.
-# @param uk - index of the u parameters of the ordered pair
-# @param vk - index of the v parameters of the ordered pair
-# @param sigma - the sigma attached to the probid for discrete
-def derv3_discrete_loglike(F, dk, xi, xj, xk, uk, vk, sigma):
-    # setup the indicator variables.
-    if xi == uk:
-        I1 = 1
-    elif xi == vk:
-        I1 = -1
-    else:
-        return 0
-
-    if xj == uk:
-        I2 = 1
-    elif xj == vk:
-        I2 = -1
-    else:
-        return 0
-
-    if xk == uk:
-        I3 = 1
-    elif xk == vk:
-        I3 = -1
-    else:
-        return 0
-
-    zk = relative_probit(F, dk, uk, vk, sigma)
-    pdf_zk = st.norm.pdf(zk)
-    cdf_zk = st.norm.cdf(zk)
-
-    pdf_cdf_zk, pdf_cdf_2 = calc_pdf_o_cdf(pdf_zk, cdf_zk)
-
-
-    # when zk -> -infinity there is a -infinity + infinity limit for paren
-    # using wolfram this comes out as -infinity
-    # https://www.wolframalpha.com/input/?i2d=true&i=Limit%5Bx*Divide%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2Cerfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%5D%2Cx-%3E-%E2%88%9E%5D%2BDivide%5BPower%5B%5C%2840%29Exp%5B-Divide%5BPower%5Bx%2C2%5D%2C2%5D%5D%5C%2841%29%2C2%5D%2CPower%5Berfc%5C%2840%29-Divide%5Bx%2CSqrt%5B2%5D%5D%5C%2841%29%2C2%5D%5D
-    # This is handled in this code
-    # EDIT: Hmm, 0 seems to make it more stable... Not sure why, but it seems to
-    # be working.
-    if cdf_zk == 0 and zk < 0:
-        #paren = -float('inf')
-        paren = 0
-    else:
-        paren = pdf_cdf_zk - (dk*dk*pdf_cdf_zk) - (3*dk*pdf_cdf_2) - (2 * pdf_cdf_2 * pdf_zk)
-
-    return -(dk*dk*dk / (2*SQ2_Pref_GP*sigma*sigma*sigma))*I1*I2*I3*paren
-
-
-
-
-
-## calc_W_discrete
-# calculate the W matrix for the discrete relative pairs contribution
-# This is following the formulation given in Appendix B.1.1.6
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
-#
-# @return W (n,n) n is the length of F
-def calc_W_discrete(pairs, F, sigma_L):
-    W = np.zeros((len(F), len(F)))
-
-    for dk, uk, vk in pairs:
-        W[uk, uk] -= derv2_discrete_loglike(F, dk, xi=uk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
-        W[uk, vk] -= derv2_discrete_loglike(F, dk, xi=uk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
-        W[vk, uk] -= derv2_discrete_loglike(F, dk, xi=vk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
-        W[vk, vk] -= derv2_discrete_loglike(F, dk, xi=vk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
-
-    return W
-
-## calc_derv_W_discrete
-# calculate the derivative W matrix for the discrete relative pairs contribution with respect to f_i
-# dW / dF(i)
-#
-# @param i - the index of the F vector that is being calculated
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
-#
-# @return W (n,n) n is the length of F
-def calc_derv_W_discrete( i, pairs, F, sigma_L):
-    W = np.zeros((len(F), len(F)))
-
-    for dk, uk, vk in pairs:
-        W[uk, uk] -= derv3_discrete_loglike(F, dk, xi=uk, xj=uk, xk=i, uk=uk, vk=vk, sigma=sigma_L)
-        W[uk, vk] -= derv3_discrete_loglike(F, dk, xi=uk, xj=vk, xk=i, uk=uk, vk=vk, sigma=sigma_L)
-        W[vk, uk] -= derv3_discrete_loglike(F, dk, xi=vk, xj=uk, xk=i, uk=uk, vk=vk, sigma=sigma_L)
-        W[vk, vk] -= derv3_discrete_loglike(F, dk, xi=vk, xj=vk, xk=i, uk=uk, vk=vk, sigma=sigma_L)
-
-    return W
-
-
-
-
-
-
-
-
-
-
-
-
-
-## logliklihoodYXTh
-# calculates the log-likilihood conditioned on X and theta
-# p(Y|X,Theta)
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param W - The W matrix
-# @param K - the covariance matrix
-def logliklihoodYXTh(pairs, F, W, K, sigmaL, invert_function=np.linalg.inv):
-    logpYF = 0
-    for dk, uk, vk in pairs:
-        logpYF += np.log(st.norm.cdf(relative_probit(F, dk, uk, vk, sigmaL)))
-
-    Kinv = invert_function(K)
-    term2 = 0.5 * np.matmul(np.matmul(np.transpose(F), Kinv), F)
-
-    term3 = 0.5 * np.log(np.linalg.det(np.identity(len(K)) + np.matmul(K, W)))
-
-    return logpYF - term2 - term3
-
-## calc_grad_loglike_discrete
-# Calculate the gradient of the log-likelyhood
-# this is used in the update step
-# grad log p(Y|F,thetaL)
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
-#
-# @return grad log p(Y|F,thetaL) (n,) n is the length of F
-def calc_grad_loglike_discrete(pairs, F, sigma_L):
-    grad = np.zeros((len(F),))
-
-    for dk, uk, vk in pairs:
-        grad[uk] -= derv_discrete_loglike(F, dk, xi=uk, uk=uk, vk=vk, sigma=sigma_L)
-        grad[vk] -= derv_discrete_loglike(F, dk, xi=vk, uk=uk, vk=vk, sigma=sigma_L)
-
-    return grad
-
-
-################################## calculate gradient of parameters (evidence)
-
-
-#### Discrete relative
-
-
-
-## calc_evidence_derivative_likelihood
-# calculates the derivative of the evidence derivatives
-# d p(theta | Y, X) / dTheta
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param K - the covariance matrix
-# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
-# @param invert_function - [opt] the matrix invertion function to use.
-#
-# @return the derivative of the log liklihood with respect to the liklihood parameter
-def calc_evidence_derivative_likelihood(pairs, F, W, K, sigma_L, invert_function=np.linalg.inv):
-    term1 = calc_grad_loglike_discrete_param(pairs, F, sigma_L)
-    partialW_sigma = calc_W_discrete_derv_param(pairs, F, sigma_L)
-
-    tmp1 = invert_function(np.identity(len(K)) + np.matmul(K, W))
-    term2 = -0.5 * np.trace(np.matmul(tmp1, np.matmul(K, partialW_sigma) ) )
-
-    return (term1 + term2)
-
-## calc_W_discrete_derv_param
-# Calculates the derivative of the of the second derivative of the discrete
-# log likelihood with respect to the sigma parameter
-# dW / d(sigma) for the discrete W
-# This is following the formulation given in Appendix B.2.3
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
-#
-# @return W (n,n) n is the length of F
-def calc_W_discrete_derv_param(pairs, F, sigma_L):
-    dW = np.zeros((len(F), len(F)))
-
-    for dk, uk, vk in pairs:
-        dW[uk, uk] += derv_W_discrete_sigma(F, dk, xi=uk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
-        dW[uk, vk] += derv_W_discrete_sigma(F, dk, xi=uk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
-        dW[vk, uk] += derv_W_discrete_sigma(F, dk, xi=vk, xj=uk, uk=uk, vk=vk, sigma=sigma_L)
-        dW[vk, vk] += derv_W_discrete_sigma(F, dk, xi=vk, xj=vk, uk=uk, vk=vk, sigma=sigma_L)
-
-    return dW
-
-## derv_W_discrete_sigma
-# Calculates the derivative of the of the second derivative of the discrete
-# log likelihood with respect to the sigma parameter
-# dW / d(sigma) for the discrete W
-# @param F - the vector of f (estimated training sample outputs)
-# @param dk - the label for the given sample of uk, vk
-# @param xi - the index of f
-# @param xj - the second index of f
-# @param uk - index of the u parameters of the ordered pair
-# @param vk - index of the v parameters of the ordered pair
-# @param sigma - the sigma attached to the probid for discrete
-def derv_W_discrete_sigma(F, dk, xi, xj, uk, vk, sigma):
-    # setup the indicator variables.
-    if xi == uk:
-        I1 = 1
-    elif xi == vk:
-        I1 = -1
-    else:
-        return 0
-
-    if xj == uk:
-        I2 = 1
-    elif xj == vk:
-        I2 = -1
-    else:
-        return 0
-
-    zk = relative_probit(F, dk, uk, vk, sigma)
-
-    pdf_zk = st.norm.pdf(zk)
-    cdf_zk = st.norm.cdf(zk)
-
-
-    pdf_cdf_zk, pdf_cdf_2 = calc_pdf_o_cdf(pdf_zk, cdf_zk)
-    pdf_cdf_3 = pdf_cdf_2*pdf_cdf_zk
-
-
-    tmp = (-(cdf_zk**2) + (dk**2)*(cdf_zk**2) + 3*dk*pdf_zk*cdf_zk + 2*(pdf_zk**2))
-    if cdf_zk == 0 and zk < 0:
-        #not sure this makes sense, but I think setting it to zero is the best option.
-        tmp = 0
-    else:
-        tmp = -pdf_cdf_zk + zk*zk*pdf_cdf_zk + 3*zk*pdf_cdf_2 + 2*pdf_cdf_3
-        first_term = (dk*dk/(sigma**3))*((dk*pdf_cdf_zk) + pdf_cdf_2)
-
-    second_term = (1 / (2*sigma*sigma*sigma)) * dk*dk*zk * tmp
-
-    return -I1*I2*(first_term - second_term)
-
-## calc_grad_loglike_discrete_param
-# @param pairs - the list of ordered pairs (dk, uk, vk) where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param F - the vector of f (estimated training sample outputs)
-# @param sigma_L - the sigma on the likelyhood function (hyperparameter)
-#
-# @return grad log p(Y|F,thetaL) (n,) n is the length of F
-def calc_grad_loglike_discrete_param(pairs, F, sigma_L):
-    grad = 0
-
-    for dk, uk, vk in pairs:
-        grad += derv_param_discrete_loglike(F, dk, xi=uk, uk=uk, vk=vk, sigma=sigma_L)
-        grad += derv_param_discrete_loglike(F, dk, xi=vk, uk=uk, vk=vk, sigma=sigma_L)
-
-    return grad
-
-
-
-
-## derv_param_discrete_loglike
-# Calculate the derivative of the discrete log liklihood with respect to the parameters
-# d / d(sigma) log p(d | f(u), f(v))
-#
-# xi, yk, vk, are indicies of the likelihood
-# @param F - the vector of F (estimated training sample outputs)
-# @param dk - the label for the given sample of uk, vk
-# @param xi - the index of f
-# @param uk - index of the u parameters of the ordered pair
-# @param vk - index of the v parameters of the ordered pair
-# @param sigma - the sigma attached to the probid for discrete
-def derv_param_discrete_loglike(F, dk, xi, uk, vk, sigma):
-    zk = relative_probit(F, dk, uk, vk, sigma)
-
-    # calculate the derivative
-    pdf_zk = st.norm.pdf(zk)
-    cdf_zk = st.norm.cdf(zk)
-
-    return -dk * pdf_zk / cdf_zk
-
-
-################################## calculate gradient of parameters (covariance function)
-
-## derv_log_p_y_given_theta_for_theta
-# caluclate the derivative of the log liklihood for a given parameter in the
-# covariance function
-# d log p(Y|theta)/dtheta_j
-#
-# @param pairs_discrete - the pairs the list of ordered pairs (dk, uk, vk)
-#                         where dk=-1 indicates u > v, and dk=1 indicate y < v
-# @param sigma_L - the sigma for the likelyhood of pairs
-# @param F - the vector of f (estimated training sample outputs)
-# @param K - the covariance matrix
-# @param dK - the derivative of the covariance matrix for the given parameter
-# @param W - The W matrix
-# @param invert_function - [opt] the matrix invertion function to use.
-#
-# @return the derivative of the log liklihood with respect to the parameter
-def derv_log_p_y_given_theta_for_theta(pairs_discrete, sigma_L, F, K, dK, W, \
-                        invert_function=np.linalg.inv):
-    K_inv = invert_function(K)
-    termA_1 = 0.5 * np.matmul(np.matmul(np.transpose(F), K_inv), np.matmul(dK, np.matmul(K_inv, F)))
-    tmp = np.identity(len(W)) + np.matmul(K, W)
-    tmp = invert_function(tmp)
-    termA_2 = 0.5 * np.trace(np.matmul(tmp, np.matmul(dK, W)))
-    termA = termA_1 - termA_2
-
-    tmp = invert_function(np.identity(len(W)) + np.matmul(K, W))
-    grad_ll = calc_grad_loglike_discrete(pairs_discrete, F, sigma_L)
-    factor2 = np.matmul(tmp, np.matmul(dK, grad_ll))
-
-
-    termB = 0
-    for i in range(len(F)):
-        gradW_i = calc_derv_W_discrete(i, pairs_discrete, F, sigma_L)
-        factor1 = -0.5 * np.trace(np.matmul(tmp, np.matmul(K, gradW_i)))
-
-        termB += factor1 * factor2[i]
-
-    return termA + termB
-
-
 ############################# Optimization functions
+
 
 ## damped_newton_update
 # this function performs the damped newton update for the preference learning
-# @param pairs_discrete - the pairs the list of ordered pairs (dk, uk, vk)
-#                         where dk=-1 indicates u > v, and dk=1 indicate y < v
 # @param F - the initial vector of f (estimated training sample outputs)
 # @param K - the covariance matrix for training inputs X
-# @param sigma_L - the sigma for the likelyhood of pairs
+# @param W - the W matrix
+# @param grad_ll - the gradient of the log_likelihood
 # @param lambda - adaptive damping factor on the newton update
 # @param invert_function - [opt] the matrix invertion function to use.
 #
 # @return the updated F for the newton update
-def damped_newton_update(pairs_discrete, F, K, sigma_L, lamda, \
+def damped_newton_update(F, K, W, grad_ll, lamda, \
                             invert_function=np.linalg.inv):
-    W = calc_W_discrete(pairs_discrete, F, sigma_L = sigma_L)
-    #print('W:')
-    #print(W)
-    grad_ll = calc_grad_loglike_discrete(pairs_discrete, F, sigma_L=sigma_L)
-
-    #print('grad_ll')
-    #print(grad_ll)
-
     term1 = invert_function(K) + W - lamda*np.identity(len(W))
     term1_inv = invert_function(term1)
     term2 = np.matmul((W - lamda*np.identity(len(W))), F) + grad_ll
 
-    return np.matmul(term1_inv, term2), W
-
-
+    return np.matmul(term1_inv, term2)
 
 
 
