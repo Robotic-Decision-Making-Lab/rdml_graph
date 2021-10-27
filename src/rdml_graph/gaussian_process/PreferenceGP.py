@@ -126,7 +126,7 @@ class PreferenceGP(GP):
             for i, x in enumerate(X):
                 dominate = np.all(x > self.X_train, axis=1)
 
-                cur_pairs = [(d_better, i, j) for j in range(len(dominate)) if dominate[j]]
+                cur_pairs = [(d_better, i+len_X, j) for j in range(len(dominate)) if dominate[j]]
                 pairs += cur_pairs
 
             if self.y_train[self.probit_idxs['relative_discrete']] is None:

@@ -162,10 +162,13 @@ class PreferenceProbit(ProbitBase):
         derv_ll_pairs = y[:,0] * pdf_cdf_ratio * self._isqrt2sig
         derv_ll = np.zeros(len(F))
 
-        # SPEEDUP?: Vectorize this summation process?
-        for i in range(len(y)):
-            derv_ll[y[i,1]] -= derv_ll_pairs[i]
-            derv_ll[y[i,2]] += derv_ll_pairs[i]
+
+        derv_ll = add_up_vec(y[:,1], -derv_ll_pairs, derv_ll)
+        derv_ll = add_up_vec(y[:,2], +derv_ll_pairs, derv_ll)
+
+        # for i in range(len(y)):
+        #     derv_ll[y[i,1]] -= derv_ll_pairs[i]
+        #     derv_ll[y[i,2]] += derv_ll_pairs[i]
 
         return derv_ll
 
@@ -189,12 +192,23 @@ class PreferenceProbit(ProbitBase):
         d2_ll_pairs = -(y[:,0]*y[:,0])*paren_pairs*self._i2var
 
         W = np.zeros((len(F), len(F)))
-        # Speedup?: Vectorize this process???
-        for i in range(len(y)):
-            W[y[i,1], y[i,1]] += -d2_ll_pairs[i]
-            W[y[i,1], y[i,2]] +=  d2_ll_pairs[i]
-            W[y[i,2], y[i,1]] +=  d2_ll_pairs[i]
-            W[y[i,2], y[i,2]] += -d2_ll_pairs[i]
+
+        # vectorized versions of summation
+        idx1 = np.array([y[:,1], y[:,1]]).T
+        idx2 = np.array([y[:,1], y[:,2]]).T
+        idx3 = np.array([y[:,2], y[:,1]]).T
+        idx4 = np.array([y[:,2], y[:,2]]).T
+
+        W = add_up_mat(idx1, -d2_ll_pairs, W)
+        W = add_up_mat(idx2,  d2_ll_pairs, W)
+        W = add_up_mat(idx3,  d2_ll_pairs, W)
+        W = add_up_mat(idx4, -d2_ll_pairs, W)
+
+        # for i in range(len(y)):
+        #     W[y[i,1], y[i,1]] += -d2_ll_pairs[i]
+        #     W[y[i,1], y[i,2]] +=  d2_ll_pairs[i]
+        #     W[y[i,2], y[i,1]] +=  d2_ll_pairs[i]
+        #     W[y[i,2], y[i,2]] += -d2_ll_pairs[i]
 
         return W
 
@@ -279,6 +293,56 @@ def calc_pdf_cdf_ratio(z):
     return pdf_cdf_z, pdf_cdf_2
 
 
+try:
+    import numba
+
+    ## add_up_mat
+    # add the values in v to the M matrix indexed by the indicies matrix
+    # @param indicies - (n x k) the list of indicies for the v to add to the matrix
+    # @param v - the values ligned up wiht indicies
+    # @param M -  [in/out] the matrix to add up
+    @numba.jit
+    def add_up_mat(indicies, v, M):
+        for i, v_i in enumerate(v):
+            M[indicies[i,0], indicies[i,1]] += v_i
+
+        return M
+
+    ## add_up_vec
+    # add the values in v to the M vector indexed by the indicies matrix
+    # @param indicies - (n,) the list of indicies for the v to add to the matrix
+    # @param v - the values ligned up wiht indicies
+    # @param M -  [in/out] the vector to add up
+    @numba.jit
+    def add_up_vec(indicies, v, M):
+        for i, v_i in enumerate(v):
+            M[indicies[i]] += v_i
+
+        return M
+except ImportError:
+    print('Failed to import numba, add_up_mat and add_up_vec will be slower')
+
+    ## add_up_mat
+    # add the values in v to the M matrix indexed by the indicies matrix
+    # @param indicies - (n x k) the list of indicies for the v to add to the matrix
+    # @param v - the values ligned up wiht indicies
+    # @param M -  [in/out] the matrix to add up
+    def add_up_mat(indicies, v, M):
+        for i, v_i in enumerate(v):
+            M[indicies[i,0], indicies[i,1]] += v_i
+
+        return M
+
+    ## add_up_vec
+    # add the values in v to the M vector indexed by the indicies matrix
+    # @param indicies - (n,) the list of indicies for the v to add to the matrix
+    # @param v - the values ligned up wiht indicies
+    # @param M -  [in/out] the vector to add up
+    def add_up_vec(indicies, v, M):
+        for i, v_i in enumerate(v):
+            M[indicies[i]] += v_i
+
+        return M
 
 
 

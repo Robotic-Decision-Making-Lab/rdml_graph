@@ -36,7 +36,8 @@ def f_lin(x, data=None):
     #return x[:,0]*x[:,1]
     return x[:,0]+x[:,1]
 
-
+def f_sq(x, data=None):
+    return x[:,0]*x[:,0] + 1.2*x[:,1]
 
 
 
@@ -44,10 +45,10 @@ if __name__ == '__main__':
     num_side = 25
     bounds = [(0,7), (0,7)]
 
-    num_train_pts = 10
+    num_train_pts = 40
     num_alts = 4
 
-    utility_f = f_lin
+    utility_f = f_sq
 
     #train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
     #train_Y = f_sin(train_X)
@@ -58,38 +59,38 @@ if __name__ == '__main__':
     gp.add_prior(bounds=np.array(bounds))
 
 
-    train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
-    train_Y = utility_f(train_X)#f_lin(train_X)
+    # train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
+    # train_Y = utility_f(train_X)#f_lin(train_X)
+    #
+    # pairs = []
+    # for i in range(len(train_X)):
+    #     pairs += gr.generate_fake_pairs(train_X, utility_f, i)
+    # gp.add(train_X, pairs)
 
-    pairs = []
-    for i in range(len(train_X)):
-        pairs += gr.generate_fake_pairs(train_X, utility_f, i)
-    gp.add(train_X, pairs)
+    for i in tqdm.tqdm(range(10)):
+        train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
+        train_Y = utility_f(train_X)#f_lin(train_X)
 
-    # for i in tqdm.tqdm(range(10)):
-    #     train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
-    #     train_Y = utility_f(train_X)#f_lin(train_X)
-    #
-    #     selected_idx, UCB, best_value = gp.ucb_selection(train_X, num_alts)
-    #
-    #     best_idx = np.argmax(train_Y[selected_idx])
-    #
-    #     #pairs = gr.gen_pairs_from_idx(best_idx, np.arange(num_alts, dtype=np.int))
-    #     pairs = gr.ranked_pairs_from_fake(train_X[selected_idx], utility_f)
-    #
-    #     print(pairs)
-    #     print(train_Y[selected_idx])
-    #     print(train_X[selected_idx])
-    #     #best_idx = np.argmax(train_Y)
-    #     #pairs = gr.gen_pairs_from_idx(best_idx, np.arange(num_alts, dtype=np.int))
-    #     #print(selected_idx)
-    #     #print(UCB)
-    #     #print(train_X[selected_idx])
-    #     #pdb.set_trace()
-    #     #print(train_Y[selected_idx])
-    #
-    #     #gp.add(train_X[selected_idx], pairs)
-    #     gp.add(train_X[selected_idx], pairs)
+        selected_idx, UCB, best_value = gp.ucb_selection(train_X, num_alts)
+
+        best_idx = np.argmax(train_Y[selected_idx])
+
+        #pairs = gr.gen_pairs_from_idx(best_idx, np.arange(num_alts, dtype=np.int))
+        pairs = gr.ranked_pairs_from_fake(train_X[selected_idx], utility_f)
+
+        print(pairs)
+        print(train_Y[selected_idx])
+        print(train_X[selected_idx])
+        #best_idx = np.argmax(train_Y)
+        #pairs = gr.gen_pairs_from_idx(best_idx, np.arange(num_alts, dtype=np.int))
+        #print(selected_idx)
+        #print(UCB)
+        #print(train_X[selected_idx])
+        #pdb.set_trace()
+        #print(train_Y[selected_idx])
+
+        #gp.add(train_X[selected_idx], pairs)
+        gp.add(train_X[selected_idx], pairs)
 
     gp.optimize(optimize_hyperparameter=False)
 
