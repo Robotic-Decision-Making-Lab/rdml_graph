@@ -27,7 +27,7 @@ import numpy as np
 import collections
 from rdml_graph.gaussian_process import GP
 from rdml_graph.gaussian_process import PreferenceProbit, ProbitBase
-from rdml_graph.gaussian_process import k_fold_half
+from rdml_graph.gaussian_process import k_fold_half, get_dk
 
 import scipy.optimize as op
 import scipy.stats as st
@@ -53,13 +53,14 @@ class PreferenceGP(GP):
     # @param cov_func - the covariance function to use
     # @param mat_inv - [opt] the matrix inversion function to use. By default
     #                   just uses numpy.linalg.inv
-    def __init__(self, cov_func, normalize_gp=True, mat_inv=np.linalg.pinv):
+    def __init__(self, cov_func, normalize_gp=True, pareto_pairs=False, mat_inv=np.linalg.pinv):
         super(PreferenceGP, self).__init__(cov_func, mat_inv)
 
         self.optimized = False
         self.lambda_gp = 0.1
 
         self.normalize_gp = normalize_gp
+        self.pareto_pairs = pareto_pairs
 
         # sigma on the likelihood function.
         #self.sigma_L = 1.0
@@ -73,6 +74,13 @@ class PreferenceGP(GP):
         self.maxloops = 100
 
 
+    def add_prior(self, bounds = np.array([[0,1],[0,1]]), num_pts = 100):
+        scaler = bounds[:,1] - bounds[:,0]
+        bias = bounds[:,0]
+
+        pts = np.random.random((num_pts, bounds.shape[0])) * scaler + bias
+
+        self.add(pts, [], type='relative_discrete')
 
     ## add_training
     # adds training data to the gaussian process
@@ -100,13 +108,34 @@ class PreferenceGP(GP):
 
 
         if type == 'relative_discrete':
-            if self.y_train[self.probit_idxs[type]] is None:
+            if y == []:
+                pass
+            elif self.y_train[self.probit_idxs[type]] is None:
                 self.y_train[self.probit_idxs[type]] = np.array(y)
             else:
                 # reset index of pairwise comparisons
                 y = [(d, u+len_X, v+len_X) for d, u, v in y]
 
-                self.y_train = self.y_train + y
+                self.y_train[self.probit_idxs[type]] = \
+                    np.append(self.y_train[self.probit_idxs[type]], np.array(y), axis=0)
+
+        if self.pareto_pairs:
+            pairs = []
+            d_better = get_dk(1,0)
+            # Go through each new sample and check if it pareto optimal to others
+            for i, x in enumerate(X):
+                dominate = np.all(x > self.X_train, axis=1)
+
+                cur_pairs = [(d_better, i, j) for j in range(len(dominate)) if dominate[j]]
+                pairs += cur_pairs
+
+            if self.y_train[self.probit_idxs['relative_discrete']] is None:
+                self.y_train[self.probit_idxs['relative_discrete']] = np.array(pairs)
+            else:
+                self.y_train[self.probit_idxs['relative_discrete']] = \
+                    np.append(self.y_train[self.probit_idxs['relative_discrete']], \
+                                np.array(pairs), axis=0)
+        # end if for pareto_pairs
 
 
         self.optimized = False
@@ -142,6 +171,11 @@ class PreferenceGP(GP):
         return logpYF - term2 - term3
 
 
+    ## optimize_parameters
+    # Optimizes the hyperparameters using a generic minimization function
+    # This sort of works. In practice I've had issues with it.
+    # @param x_train - the input training parameters
+    # @param y_train - the label training parameters
     def optimize_parameters(self, x_train, y_train):
         # TODO setup full vector
 
@@ -151,25 +185,6 @@ class PreferenceGP(GP):
         x0 = np.array([self.probits[0].sigma], dtype=np.float)
         x0 = np.append(x0, self.cov_func.get_param(), axis=0)
         x = x0
-
-        #pdb.set_trace()
-
-        # for i in range(40):
-        #     print('STEP: '+str(i))
-        #     grad = self.calc_grad_ll(x)
-        #     value = self.calc_ll(x)
-        #
-        #
-        #     print(grad)
-        #     print(value)
-        #     print(x)
-        #
-        #     x -= grad*0.02
-        #     #x[0] = self.sigma_L
-        #     # if x[0] <= 0.01:
-        #     #     x[0] = 0.01
-
-        #theta = op.minimize(fun=self.calc_ll, args=(x_train, y_train), x0=x0, jac=self.calc_grad_ll, method='BFGS', options={'maxiter': 5, 'disp': True})
 
         ll_pre = self.calc_ll_param(x0, x_train, y_train)
         print('ll_pre = ' + str(ll_pre))

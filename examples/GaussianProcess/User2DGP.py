@@ -44,17 +44,18 @@ if __name__ == '__main__':
     num_side = 25
     bounds = [(0,7), (0,7)]
 
-    num_train_pts = 50
+    num_train_pts = 10
     num_alts = 4
 
-    utility_f = f_sin
+    utility_f = f_lin
 
     #train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
     #train_Y = f_sin(train_X)
 
     #gp = gr.PreferenceGP(gr.RBF_kern(0.2,0.5)*gr.linear_kern(0.2, 0.1, 0))
     #gp = gr.PreferenceGP(gr.linear_kern(0.3, 0.1, 0.0))
-    gp = gr.PreferenceGP(gr.RBF_kern(0.5, 1.0))
+    gp = gr.PreferenceGP(gr.RBF_kern(0.5, 1.0), pareto_pairs=True)
+    gp.add_prior(bounds=np.array(bounds))
 
 
     train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
@@ -90,8 +91,6 @@ if __name__ == '__main__':
     #     #gp.add(train_X[selected_idx], pairs)
     #     gp.add(train_X[selected_idx], pairs)
 
-    print(gp.y_train)
-
     gp.optimize(optimize_hyperparameter=False)
 
     x = np.linspace(bounds[0][0], bounds[0][1], num_side)
@@ -120,7 +119,7 @@ if __name__ == '__main__':
     ax.set_ylabel('y')
     ax.set_zlabel('z')
 
-    print(gp.X_train)
-    print(gp.F)
+    #print(gp.X_train)
+    #print(gp.F)
 
     plt.show()
