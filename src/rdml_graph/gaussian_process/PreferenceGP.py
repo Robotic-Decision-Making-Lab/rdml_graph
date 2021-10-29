@@ -53,7 +53,8 @@ class PreferenceGP(GP):
     # @param cov_func - the covariance function to use
     # @param mat_inv - [opt] the matrix inversion function to use. By default
     #                   just uses numpy.linalg.inv
-    def __init__(self, cov_func, normalize_gp=True, pareto_pairs=False, mat_inv=np.linalg.pinv):
+    def __init__(self, cov_func, normalize_gp=True, pareto_pairs=False, \
+            other_probits={}, mat_inv=np.linalg.pinv):
         super(PreferenceGP, self).__init__(cov_func, mat_inv)
 
         self.optimized = False
@@ -66,6 +67,12 @@ class PreferenceGP(GP):
         #self.sigma_L = 1.0
         self.probits = [PreferenceProbit(sigma = 3.0)]
         self.probit_idxs = {'relative_discrete': 0}
+
+        i = 1
+        for key in other_probits:
+            self.probit_idxs[key] = i
+            self.probits.append(other_probits[key])
+            i += 1
 
         self.y_train = [None] * len(self.probits)
         self.X_train = None
@@ -118,6 +125,20 @@ class PreferenceGP(GP):
 
                 self.y_train[self.probit_idxs[type]] = \
                     np.append(self.y_train[self.probit_idxs[type]], np.array(y), axis=0)
+        elif type == 'ordinal':
+            if not isinstance(y, np.ndarray):
+                y = np.array(y)
+            if len(y.shape) == 1:
+                new_y = np.empty((y.shape[0], 2), dtype=int)
+                new_y[:,0] = y
+                new_y[:,1] = np.arange(0, y.shape[0])
+            else:
+                new_y = y
+            if self.y_train[self.probit_idxs[type]] is None:
+                self.y_train[self.probit_idxs[type]] = new_y
+            else:
+                self.y_train[self.probit_idxs[type]] = \
+                    np.append(self.y_train[self.probit_idxs[type]], new_y, axis=0)
 
         if self.pareto_pairs:
             pairs = []
@@ -219,10 +240,11 @@ class PreferenceGP(GP):
         log_likelihood = 0
 
         for j, probit in enumerate(self.probits):
-            W_local, dpy_df_local, py_local = probit.derivatives(y[j], self.F)
-            W += W_local
-            grad_ll += dpy_df_local
-            log_likelihood += py_local
+            if y[j] is not None:
+                W_local, dpy_df_local, py_local = probit.derivatives(y[j], self.F)
+                W += W_local
+                grad_ll += dpy_df_local
+                log_likelihood += py_local
 
         return W, grad_ll, log_likelihood
 
