@@ -53,7 +53,7 @@ class PreferenceGP(GP):
     # @param cov_func - the covariance function to use
     # @param mat_inv - [opt] the matrix inversion function to use. By default
     #                   just uses numpy.linalg.inv
-    def __init__(self, cov_func, normalize_gp=True, pareto_pairs=False, mat_inv=np.linalg.pinv):
+    def __init__(self, cov_func, normalize_gp=True, pareto_pairs=False, normalize_positive=False, mat_inv=np.linalg.pinv):
         super(PreferenceGP, self).__init__(cov_func, mat_inv)
 
         self.optimized = False
@@ -61,10 +61,11 @@ class PreferenceGP(GP):
 
         self.normalize_gp = normalize_gp
         self.pareto_pairs = pareto_pairs
+        self.normalize_positive = normalize_positive
 
         # sigma on the likelihood function.
         #self.sigma_L = 1.0
-        self.probits = [PreferenceProbit(sigma = 3.0)]
+        self.probits = [PreferenceProbit(sigma = 1.0)]
         self.probit_idxs = {'relative_discrete': 0}
 
         self.y_train = [None] * len(self.probits)
@@ -252,8 +253,14 @@ class PreferenceGP(GP):
 
             # normalize F
             if self.normalize_gp:
-                F_norm = np.linalg.norm(F_new, ord=np.inf)
-                F_new = F_new / F_norm
+                if self.normalize_positive:
+                    min = np.amin(F_new)
+                    F_new = (F_new - min)
+                    max = np.amax(F_new)
+                    F_new = F_new / max
+                else:
+                    F_norm = np.linalg.norm(F_new, ord=np.inf)
+                    F_new = F_new / F_norm
 
             # check for convergence and add noise if there is an error
             df = np.abs((F_new - self.F))
