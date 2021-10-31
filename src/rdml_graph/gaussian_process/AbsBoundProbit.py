@@ -16,13 +16,13 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-# OrdinalProbit.py
+# AbsBoundProbit.py
 # Written Ian Rankin - October 2021
 # Modified code by Nicholas Lawerence from here
 # https://github.com/osurdml/GPtest/tree/feature/wine_statruns/gp_tools
 # Used with permission.
 #
-# A set of different Gaussian Process Probits from
+# A set of Gaussian Process Probits from
 # Pairwise Judgements and Absolute Ratings with Gaussian Process Priors
 #  - a collection of technical details (2014)
 # Bjorn Sand Jenson, Jens Brehm, Nielsen
@@ -32,122 +32,86 @@ import numpy as np
 import scipy.stats as st
 
 from rdml_graph.gaussian_process import ProbitBase
-from rdml_graph.gaussian_process import std_norm_pdf, std_norm_cdf, calc_pdf_cdf_ratio
+from rdml_graph.gaussian_process import std_norm_pdf, std_norm_cdf
 
+from scipy.special import digamma, polygamma
+from scipy.stats import norm, beta
 
-## OrdinalProbit
-# This is almost directly Nick's code, for Ordinal regression.
-# This is based on the paper by Chu and Ghahramani
-# https://www.jmlr.org/papers/v6/chu05a.html
-# Ordinal regression is for categorical scales (like a likert scale)
-class OrdinalProbit(ProbitBase):
-    type = 'categorical'
-    y_type = 'discrete'
+## AbsBoundProbit
+# This is almost directly Nick's code, for absolute bounded inputs.
+# Pairwise Judgements and Absolute Ratings with Gaussian Process Priors
+#  - a collection of technical details (2014)
+# Bjorn Sand Jenson, Jens Brehm, Nielsen
+#
+#
+class AbsBoundProbit(ProbitBase):
+    type = 'bounded continuous'
+    y_type = 'bounded'
 
 
     ## Constructor
-    # @param sigma - the sigma on the likelihood function
-    # @param b - the bias parameter
-    # @param n_ordinals - the number of ordinal categories.
-    # @param eps - the epsilon on #TODO
-    def __init__(self, sigma=1.0, b=1.0, n_ordinals=5, eps=1.0e-10):
-        self.n_ordinals=n_ordinals
-        self.set_hyper([sigma, b])
-        self.eps = eps
-        self.y_list = np.atleast_2d(np.arange(1, self.n_ordinals+1, 1, dtype='int')).T
+    # @param sigma - the slope of the probit, basically scales how far away from
+    #               0 the latent has to be to to move away from 0.5 output. Sigma should
+    #               basically relate to the range of the latent function
+    # @param v - the precision, kind of related to inverse of noise, high v is sharp distributions
+    def __init__(self, sigma=1.0, v=10.0):
+        self.set_hyper([sigma, v])
+        self.log2pi = np.log(2.0*np.pi)
+
 
     ## set_hyper
     # Sets the hyperparameters for the probit
-    # @param hyper - an array or list with [sigma, b]
+    # @param hyper - a list of hyperparameters [sigma, v]
+    #               sigma, the slope of the probit
+    #               v, precision, related to inverse of noise
     def set_hyper(self, hyper):
         self.set_sigma(hyper[0])
-        self.set_b(hyper[1])
-
-    ## set_b
-    # Sets the bias hyperparameter
-    # @param b - should be a scalar or vector of breakpoints
-    def set_b(self, b):
-        if not hasattr(b, "__len__"):
-            b = abs(b)
-            self.b = np.hstack(([-np.Inf],np.linspace(-b, b, self.n_ordinals-1), [np.Inf]))
-        elif len(b) == self.n_ordinals+1:
-            self.b = b
-        elif len(b) == self.n_ordinals-1:
-            self.b = np.hstack(([-np.Inf], b, [np.Inf]))
-        else:
-            raise ValueError('Specified b should be a scalar or vector of breakpoints')
+        self.set_v(hyper[1])
 
     ## set_sigma
-    # sets the sigma hyperparamter and calculates the inverse of sigma and inverse squared
-    # @param sigma - the sigma value for the probit function.
+    # Sets the sigma on the absolute bounded probit.
+    # Also calculates inverse to the sigma for fast calculation.
+    # @param sigma - the slope of the probit, basically scales how far away from
+    #               0 the latent has to be to to move away from 0.5 output. Sigma should
+    #               basically relate to the range of the latent function
     def set_sigma(self, sigma):
         self.sigma = sigma
-        self._isigma = 1.0/self.sigma
-        self._ivar = self._isigma**2
+        self._isqrt2sig = 1.0 / (self.sigma * np.sqrt(2.0))
+        self._i2var =  self._isqrt2sig**2
+
+    ## sets the v variable.
+    # @param v - the precision, kind of related to inverse of noise, high v is sharp distributions
+    def set_v(self, v):
+        self.v = v
 
     ## print_hyperparameters
     # prints the hyperparameter of the probit
     def print_hyperparameters(self):
-        print("Ordinal probit, {0} ordered categories.".format(self.n_ordinals))
-        print("Sigma: {0:0.2f}, b: ".format(self.sigma))
-        print(self.b)
+        print("Beta distribution, probit mean link.")
+        print("Sigma: {0:0.2f}, v: {1:0.2f}".format(self.sigma, self.v))
 
-    ## z_k
-    # returns the probit for the given probit class (the difference in the
-    # latent space)
-    # @param y - the labels for the given probit (rating, u) (must be a numpy array)
-    # @param F - the input estimates in the latent space
-    #
-    # @return the vector of z_k values
-    def z_k(self, y, F):
-        if isinstance(y, np.ndarray):
-            f = F[y[:,1]]
-            y = y[:,0]
-        else:
-            f = F
-        return self._isigma*(self.b[y] - f)
 
-    def norm_pdf(self, y, F):
-        if isinstance(y, np.ndarray):
-            f = F[y[:,1]]
-            y = y[:,0]
-        else:
-            f = F
+    ## mean_link
+    # The mean link function for the probit function.
+    # Defined as equation 11 in Section 3.2.1
+    # @param F - the predicted locations
+    def mean_link(self, F):
+        ml = np.clip(std_norm_cdf(F*self._isqrt2sig), 1e-12, 1.0-1e-12)
+        return ml
 
-        if isinstance(y, np.ndarray):
-            f = f*np.ones(y.shape, dtype='float')       # This ensures the number of f values matches the number of y
-            out = np.zeros(y.shape, dtype='float')
-            for i in range(out.shape[0]):
-                if y[i] != 0 and y[i] != self.n_ordinals:  # b0 = -Inf -> N(-Inf) = 0
-                    z = self._isigma*(self.b[y[i]] - f[i])
-                    out[i] = std_norm_pdf(z)
-        else:
-            out = 0
-            if y!=0 and y != self.n_ordinals:
-                z = self._isigma*(self.b[y] - f)
-                out = std_norm_pdf(z)
-        return out
-
-    def norm_cdf(self, y, F, var_x=0.0):
-        if isinstance(y, np.ndarray):
-            f = F[y[:,1]]
-            y = y[:,0]
-        else:
-            f = F
-        ivar = self._isigma + var_x
-        f = f*np.ones(y.shape, dtype='float')
-        out = np.zeros(y.shape, dtype='float')
-        for i in range(out.shape[0]):
-            if y[i] == self.n_ordinals:
-                out[i] = 1.0
-            elif y[i] != 0:
-                z = ivar*(self.b[y[i]] - f[i])
-                out[i] = std_norm_cdf(z)
-        return out
+    ## get_alpha_beta
+    # the alpha and beta function for the mean function.
+    # Equation 10
+    # @param F - the input data
+    def get_alpha_beta(self, F):
+        ml = self.mean_link(F)
+        aa = self.v * ml
+        bb = self.v - aa    # = self.v * (1-ml)
+        return aa, bb
 
     ## derivatives
     # Calculates the derivatives of the probit with the given input data
-    # @param y - the given set of labels for the probit (rating, u_k)
+    # @param y - the given set of labels for the probit
     # @param F - the input data samples
     #
     # @return - W, dpy_df, py
@@ -155,53 +119,39 @@ class OrdinalProbit(ProbitBase):
     #       dpy_df - the derivative of P(y|x,theta) with respect to F
     #       py - P(y|x,theta) for the given probit
     def derivatives(self, y, F):
-        f = F[y[:,1]]
-        y_orig = y
-        y = y[:,0]
-        l = self.likelihood(y_orig, F)
-        py = np.log(l)
+        y_sel = y[0][y[1]]
 
-        # First derivative - Chu and Gharamani
-        # Having issues with derivative (likelihood denominator drops to 0)
-        dpy_df = np.zeros(l.shape, dtype='float')
-        d2py_df2 = np.zeros(l.shape, dtype='float')
-        for i in range(l.shape[0]):
-            if l[i] < self.eps:
-                # l2 = self.likelihood(y[i], f[i]+self.delta_f)
-                # l0 = self.likelihood(y[i], f[i]-self.delta_f)
-                # dpy_df[i] = -(l2-l[i])/self.delta_f/l[i]      # (ln(f))' = f'/f
-                # d2py_df2[i] = (l2 - 2*l[i] + l0)/self.delta_f**2/dpy_df[i]/l[i]
+        aa, bb = self.get_alpha_beta(F)
 
-                if y[i] == 1:
-                    dpy_df[i] = self._isigma*self.z_k(y[i], f[i])
-                    d2py_df2[i] = -self._ivar
-                elif y[i] == self.n_ordinals:
-                    dpy_df[i] = self._isigma*self.z_k(y[i]-1, f[i])
-                    d2py_df2[i] = -self._ivar
-                else:
-                    z1 = self.z_k(y[i], f[i])
-                    z2 = self.z_k(y[i]-1, f[i])
-                    ep = np.exp(-0.5*(z1**2 - z2**2))
-                    dpy_df[i] = self._isigma*(z1*ep-z2)/(ep - 1.0)
-                    d2py_df2[i] = -(self._ivar*(1.0 - (z1**2 *ep - z2**2)/(ep - 1.0)) + dpy_df[i]**2)
-            else:
-                dpy_df[i] = -self._isigma*(self.norm_pdf(y[i], f[i]) - self.norm_pdf(y[i]-1, f[i])) / l[i]
-                d2py_df2[i] = -(dpy_df[i]**2 + self._ivar*(self.norm_pdf(y[i], f[i]) - self.norm_pdf(y[i]-1, f[i])) / l[i])
+        # Trouble with derivatives...
+        dpy_df = self.v*self._isqrt2sig*std_norm_pdf(F*self._isqrt2sig) * (np.log(y_sel) - np.log(1-y_sel) - digamma(aa) + digamma(bb))
 
-        W = np.diagflat(-d2py_df2)
-        return W, dpy_df, py
+        Wdiag = - self.v*self._isqrt2sig*std_norm_pdf(f*self._isqrt2sig) * (
+            F * self._i2var * (np.log(y_sel) - np.log(1.0-y_sel) - digamma(aa) + digamma(bb)) +
+            self.v * self._isqrt2sig * std_norm_pdf(F*self._isqrt2sig) * (polygamma(1, aa) + polygamma(1, bb)) )
+
+        W = np.diagflat(Wdiag)
+
+        py = np.log(beta.pdf(y_sel, aa, bb))
+
+        return -W, dpy_df, py
 
 
     ## likelihood
     # Returns the liklihood function for the given probit
-    # @param y - the given set of labels for the probit
+    # @param y - the given set of labels for the probit (np(float) data, np(int)index)
     # @param F - the input data samples
     #
     # @return P(y|F)
     def likelihood(self, y, F):
-        y_modified = np.copy(y)
-        y_modified[:,0] -= 1
-        return self.norm_cdf(y, F) - self.norm_cdf(y_modified, F)
+        y_selected = y[0][y[1]]
+        aa, bb = self.get_alpha_beta(f)
+        return beta.pdf(y, aa, bb)
+
+    ## cdf for the beta function.
+    def cdf(self, y, F):
+        aa, bb = self.get_alpha_beta(f)
+        return beta.cdf(y, aa, bb)
 
 
     ## posterior_likelihood
