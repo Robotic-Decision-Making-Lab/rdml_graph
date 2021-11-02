@@ -129,12 +129,14 @@ class GP:
         ######### CHECK if the best candidate is already in the list, if it is move to
         # the front of the list
         found_one_idx = False
+        print(selected_idx)
+        print(UCB[selected_idx])
         for i, idx in enumerate(selected_idx):
             if idx == best_idx:
                 found_one_idx = True
                 tmp = selected_idx[i]
                 selected_idx[i] = selected_idx[0]
-                selected_idx[0] = selected_idx[i]
+                selected_idx[0] = tmp
                 break
         # If the best path is not in the list of selected candidate, then remove worst
         # candidate UCB and put the best at the front.
@@ -145,7 +147,7 @@ class GP:
 
         ######### Sort the other selected indicies to ensure
         # the array looks like this [best_mean, largest_UCB, next_largest_UCB,...]
-        selected_idx[1:] = (selected_idx[np.argsort(UCB[selected_idx[1:]])])[::-1]
+        selected_idx[1:] = (selected_idx[np.argsort(UCB[selected_idx[1:]])+1])[::-1]
 
         return selected_idx, UCB, mu[best_idx]
 
