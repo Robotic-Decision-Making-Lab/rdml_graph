@@ -31,17 +31,19 @@ import rdml_graph as gr
 
 if __name__ == '__main__':
     X_train = np.array([0,1,2,3,4.2,6,7])
-    abs_values = np.array([0.9,0.8,0.3,0.2,0.22  ,0.4,0.5])
+    abs_values = np.array([0.8,0.6,0.3,0.2,0.22  ,0.4,0.5])
+    #abs_values = np.array([0.4, 0.2, 0.2, 0.2, 0.1, 0.11, 0.3])
 
 
-    gp = gr.PreferenceGP(gr.RBF_kern(0.5, 0.7), \
-            other_probits={'abs': gr.AbsBoundProbit(2.0,1.0, n_ordinals=5)})
+    gp = gr.PreferenceGP(gr.RBF_kern(0.5, 0.7), normalize_gp=False, \
+            normalize_positive=False, \
+            other_probits={'abs': gr.AbsBoundProbit(1.0,5.0)})
     #gp = gr.PreferenceGP(gr.periodic_kern(1.2,0.3,5))
     #gp = gr.PreferenceGP(gr.linear_kern(0.2, 0.2, 0.2))
     #gp = gr.PreferenceGP(gr.RBF_kern(0.2,1)+gr.periodic_kern(1,0.2,0)+gr.linear_kern(0.2,0.1,0.3))
     #gp = gr.PreferenceGP(gr.RBF_kern(0.1,1)*gr.linear_kern(0.3,0.2,0.3))
 
-    gp.add(X_train, ratings, type='abs')
+    gp.add(X_train, abs_values, type='abs')
 
     #gp.optimize(optimize_hyperparameter=True)
     #print('gp.calc_ll()')
@@ -52,12 +54,12 @@ if __name__ == '__main__':
     mu, sigma = gp.predict(X)
     std = np.sqrt(sigma)
 
-    plt.scatter(X_train, ratings)
+    plt.scatter(X_train, abs_values)
     sigma_to_plot = 1
 
     plt.plot(X, mu)
-    plt.scatter(X_train, gp.F)
-    plt.gca().fill_between(X, mu-(sigma_to_plot*std), mu+(sigma_to_plot*std), color='#dddddd')
+    #plt.scatter(X_train, gp.F)
+    #plt.gca().fill_between(X, mu-(sigma_to_plot*std), mu+(sigma_to_plot*std), color='#dddddd')
     #plt.scatter(X_train, F)
 
     plt.title('Gaussian Process estimate (1 sigma)')

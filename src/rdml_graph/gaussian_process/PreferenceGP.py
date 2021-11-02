@@ -139,6 +139,23 @@ class PreferenceGP(GP):
             else:
                 self.y_train[self.probit_idxs[type]] = \
                     np.append(self.y_train[self.probit_idxs[type]], new_y, axis=0)
+        elif type == 'abs':
+            if isinstance(y, tuple):
+                v = y[0]
+                idxs = y[1]
+            elif isinstance(y, np.ndarray):
+                v = y
+                idxs = np.arange(0, y.shape[0])
+            else:
+                print('abs type received unknown type for y')
+                return
+
+            if self.y_train[self.probit_idxs[type]] is not None:
+                v = np.append(self.y_train[self.probit_idxs[type]][0], v, axis=0)
+                idxs = np.append(self.y_train[self.probit_idxs[type]][1], idxs, axis=0)
+
+            self.y_train[self.probit_idxs[type]] = (v, idxs)
+
 
         if self.pareto_pairs:
             pairs = []

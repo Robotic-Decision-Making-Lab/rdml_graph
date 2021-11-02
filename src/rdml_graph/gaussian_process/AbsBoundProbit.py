@@ -120,15 +120,16 @@ class AbsBoundProbit(ProbitBase):
     #       py - P(y|x,theta) for the given probit
     def derivatives(self, y, F):
         y_sel = y[0][y[1]]
+        f = F[y[1]]
 
-        aa, bb = self.get_alpha_beta(F)
+        aa, bb = self.get_alpha_beta(f)
 
         # Trouble with derivatives...
-        dpy_df = self.v*self._isqrt2sig*std_norm_pdf(F*self._isqrt2sig) * (np.log(y_sel) - np.log(1-y_sel) - digamma(aa) + digamma(bb))
+        dpy_df = self.v*self._isqrt2sig*std_norm_pdf(f*self._isqrt2sig) * (np.log(y_sel) - np.log(1-y_sel) - digamma(aa) + digamma(bb))
 
         Wdiag = - self.v*self._isqrt2sig*std_norm_pdf(f*self._isqrt2sig) * (
-            F * self._i2var * (np.log(y_sel) - np.log(1.0-y_sel) - digamma(aa) + digamma(bb)) +
-            self.v * self._isqrt2sig * std_norm_pdf(F*self._isqrt2sig) * (polygamma(1, aa) + polygamma(1, bb)) )
+            f * self._i2var * (np.log(y_sel) - np.log(1.0-y_sel) - digamma(aa) + digamma(bb)) +
+            self.v * self._isqrt2sig * std_norm_pdf(f*self._isqrt2sig) * (polygamma(1, aa) + polygamma(1, bb)) )
 
         W = np.diagflat(Wdiag)
 
@@ -144,7 +145,8 @@ class AbsBoundProbit(ProbitBase):
     #
     # @return P(y|F)
     def likelihood(self, y, F):
-        y_selected = y[0][y[1]]
+        y_selected = y[0]
+        f = F[y[1]]
         aa, bb = self.get_alpha_beta(f)
         return beta.pdf(y, aa, bb)
 
