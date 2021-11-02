@@ -4,22 +4,43 @@
 #
 
 import numpy as np
+import matplotlib.pyplot as plt
 import rdml_graph as gr
 
-x_axis = 20
-y_axis = 25
+import pdb
+
+x_axis = 40
+y_axis = 40
+
+
+path = np.array([[3.1,4.2], [8, 5], [13,12], [-10,13], [-15, -5], [15, -5]])
+
+budget = 0
+for i in range(1, path.shape[0]):
+    budget += np.linalg.norm(path[i] - path[i-1], ord=2)
 
 info_field = np.ones((x_axis,y_axis, 2)) * np.array([2,3])
+x_ticks = np.arange(-x_axis/2,x_axis/2)
+y_ticks = np.arange(-y_axis/2,y_axis/2)
 eval = gr.MaskedEvaluator(info_field, \
-                    np.arange(-x_axis,x_axis,2), np.arange(0,y_axis), \
-                    radius=1.5)
+                    x_ticks, y_ticks,
+                    radius=2, \
+                    budget=budget)
 
-path = np.array([[3.1,4.2], [8, 5], [13,12], [-10,13], [-15, -5]])
 
-score = eval.getScore(path)
+
+score, mask = eval.getScore(path, return_mask=True)
+
+#plt.matshow(mask)
+print(mask[np.newaxis,:,:].shape)
+gr.plot_multi(mask[:,:, np.newaxis], [path], x_ticks=x_ticks, y_ticks=y_ticks)
 
 print(score)
+
+plt.show()
+
 #
+
 # info_field = np.ones((x_axis, y_axis))
 # step_size = 3
 # x_ticks = np.arange(25.5, 25.5+step_size*x_axis, step_size)

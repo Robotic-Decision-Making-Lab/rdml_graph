@@ -103,8 +103,13 @@ class MaskedEvaluator(PathEvaluator):
         if budget == float('inf'):
             self.scales = np.ones(len(self.chan))
         else:
-            scaled_radius = radius / np.mean([self.x_scale, self.y_scale])
-            self.scales = 1 / (self.expected_val*(budget+scaled_radius*2)*2*scaled_radius*2)
+            #pdb.set_trace()
+            #scaled_radius = radius / np.mean([self.x_scale, self.y_scale])
+            #budget_grid = budget / np.mean([self.x_scale, self.y_scale])
+            length_grid = (budget+radius*2)  / self.y_scale
+            width_grid = (radius*2) / self.x_scale
+            self.scales = 1 / (self.expected_val*(length_grid*width_grid))
+            #self.scales = 1 / (self.expected_val*(budget_grid+scaled_radius*2)*scaled_radius*2)
 
 
     def gen_slices_along_x(self, x, min_pt, max_pt, line_low_loc, line_high_loc, line_param, isTop):
@@ -259,7 +264,7 @@ class MaskedEvaluator(PathEvaluator):
     # getScore, gets the score of path given within the budget
     # @param path - the path as 2d numpy array (n x 2)
     # @param budget - the budget of the path, (typically path length)
-    def getScore(self, path, budget=float('inf')):
+    def getScore(self, path, budget=float('inf'), return_mask=False):
         # force path along budget (TODO)
 
         mask = np.zeros(self.info_field.shape[0:2], dtype=np.int8)
@@ -272,5 +277,7 @@ class MaskedEvaluator(PathEvaluator):
             scores += self.getSegmentAlongX(pt1, pt2, mask)
 
         #print(mask)
+        if return_mask:
+            return scores * self.scales, mask
 
         return scores * self.scales
