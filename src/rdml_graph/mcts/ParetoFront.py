@@ -132,9 +132,25 @@ class ParetoFront:
 
 ## get_pareto
 # This function returns the indicies of the pareto optimal values in values
+# Code taken directly from this stackoverflow post for the function
+# is_pareto_efficient by user 'Peter'
+# https://stackoverflow.com/questions/32791911/fast-calculation-of-pareto-front-in-python
 # @param values - a numpy array of n values with k dimmensions numpy(n, k)
 #
 # @return - numpy array of indicies
-def get_pareto(values):
-    pass
-    ########## TODO
+def get_pareto(values, return_mask=False):
+    is_efficient = np.arange(values.shape[0])
+    n_points = values.shape[0]
+    next_point_index = 0  # Next index in the is_efficient array to search for
+    while next_point_index<len(values):
+        nondominated_point_mask = np.any(values>values[next_point_index], axis=1)
+        nondominated_point_mask[next_point_index] = True
+        is_efficient = is_efficient[nondominated_point_mask]  # Remove dominated points
+        values = values[nondominated_point_mask]
+        next_point_index = np.sum(nondominated_point_mask[:next_point_index])+1
+    if return_mask:
+        is_efficient_mask = np.zeros(n_points, dtype = bool)
+        is_efficient_mask[is_efficient] = True
+        return is_efficient_mask
+    else:
+        return is_efficient

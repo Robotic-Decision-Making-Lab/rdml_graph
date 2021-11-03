@@ -24,7 +24,7 @@
 import tqdm
 import numpy as np
 from rdml_graph.mcts import MCTSTree
-from rdml_graph.mcts.ParetoFront import ParetoFront
+from rdml_graph.mcts.ParetoFront import ParetoFront, get_pareto
 
 import pdb
 
@@ -57,15 +57,20 @@ def UCBSelection(current, budget, data):
 # @param data - generic data, if needed.
 def paretoUCBSelection(current, budget, data):
     D = current.sum_reward.shape[0]
-    optimal = ParetoFront(D, len(current.children))
+    #optimal = ParetoFront(D, len(current.children))
 
-    for child in current.children:
-        UCB = child.reward() +  \
-            np.sqrt((4 * np.log(current.num_updates)) / (2 * child.num_updates))
+    UCB = [child.reward() +  \
+            np.sqrt((4 * np.log(current.num_updates)) / (2 * child.num_updates)) \
+            for child in current.children]
+    # for child in current.children:
+    #     UCB = child.reward() +  \
+    #         np.sqrt((4 * np.log(current.num_updates)) / (2 * child.num_updates))
+        #optimal.check_and_add(UCB, child)
+    pareto_idx = get_pareto(np.array(UCB))
+    rand_idx = np.random.randint(0, len(pareto_idx))
 
-        optimal.check_and_add(UCB, child)
-
-    rew, child = optimal.get_random()
+    child = current.children[pareto_idx[rand_idx]]
+    #rew, child = optimal.get_random()
     return child
 
 

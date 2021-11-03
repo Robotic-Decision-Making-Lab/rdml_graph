@@ -19,8 +19,12 @@ if __name__ == '__main__':
     for i in range(rewards.shape[0]):
         front.check_and_add(rewards[i], i)
 
+    pareto_idx = gr.get_pareto(rewards)
+    print('pareto_idx: ' + str(pareto_idx))
+
     plt.scatter(rewards[:,0], rewards[:, 1], color='red')
-    plt.scatter(front.front[:front.size,0], front.front[:front.size,1], color='blue')
+    #plt.scatter(front.front[:front.size,0], front.front[:front.size,1], color='blue')
+    plt.scatter(rewards[pareto_idx][:,0], rewards[pareto_idx][:,1], color='green')
 
     print(front.get())
     plt.show()
