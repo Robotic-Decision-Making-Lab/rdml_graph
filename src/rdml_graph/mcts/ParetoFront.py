@@ -139,7 +139,7 @@ class ParetoFront:
 #
 # @return - numpy array of indicies
 def get_pareto(values, return_mask=False):
-    is_efficient = np.arange(values.shape[0])
+    is_efficient = np.arange(values.shape[0], dtype=int)
     n_points = values.shape[0]
     next_point_index = 0  # Next index in the is_efficient array to search for
     while next_point_index<len(values):

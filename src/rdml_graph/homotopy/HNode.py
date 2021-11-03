@@ -114,8 +114,30 @@ class HNode(TreeNode):
     def __hash__(self):
         return hash((self.node, self.h_sign))
 
+    def getHPath(self):
+        path = self.getPath()
+        pts = np.empty((len(path), 2))
+        for i, homotopy in enumerate(path):
+            pts[i] = homotopy.node.pt
+        return HPath(pts, self.h_sign)
 
+## HPath
+# This is a partial clone of HNode, without links to all nodes.
+# Used for much faster saving and loading, but with a similar API
+class HPath():
+    ## constructor
+    def __init__(self, path, h_sign):
+        self.path = path
+        self.h_sign = h_sign
 
+    def getPath(self):
+        return self.path
+
+    def getHPath(self):
+        return self
+
+    def __str__(self):
+        return 'HPath(h-sign='+ str(self.h_sign)+', path='+str(self.path)
 
 
 

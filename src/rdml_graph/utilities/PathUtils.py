@@ -24,7 +24,7 @@
 
 import numpy as np
 from rdml_graph.core import Node
-from rdml_graph.homotopy import HNode
+from rdml_graph.homotopy import HNode, HPath
 
 
 ## getWaypoints
@@ -53,7 +53,8 @@ def getWaypoints(path):
 def getWaypointsHomotopy(path):
     if isinstance(path, HNode):
         path = path.get_parent_path()
-
+    elif isinstance(path, np.ndarray):
+        return path
 
     pts = np.empty((len(path), 2))
     for i, homotopy in enumerate(path):
