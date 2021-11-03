@@ -129,3 +129,12 @@ class ParetoFront:
         self.front[self.size] = r
         self.front_val[self.size] = n
         self.size += 1
+
+## get_pareto
+# This function returns the indicies of the pareto optimal values in values
+# @param values - a numpy array of n values with k dimmensions numpy(n, k)
+#
+# @return - numpy array of indicies
+def get_pareto(values):
+    pass
+    ########## TODO
