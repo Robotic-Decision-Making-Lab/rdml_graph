@@ -28,6 +28,7 @@
 
 import numpy as np
 from rdml_graph.information_gathering import PathEvaluator
+from rdml_graph.information_gathering import applyBudget
 import math
 
 import pdb
@@ -264,8 +265,10 @@ class MaskedEvaluator(PathEvaluator):
     # getScore, gets the score of path given within the budget
     # @param path - the path as 2d numpy array (n x 2)
     # @param budget - the budget of the path, (typically path length)
-    def getScore(self, path, budget=float('inf'), return_mask=False):
-        # force path along budget (TODO)
+    def getScore(self, path, budget=None, return_mask=False):
+        if budget is None:
+            budget = self.budget
+        path, length = applyBudget(path, budget)
 
         mask = np.zeros(self.info_field.shape[0:2], dtype=np.int8)
         scores = np.zeros(len(self.chan))
