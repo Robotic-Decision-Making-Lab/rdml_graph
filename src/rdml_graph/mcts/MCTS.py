@@ -85,7 +85,6 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
 
             ######### SELECTION and Expansion
             # Check all possibilties of selection.
-
             while True:
                 if len(current.unpicked_children) > 0:
                     ######## Expansion

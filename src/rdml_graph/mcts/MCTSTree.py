@@ -77,7 +77,7 @@ class MCTSTree(SearchState):
     ## expandNode
     # expands the current node at the given index.
     # If idx is none, then a random unpicked child is selected.
-    # @param idx - the index of the unpicked child to expand (normaly random)
+    # @param idx - the index of the unpicked child to expand (normally random)
     #
     # @return - the MCTSTree to expand
     # @post - unpicked children has child removed, added to children
@@ -99,13 +99,16 @@ class MCTSTree(SearchState):
     # @param budget - the max budget of the successor function.
     #
     # @return - list of MCTSTree objects.
-    def successor(self, budget=np.inf):
+    def successor(self, budget=np.inf, one_after_budget=True):
         result = []
         self.e = []
         succ = self.state.successor()
+        if one_after_budget and self.rCost > budget:
+            return result
+
         for s in succ:
             cost = self.rCost + s[1]
-            if cost <= budget:
+            if cost <= budget or one_after_budget:
                 n = MCTSTree(s[0], cost, self)
                 result.append(n)
                 self.e.append(Edge(self, n, s[1]))

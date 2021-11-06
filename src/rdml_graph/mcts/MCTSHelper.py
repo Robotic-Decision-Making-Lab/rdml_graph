@@ -98,12 +98,12 @@ def randomRollout(treeState, budget, data=None):
         child = succ[childIdx][0]
         edgeCost = succ[childIdx][1]
 
-        if remainingBudget > edgeCost:
-            sequence += [child]
-            remainingBudget -= edgeCost
-            current = child
-        else:
-            break
+        #if remainingBudget > edgeCost:
+        sequence += [child]
+        remainingBudget -= edgeCost
+        current = child
+        #else:
+        #    break
     return sequence
 
 
