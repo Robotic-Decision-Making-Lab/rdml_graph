@@ -89,6 +89,10 @@ class PreferenceGP(GP):
 
         self.add(pts, [], type='relative_discrete')
 
+    def reset(self):
+        self.y_train = [None] * len(self.probits)
+        self.X_train = None
+
     ## add_training
     # adds training data to the gaussian process
     # appends the data if there already is some training data
