@@ -193,4 +193,4 @@ class GP:
     #
     # @return an array of output values (n)
     def __call__(self, X):
-        return predict(X)
+        return self.predict(X)
