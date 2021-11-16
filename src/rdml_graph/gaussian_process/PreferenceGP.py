@@ -77,21 +77,45 @@ class PreferenceGP(GP):
         self.y_train = [None] * len(self.probits)
         self.X_train = None
 
+        self.prior_idx = None
+
         self.delta_f = 0.002 # set the convergence to stop
         self.maxloops = 100
 
 
+    ## add_prior
+    # this function adds prioir data to the GP if desired. Desigend to work with
+    # the pareto_pairs constraint to generate a function that ensures pareto_pairs
+    # @param bounds - the bounds for the prior pts numpy array (nxn)
+    # @param num_pts - the number of prior pts to add
     def add_prior(self, bounds = np.array([[0,1],[0,1]]), num_pts = 100):
         scaler = bounds[:,1] - bounds[:,0]
         bias = bounds[:,0]
 
         pts = np.random.random((num_pts, bounds.shape[0])) * scaler + bias
 
+        if self.X_train is not None:
+            self.prior_idx = (self.X_train.shape[0], self.X_train.shape[0]+num_pts)
+        else:
+            self.prior_idx = (0, num_pts)
         self.add(pts, [], type='relative_discrete')
 
+
+    ## get_prior_pts
+    # get the set of prior points if they exist
+    # @return numpy array of X_train if it exists, None otherwise
+    def get_prior_pts(self):
+        if self.prior_idx is not None:
+            return self.X_train[self.prior_idx[0]:self.prior_idx[1]]
+        else:
+            return None
+
+    ## reset
+    # This function resets all points for the GP
     def reset(self):
         self.y_train = [None] * len(self.probits)
         self.X_train = None
+        self.prior_idx = None
 
     ## add_training
     # adds training data to the gaussian process
