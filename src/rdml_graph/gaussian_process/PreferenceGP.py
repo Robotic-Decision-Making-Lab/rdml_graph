@@ -31,6 +31,7 @@ from rdml_graph.gaussian_process import k_fold_half, get_dk
 
 import scipy.optimize as op
 import scipy.stats as st
+import math
 
 import pdb
 
@@ -386,9 +387,9 @@ class PreferenceGP(GP):
         mu = np.empty(X.shape[0])
         sigma = np.empty(X.shape[0])
 
-        for i range(num_runs):
+        for i in range(num_runs):
             low_i = i*num_at_a_time
-            high_i = math.min(X.shape[0], low_i+num_at_a_time)
+            high_i = min(X.shape[0], low_i+num_at_a_time)
 
             mu_loc, sigma_loc = self.predict(X[low_i:high_i])
             sigma[low_i:high_i] = sigma_loc
