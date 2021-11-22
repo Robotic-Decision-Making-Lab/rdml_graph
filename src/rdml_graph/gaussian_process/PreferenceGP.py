@@ -378,6 +378,24 @@ class PreferenceGP(GP):
 
 
 
+    def predict_large(self,X):
+        num_at_a_time = 50
+
+        num_runs = int(math.ceil(X.shape[0] / num_at_a_time))
+
+        mu = np.empty(X.shape[0])
+        sigma = np.empty(X.shape[0])
+
+        for i range(num_runs):
+            low_i = i*num_at_a_time
+            high_i = math.min(X.shape[0], low_i+num_at_a_time)
+
+            mu_loc, sigma_loc = self.predict(X[low_i:high_i])
+            sigma[low_i:high_i] = sigma_loc
+            mu[low_i:high_i] = mu_loc
+
+        return mu, sigma
+
 
     ## Predicts the output of the GP at new locations
     # @param X - the input test samples (n,k).
