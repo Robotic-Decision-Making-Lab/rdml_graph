@@ -380,7 +380,7 @@ class PreferenceGP(GP):
 
 
     def predict_large(self,X):
-        num_at_a_time = 50
+        num_at_a_time = 15
 
         num_runs = int(math.ceil(X.shape[0] / num_at_a_time))
 
