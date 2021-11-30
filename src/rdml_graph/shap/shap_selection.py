@@ -16,7 +16,9 @@ from rdml_graph.shap import select_SHAP_idx
 # @param selection_method - string ['random_less', 'worse_shap', 'similar_except']
 #
 # @return alts_to_show (list), pertinent_features (list)
-def select_alts_from_shap_diff(best_path_idx, shap_values, num_paths, selection_method='random_less', isMax=True, exclude_func=None, data=None):
+def select_alts_from_shap_diff(best_path_idx, shap_values, num_paths,
+                            selection_method='random_less', isMax=True,
+                            exclude_func=None, data=None, pareto_idx=None):
     best_path_shap = shap_values[best_path_idx]
     median_shap = np.median(shap_values, axis=0)
 
@@ -42,6 +44,20 @@ def select_alts_from_shap_diff(best_path_idx, shap_values, num_paths, selection_
         elif selection_method == 'similar_except':
             alt_idx = select_similar_except(best_path_idx, pert_feat, shap_values, \
                                 greater, set(alts_to_show), exclude_func=exclude_func, data=data)
+        elif selection_method == 'prefer_pareto':
+            # print('PREFER_PARETO')
+            # print('\tpareto_idx: ' + str(pareto_idx))
+            # print('\tpert_feat: ' + str(pert_feat))
+            alt_idx = select_prefer_pareto(best_path_idx, pareto_idx, \
+                                pert_feat, shap_values, \
+                                greater, set(alts_to_show), exclude_func=exclude_func,
+                                data=data)
+            # print('alt_idx: ' + str(alt_idx))
+            # print('best_path_idx: ' + str(best_path_idx))
+
+
+
+
 
         alts_to_show += [alt_idx]
 
@@ -139,6 +155,93 @@ def select_similar_except(sel_alt_idx, shap_idx, shap_values, greater=False, exc
 
     return np.argmax(utility)
 
+## select_prefer_pareto
+# This tries to find the vector that is most similar to given selected index except
+# along the given index. This does anr argmax of the sum of the L-norm and the difference in values
+# @param sel_alt_idx - the selected alt index
+# @param shap_values - the list of shap values for the paths
+# @param shap_idx - the index of the shap vector that is being evaluated
+# @param value - the value of the shap vector to return with less than
+# @param greater - [opt] set to false to invert and return indicies which are greater than
+# @param exclude - [opt] set of indicies to exclude
+# @param order - the order of the norm on the second feature (typically a 2 norm)
+def select_prefer_pareto(sel_alt_idx, pareto_idx, shap_idx, shap_values,
+                        greater=False, exclude_idx={}, order=2,
+                        exclude_func=None, data=None):
+    selected_shap = shap_values[sel_alt_idx]
+    scores = np.ones((pareto_idx.shape[0], 2))
+
+
+    for idx in pareto_idx:
+        if idx not in exclude_idx:
+            #print('\t\tidx: ' + str(idx))
+            shap_diff = selected_shap - shap_values[idx]
+            feat_diff = shap_diff[shap_idx]
+            #print('\t\tfeat_diff: ' + str(feat_diff))
+            #print('\t\tshap_diff: ' + str(shap_diff))
+            if greater:
+                feat_diff = -feat_diff # reverse direction for features that are greater than.
+
+            if feat_diff < 0.000001:
+                scores[idx, :] = -float('inf')
+            if exclude_func is not None:
+                if exclude_func(shap_values[idx], selected_shap, data):
+                    scores[idx, :] = -float('inf')
+            else:
+                # find and set scores
+                scores[idx,0] = feat_diff
+                all_else_vec = shap_diff[np.arange(len(shap_diff))!=shap_idx]
+
+                scores[idx,1] = -np.linalg.norm(all_else_vec, ord=order)
+        else:
+            scores[idx, :] = -float('inf')
+
+    print(scores)
+
+    if selected_shap.shape[0] > 1:
+        utility = scores[:,0] + scores[:,1]/((selected_shap.shape[0]-1)**(1/order))
+    else:
+        utility = scores[:,0]
+
+    #print('Utility: ' + str(utility))
+
+    best_idx = np.argmax(utility)
+    #print('best_idx: ' + str(best_idx))
+    if not np.isinf(utility[best_idx]):
+        return best_idx
+
+    scores = np.ones((shap_values.shape[0], 2))
+
+
+    for idx in range(shap_values.shape[0]):
+        if idx not in exclude_idx:
+            shap_diff = selected_shap - shap_values[idx]
+            feat_diff = shap_diff[shap_idx]
+            if greater:
+                feat_diff = -feat_diff # reverse direction for features that are greater than.
+
+            if feat_diff < 0.000001:
+                scores[idx, :] = -float('inf')
+            if exclude_func is not None:
+                if exclude_func(shap_values[idx], selected_shap, data):
+                    scores[idx, :] = -float('inf')
+            else:
+                # find and set scores
+                scores[idx,0] = feat_diff
+                all_else_vec = shap_diff[np.arange(len(shap_diff))!=shap_idx]
+
+                scores[idx,1] = -np.linalg.norm(all_else_vec, ord=order)
+        else:
+            scores[idx, :] = -float('inf')
+
+
+    # with no particular math for combining...
+    if selected_shap.shape[0] > 1:
+        utility = scores[:,0] + scores[:,1]/((selected_shap.shape[0]-1)**(1/order))
+    else:
+        utility = scores[:,0]
+
+    return np.argmax(utility)
 
 
 
