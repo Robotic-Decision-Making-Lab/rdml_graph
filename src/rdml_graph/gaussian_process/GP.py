@@ -117,14 +117,30 @@ class GP:
     # @return [highest_mean, highest_ucb, next highest ucb, ...],
     #          ucb values for candidate_pts,
     #          value of the best point.
-    def ucb_selection(self, candidate_pts, num_alts, ucb_scaler=1):
+    def ucb_selection(self, candidate_pts, num_alts, ucb_scaler=1, prefer_num=-1):
         mu, variance = self.predict(candidate_pts)
         UCB = mu + ucb_scaler*np.sqrt(variance)
 
         best_idx = np.argmax(mu)
 
-        selected_idx = np.argpartition(UCB, -num_alts)[-num_alts:]
-        #selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
+        num_alts += 1
+
+        if prefer_num < 0:
+            selected_idx = np.argpartition(UCB, -num_alts)[-num_alts:]
+            selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
+        else:
+            if prefer_num >= num_alts:
+                selected_idx = np.argpartition(UCB[:prefer_num], -num_alts)[-num_alts:]
+                selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
+            else:
+                selected_idx = np.arange(prefer_num, dtype=np.int)
+                selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
+                num_alts = num_alts - prefer_num
+                if num_alts > 0:
+                    alt_idx = np.argpartition(UCB, -num_alts)[-num_alts:]
+                    alt_idx = alt_idx[np.argsort(UCB[alt_idx])][::-1]
+
+                    selected_idx = np.append(selected_idx, alt_idx, axis=0)
 
         ######### CHECK if the best candidate is already in the list, if it is move to
         # the front of the list
@@ -135,13 +151,16 @@ class GP:
             if idx == best_idx:
                 found_one_idx = True
                 tmp = selected_idx[i]
-                selected_idx[i] = selected_idx[0]
-                selected_idx[0] = tmp
+                selected_idx = np.delete(selected_idx, i)
+                selected_idx = np.insert(selected_idx, 0, tmp)
+                #selected_idx[i] = selected_idx[0]
+                #selected_idx[0] = tmp
                 break
         # If the best path is not in the list of selected candidate, then remove worst
         # candidate UCB and put the best at the front.
         if not found_one_idx:
-            worst_idx = np.argmin(UCB[selected_idx])
+            #worst_idx = np.argmin(UCB[selected_idx])
+            worst_idx = len(selected_idx)-1
             selected_idx[worst_idx] = selected_idx[0]
             selected_idx[0] = best_idx
 
