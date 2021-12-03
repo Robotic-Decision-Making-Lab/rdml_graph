@@ -196,7 +196,7 @@ def select_prefer_pareto(sel_alt_idx, pareto_idx, shap_idx, shap_values,
         else:
             scores[idx, :] = -float('inf')
 
-    print(scores)
+    #print(scores)
 
     if selected_shap.shape[0] > 1:
         utility = scores[:,0] + scores[:,1]/((selected_shap.shape[0]-1)**(1/order))

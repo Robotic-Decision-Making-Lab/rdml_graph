@@ -272,19 +272,27 @@ def bin_float_split(X, importance_func, parent, id, with_labels=True):
 
         if x_prev == x_i:
             # if they are the same value, don't bother splitting here
+            #print("VALUES ARE THE SAME: " + str(i))
             continue
 
         splits = [X[0:i], X[i:]]
+        #print('\t\tlen_0: '+str(len(splits[0]))+' len_1: '+str(len(splits[1])))
         importance = importance_func(splits)
+
+        #print('\t\timportance: ' + str(importance))
 
         # update the best importance if needed
         if importance > best_importance:
             best_importance = importance
             best_atr = i
+        x_prev = x_i # update the previous x for the next iteration.
 
     if best_atr is None:
         # There are no viable splits
         return None, best_importance
+
+    #print('SORTED_X')
+    #print(X)
 
     if with_labels:
         value = (X[best_atr-1][0] + X[best_atr][0]) / 2
@@ -292,6 +300,10 @@ def bin_float_split(X, importance_func, parent, id, with_labels=True):
         value = (X[best_atr-1] + X[best_atr]) / 2
     # end for loop for all samples
     n = FloatDecision(id, parent, -1, value)
+
+    #print('\tbest_attribute: ' + str(best_atr))
+    #print('\tvalue: ' + str(value))
+
     return n, best_importance
 
 ######################### ATTRIBUTE FUNCTIONS ##########################
@@ -336,6 +348,7 @@ def default_attribute_func(X, importance_func, types, parent, id):
         if n is not None:
             n.idx = i
 
+        #print('\timportance: ' + str(importance))
 
         if importance > best_importance:
             best_importance = importance
@@ -345,7 +358,7 @@ def default_attribute_func(X, importance_func, types, parent, id):
 
     if best_attribute is None:
         return None
-
+    #print('best_importance: ' + str(best_importance))
     # if len(best_attribute) > 1:
     #     print(best_attribute)
     #     pdb.set_trace()

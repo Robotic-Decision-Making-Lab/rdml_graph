@@ -67,6 +67,7 @@ def learn_decision_tree(X, \
         parent_samples=None,
         id = 0):
     # Start function
+    #pdb.set_trace()
 
     # Check for base case
     if len(X) == 0:
