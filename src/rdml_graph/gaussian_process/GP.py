@@ -137,7 +137,10 @@ class GP:
                 selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
                 num_alts = num_alts - prefer_num
                 if num_alts > 0:
-                    alt_idx = np.argpartition(UCB, -num_alts)[-num_alts:]
+                    #pdb.set_trace()
+
+                    alt_idx = np.argpartition(UCB[prefer_num:], -num_alts)[-num_alts:]
+                    alt_idx += prefer_num
                     alt_idx = alt_idx[np.argsort(UCB[alt_idx])][::-1]
 
                     selected_idx = np.append(selected_idx, alt_idx, axis=0)
