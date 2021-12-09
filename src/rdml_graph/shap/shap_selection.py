@@ -11,9 +11,16 @@ from rdml_graph.shap import select_SHAP_idx
 
 ## select_alts_from_shap_diff
 # @param best_path_idx - the index of the best path selected
-# @param shap_values - list of shapely values for each path features from the best path (numpy nxm)
+# @param shap_values - list of shapely values for each path features from the
+#                      best path (numpy nxm)
 # @param num_paths - the number of paths to show. (includes best path)
 # @param selection_method - string ['random_less', 'worse_shap', 'similar_except']
+# @param isMax - [opt] sets whether it is explaining for a selection that is high
+#                (selected path) or low (bad grasp query)
+# @param exclude_func - [opt] called and allows particular indicies to be excluded.
+# @param data - [opt] any additional data needed by the selection function
+#               (not used currently I think)
+# @param pareto_idx - [opt] a list of indicies to prefer in selection.
 #
 # @return alts_to_show (list), pertinent_features (list)
 def select_alts_from_shap_diff(best_path_idx, shap_values, num_paths,
