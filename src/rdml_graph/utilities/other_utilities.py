@@ -21,6 +21,8 @@
 #
 # A set of random utilities that didn't have another home.
 
+import time
+
 ## get_indicies_from
 # This function returns the elements in the parallel lists from the indicies
 # Just a convience function that means I don't have to think about it
@@ -32,3 +34,14 @@ def get_indicies_from(indicies, *parallel_lists):
     down_selected = [[lis[a] for a in indicies] for lis in parallel_lists]
 
     return tuple(down_selected)
+
+## str_timestamp
+# creates a string versiion of a timestamp.
+# Designed to be used to save files without having to worry about conflicts
+# between runs.
+#
+# @return the timestamp as a string.
+def str_timestamp():
+    t = time.localtime()
+    timestamp = time.strftime('%Y-%m-%d_%H-%M-%S', t)
+    return timestamp
