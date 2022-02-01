@@ -123,13 +123,16 @@ class GP:
 
         best_idx = np.argmax(mu)
 
-        num_alts += 1
+        #num_alts += 1
+
+        #pdb.set_trace()
 
         if prefer_num < 0:
             selected_idx = np.argpartition(UCB, -num_alts)[-num_alts:]
             selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
         else:
             if prefer_num >= num_alts:
+                #pdb.set_trace()
                 selected_idx = np.argpartition(UCB[:prefer_num], -num_alts)[-num_alts:]
                 selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
             else:
