@@ -54,7 +54,9 @@ class PreferenceGP(GP):
     # @param cov_func - the covariance function to use
     # @param mat_inv - [opt] the matrix inversion function to use. By default
     #                   just uses numpy.linalg.inv
-    def __init__(self, cov_func, normalize_gp=True, pareto_pairs=False, normalize_positive=False, other_probits={}, mat_inv=np.linalg.pinv):
+    def __init__(self, cov_func, normalize_gp=True, pareto_pairs=False, \
+                normalize_positive=False, other_probits={}, mat_inv=np.linalg.pinv, \
+                use_hyper_optimization=False):
         super(PreferenceGP, self).__init__(cov_func, mat_inv)
 
         self.optimized = False
@@ -63,6 +65,7 @@ class PreferenceGP(GP):
         self.normalize_gp = normalize_gp
         self.pareto_pairs = pareto_pairs
         self.normalize_positive = normalize_positive
+        self.use_hyper_optimization = use_hyper_optimization
 
         # sigma on the likelihood function.
         #self.sigma_L = 1.0
@@ -257,7 +260,7 @@ class PreferenceGP(GP):
         print('ll_pre = ' + str(ll_pre))
 
         #bounds=[(0.0001, 100), (0.0001, 10), (0.001,30)],
-        bounds = [(0.1, 7) for i in range(len(x))]
+        bounds = [(0.1, 15) for i in range(len(x))]
         calc_ll = lambda x, *args : -self.calc_ll_param(x, args[0], args[1])
         theta = op.minimize(fun=calc_ll, args=(x_train, y_train), x0=x0, bounds=bounds, tol=0.01, options={'maxiter': 300, 'disp': False})
         x = theta.x
@@ -412,7 +415,7 @@ class PreferenceGP(GP):
 
         # lazy optimization of GP
         if not self.optimized:
-            self.optimize()
+            self.optimize(optimize_hyperparameter=self.use_hyper_optimization)
 
         W = self.W
         X_test = X

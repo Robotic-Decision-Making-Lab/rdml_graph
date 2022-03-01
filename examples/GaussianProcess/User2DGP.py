@@ -55,7 +55,8 @@ if __name__ == '__main__':
 
     #gp = gr.PreferenceGP(gr.RBF_kern(0.2,0.5)*gr.linear_kern(0.2, 0.1, 0))
     #gp = gr.PreferenceGP(gr.linear_kern(0.3, 0.1, 0.0))
-    gp = gr.PreferenceGP(gr.RBF_kern(0.5, 1.0), pareto_pairs=True)
+    gp = gr.PreferenceGP(gr.RBF_kern(1.0, 1.0), pareto_pairs=True, \
+                        use_hyper_optimization=True)
     gp.add_prior(bounds=np.array(bounds))
 
 
@@ -92,7 +93,7 @@ if __name__ == '__main__':
         #gp.add(train_X[selected_idx], pairs)
         gp.add(train_X[selected_idx], pairs)
 
-    gp.optimize(optimize_hyperparameter=False)
+    gp.optimize(optimize_hyperparameter=True)
 
     x = np.linspace(bounds[0][0], bounds[0][1], num_side)
     y = np.linspace(bounds[1][0], bounds[1][1], num_side)

@@ -125,7 +125,6 @@ class GP:
 
         #num_alts += 1
 
-        #pdb.set_trace()
 
         if prefer_num < 0:
             selected_idx = np.argpartition(UCB, -num_alts)[-num_alts:]
