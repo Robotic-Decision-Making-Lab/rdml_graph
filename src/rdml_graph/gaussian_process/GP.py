@@ -23,6 +23,7 @@
 # Starting framework for the user preference GP.
 
 import numpy as np
+from rdml_graph.gaussian_process import ActiveLearner, UCBLearner
 import collections
 
 import pdb
@@ -63,7 +64,7 @@ class GP:
     # @param mean_func - [opt] a function that modifies the normal 0 mean GP
     #                   this simply adds the GP estimate to the given function.
     #                   must be able to take vectorized inputs.
-    def __init__(self, cov_func, mat_inv=np.linalg.pinv, mean_func=None):
+    def __init__(self, cov_func, mat_inv=np.linalg.pinv, mean_func=None, active_learner=None):
         self.cov_func = cov_func
 
         self.invert_function = mat_inv
@@ -74,6 +75,10 @@ class GP:
             self.mean_func = lambda x : 0
         else:
             self.mean_func = mean_func
+
+        if active_learner is None:
+            self.active_learner = UCBLearner(1.0)
+        self.active_learner.gp = self
 
 
     ## add_training
@@ -118,63 +123,12 @@ class GP:
     #          ucb values for candidate_pts,
     #          value of the best point.
     def ucb_selection(self, candidate_pts, num_alts, ucb_scaler=1, prefer_num=-1):
-        mu, variance = self.predict(candidate_pts)
-        UCB = mu + ucb_scaler*np.sqrt(variance)
-
-        best_idx = np.argmax(mu)
-
-        #num_alts += 1
+        self.active_learner.alpha = ucb_scaler
+        return self.active_learner.select(candidate_pts, num_alts, prefer_num)
 
 
-        if prefer_num < 0:
-            selected_idx = np.argpartition(UCB, -num_alts)[-num_alts:]
-            selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
-        else:
-            if prefer_num >= num_alts:
-                #pdb.set_trace()
-                selected_idx = np.argpartition(UCB[:prefer_num], -num_alts)[-num_alts:]
-                selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
-            else:
-                selected_idx = np.arange(prefer_num, dtype=np.int)
-                selected_idx = selected_idx[np.argsort(UCB[selected_idx])][::-1]
-                num_alts = num_alts - prefer_num
-                if num_alts > 0:
-                    #pdb.set_trace()
-
-                    alt_idx = np.argpartition(UCB[prefer_num:], -num_alts)[-num_alts:]
-                    alt_idx += prefer_num
-                    alt_idx = alt_idx[np.argsort(UCB[alt_idx])][::-1]
-
-                    selected_idx = np.append(selected_idx, alt_idx, axis=0)
-
-        ######### CHECK if the best candidate is already in the list, if it is move to
-        # the front of the list
-        found_one_idx = False
-        print(selected_idx)
-        print(UCB[selected_idx])
-        for i, idx in enumerate(selected_idx):
-            if idx == best_idx:
-                found_one_idx = True
-                tmp = selected_idx[i]
-                selected_idx = np.delete(selected_idx, i)
-                selected_idx = np.insert(selected_idx, 0, tmp)
-                #selected_idx[i] = selected_idx[0]
-                #selected_idx[0] = tmp
-                break
-        # If the best path is not in the list of selected candidate, then remove worst
-        # candidate UCB and put the best at the front.
-        if not found_one_idx:
-            #worst_idx = np.argmin(UCB[selected_idx])
-            worst_idx = len(selected_idx)-1
-            selected_idx[worst_idx] = selected_idx[0]
-            selected_idx[0] = best_idx
-
-        ######### Sort the other selected indicies to ensure
-        # the array looks like this [best_mean, largest_UCB, next_largest_UCB,...]
-        selected_idx[1:] = (selected_idx[np.argsort(UCB[selected_idx[1:]])+1])[::-1]
-
-        return selected_idx, UCB, mu[best_idx]
-
+    def select(self, candidate_pts, num_alts, prefer_num):
+        return self.active_learner.select(candidate_pts, num_alts, prefer_num)
 
     ## Predicts the output of the GP at new locations
     # @param X - the input test samples (n,k).
