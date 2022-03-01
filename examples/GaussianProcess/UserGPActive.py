@@ -45,7 +45,7 @@ if __name__ == '__main__':
     num_side = 25
     bounds = [(0,7), (0,7)]
 
-    num_train_pts = 10
+    num_train_pts = 40
     num_alts = 4
 
     utility_f = f_sq
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     #gp = gr.PreferenceGP(gr.linear_kern(0.3, 0.1, 0.0))
     gp = gr.PreferenceGP(gr.RBF_kern(1.0, 1.0), pareto_pairs=True, \
                         use_hyper_optimization=False)
-    gp.add_prior(bounds=np.array(bounds))
+    gp.add_prior(bounds=np.array(bounds), num_pts=20)
 
 
 
