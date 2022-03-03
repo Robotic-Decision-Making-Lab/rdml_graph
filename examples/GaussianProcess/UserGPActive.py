@@ -54,7 +54,8 @@ if __name__ == '__main__':
     #gp = gr.PreferenceGP(gr.RBF_kern(0.2,0.5)*gr.linear_kern(0.2, 0.1, 0))
     #gp = gr.PreferenceGP(gr.linear_kern(0.3, 0.1, 0.0))
     gp = gr.PreferenceGP(gr.RBF_kern(1.0, 1.0), pareto_pairs=True, \
-                        use_hyper_optimization=False)
+                        use_hyper_optimization=False, \
+                        active_learner = gr.DetLearner(0.9))
     gp.add_prior(bounds=np.array(bounds), num_pts=20)
 
 
@@ -63,7 +64,7 @@ if __name__ == '__main__':
         train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
         train_Y = utility_f(train_X)#f_lin(train_X)
 
-        selected_idx, UCB, best_value = gp.ucb_selection(train_X, num_alts)
+        selected_idx, UCB, best_value = gp.select(train_X, num_alts)
 
         best_idx = np.argmax(train_Y[selected_idx])
 

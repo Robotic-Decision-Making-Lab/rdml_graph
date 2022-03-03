@@ -56,8 +56,8 @@ class PreferenceGP(GP):
     #                   just uses numpy.linalg.inv
     def __init__(self, cov_func, normalize_gp=True, pareto_pairs=False, \
                 normalize_positive=False, other_probits={}, mat_inv=np.linalg.pinv, \
-                use_hyper_optimization=False):
-        super(PreferenceGP, self).__init__(cov_func, mat_inv)
+                use_hyper_optimization=False, active_learner=None):
+        super(PreferenceGP, self).__init__(cov_func, mat_inv, active_learner=active_learner)
 
         self.optimized = False
         self.lambda_gp = 0.1

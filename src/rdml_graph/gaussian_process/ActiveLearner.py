@@ -22,6 +22,7 @@
 # Active learning selection algorithms for Pairwise GP's
 
 import numpy as np
+import pdb
 
 ## Base Active Learning class.
 #
@@ -45,6 +46,32 @@ class ActiveLearner:
     #          value of the best point.
     def select(self, candidate_pts, num_alts, prefer_num=-1):
         raise NotImplementedError('ActiveLearner select is not impleneted')
+
+    ## select_greedy
+    # This function greedily selects the best single data point
+    # Depending on the selection method, you are not forced to implement this function
+    # @param cur_selection - a list of current selections
+    # @param data - a user defined tuple of data (determined by the select function)
+    #
+    # @return the index of the greedy selection.
+    def select_greedy(self, cur_selection, data):
+        raise NotImplementedError("ActiveLearner select_greey is not implemented as has been called")
+
+    # select_greedy_k
+    # This function selects the top k canidates given the data and the select greedy
+    # function. This allows a function to select multiple choices in a greedy manner.
+    def select_greedy_k(self, cur_selection, num_alts, data):
+        num_itr = num_alts - len(cur_selection)
+
+
+        sel_values = [-float('inf')] * len(cur_selection)
+
+        for i in range(num_itr):
+            selection, sel_value = self.select_greedy(cur_selection, data)
+            cur_selection.append(selection)
+            sel_values.append(sel_value)
+
+        return cur_selection, sel_values
 
     # select best k
     # this function selects the top k canidate scores and the single best index
@@ -160,19 +187,41 @@ class DetLearner(ActiveLearner):
     #          value of the best point.
     def select(self, candidate_pts, num_alts, prefer_num=-1):
         mu, variance = self.gp.predict(candidate_pts)
-        cov = gp.cov
+        cov = self.gp.cov
         best_idx = np.argmax(mu)
 
-        data = (mu, variance, cov)
+        data = (mu, variance, cov, prefer_num)
         cur_selection = [np.argmax(best_idx)]
 
+        selected_idx, USGV = self.select_greedy_k(cur_selection, num_alts, data)
+        print(selected_idx)
+        return np.array(selected_idx), USGV, mu[best_idx]
 
-    def select_single(cur_selection, data):
-        mu, variance, cov = data
 
+    def select_greedy(self, cur_selection, data):
+        mu, variance, cov, prefer_num = data
 
-        for i in range(len(mu)) not in cur_selection:
-            print(i)
+        best_v = -float('inf')
+        best_i = -1
+
+        exp_v = 1.0 / (len(cur_selection) + 1)
+        for i in [x for x in range(len(mu)) if x not in cur_selection]:
+            idxs = cur_selection + [i]
+            sub_grid = np.ix_(idxs, idxs)
+            sub_cov = cov[sub_grid]
+
+            GV = np.linalg.det(sub_cov) # Generalized variance.
+            SGV = GV ** exp_v # Standardized generalized variance
+
+            value = (1-self.alpha)*mu[i] + self.alpha*SGV
+            #print('i: ' + str(i)+ ' SGV: ' + str(SGV) + ' value: ' +str(value))
+
+            if value > best_v:
+                best_v = value
+                best_i = i
+
+        return best_i, value
+
 
 
 

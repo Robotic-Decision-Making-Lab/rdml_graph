@@ -78,6 +78,8 @@ class GP:
 
         if active_learner is None:
             self.active_learner = UCBLearner(1.0)
+        else:
+            self.active_learner = active_learner
         self.active_learner.gp = self
 
 
@@ -127,7 +129,7 @@ class GP:
         return self.active_learner.select(candidate_pts, num_alts, prefer_num)
 
 
-    def select(self, candidate_pts, num_alts, prefer_num):
+    def select(self, candidate_pts, num_alts, prefer_num=-1):
         return self.active_learner.select(candidate_pts, num_alts, prefer_num)
 
     ## Predicts the output of the GP at new locations
