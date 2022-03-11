@@ -99,6 +99,14 @@ class PreferenceGP(GP):
 
         if method == 'random':
             pts = np.random.random((num_pts, bounds.shape[0])) * scaler + bias
+
+            # replace 2 of the points with the min a max of the prior bounds
+            if num_pts > 2:
+                pts[0] = bounds[:,0]
+                pts[1] = bounds[:,1]
+
+            print(pts)
+
         elif method == 'exact':
             pts = pts
             num_pts = pts.shape[0]
