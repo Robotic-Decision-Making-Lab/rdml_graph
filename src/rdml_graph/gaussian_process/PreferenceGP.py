@@ -92,17 +92,71 @@ class PreferenceGP(GP):
     # the pareto_pairs constraint to generate a function that ensures pareto_pairs
     # @param bounds - the bounds for the prior pts numpy array (nxn)
     # @param num_pts - the number of prior pts to add
-    def add_prior(self, bounds = np.array([[0,1],[0,1]]), num_pts = 100):
+    def add_prior(self, bounds = np.array([[0,1],[0,1]]), num_pts = 100, \
+                    method='random', pts=None):
         scaler = bounds[:,1] - bounds[:,0]
         bias = bounds[:,0]
 
-        pts = np.random.random((num_pts, bounds.shape[0])) * scaler + bias
+        if method == 'random':
+            pts = np.random.random((num_pts, bounds.shape[0])) * scaler + bias
+        elif method == 'exact':
+            pts = pts
+            num_pts = pts.shape[0]
 
         if self.X_train is not None:
             self.prior_idx = (self.X_train.shape[0], self.X_train.shape[0]+num_pts)
         else:
             self.prior_idx = (0, num_pts)
         self.add(pts, [], type='relative_discrete')
+        self.remove_without_reference()
+
+
+
+    ## This function removes all training points with no references
+    # This is used because prior points can have no references and cause problems
+    # during optimization because of it.
+    #
+    # @post - X_train has removed indicies, all references in y_train have been
+    #          decremented
+    def remove_without_reference(self, remove_prior=True):
+        counts = np.zeros(self.X_train.shape[0])
+
+        # iterate through each type of training data
+        for type in self.probit_idxs:
+            y = self.y_train[self.probit_idxs[type]]
+            if type == 'relative_discrete':
+                for pair in y:
+                    counts[pair[1]] += 1
+                    counts[pair[2]] += 1
+
+        # check which pts don't have any counts
+        #idx_to_rm = [x for x in range(len(counts)) if counts[x] == 0]
+        idx_to_rm = []
+        cur_cts = 0
+        for i in range(len(counts)):
+            if counts[i] == 0:
+                idx_to_rm.append(i)
+                cur_cts += 1
+
+            counts[i] = cur_cts
+
+        # remove X_train points to remove
+        self.X_train = np.delete(self.X_train, idx_to_rm, axis=0)
+
+        # reduce indicies of y_train to match removed indicies
+        for type in self.probit_idxs:
+            y = self.y_train[self.probit_idxs[type]]
+            if type == 'relative_discrete':
+                for pair in y:
+                    pair[1] -= counts[pair[1]]
+                    pair[2] -= counts[pair[2]]
+
+
+        if remove_prior:
+            # update the index if they have been removed
+            prior_idx = (self.prior_idx[0], self.prior_idx[1] - len(idx_to_rm))
+            self.prior_idx = prior_idx
+
 
 
     ## get_prior_pts
