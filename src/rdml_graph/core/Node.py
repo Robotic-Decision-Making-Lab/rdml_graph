@@ -137,6 +137,37 @@ class TreeNode(Node):
 
         return self.parent.getPath() + [self]
 
+    # getTreeStats
+    # This function returns various statistics about the current tree
+    def getTreeStats(self, max_depth = 0):
+        node_balance = []
+        max_depth = max_depth
+        new_max_depth = max_depth
+        num_branches = 0
+
+        for edge in self.e:
+            if isinstance(edge.c, TreeNode):
+                stats = edge.c.getTreeStats(max_depth+1)
+            else:
+                stats = {}
+                stats['max_depth'] = max_depth+1
+                stats['node_balance'] = [1]
+                stats['num_branches'] = 1
+
+            if stats['max_depth'] > new_max_depth:
+                new_max_depth = stats['max_depth']
+
+            node_balance.append(sum(stats['node_balance']))
+            num_branches += stats['num_branches']
+
+        stats = {}
+        stats['max_depth'] = new_max_depth
+        stats['node_balance'] = node_balance
+        stats['num_branches'] = num_branches
+        return stats
+
+
+
     ## depth first search
     # returns the full path to the output location.
     # @param n - the input node
