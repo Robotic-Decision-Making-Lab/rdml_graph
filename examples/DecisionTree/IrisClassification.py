@@ -13,6 +13,7 @@ import sklearn.datasets as dt
 import matplotlib.pyplot as plt
 import random
 
+import pdb
 
 def main():
     iris = dt.load_iris()
@@ -25,15 +26,18 @@ def main():
 
 
 
-    root,_ = gr.learn_decision_tree(X, \
+    root,_ = gr.learn_random_forest(X, \
+                    num_trees = 10, \
                     types=types, \
                     attribute_func=gr.default_attribute_func,\
                     importance_func=gr.classification_importance, \
                     plurality_func=gr.class_plurality,\
                     max_depth=100)
 
-    t = root.get_viz(labels=True)
-    t.view()
+    print(root.traverse(X_in[0]))
+
+    #t = root.get_viz(labels=True)
+    #t.view()
 
     # xs = np.arange(0,10,0.1)
     # xs = np.transpose([np.tile(xs, len(xs)), np.repeat(xs, len(xs))])
