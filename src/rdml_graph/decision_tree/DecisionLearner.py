@@ -83,7 +83,7 @@ def learn_decision_tree(X, \
         if n is None:
             #print('Attribute function returned None, and I do not know why, debug this!')
             #pdb.set_trace()
-            print('\n\n\nX: ' + str(X))
+            #print('\n\n\nX: ' + str(X))
             return plurality_func(X), id
         n.samples = X
         n.types = types

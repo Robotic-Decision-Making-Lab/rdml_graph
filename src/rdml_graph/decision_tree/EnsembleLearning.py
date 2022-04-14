@@ -83,7 +83,7 @@ def learn_random_forest(X, \
 
     trees = [t[0] for t in trees]
 
-    model = Ensemble(trees)
+    model = Ensemble(trees, samples=X)
 
     return model, 0
 
@@ -97,7 +97,7 @@ class Ensemble:
     ## init
     # constructor for the Ensemble learning algorithm
     # @param trees a list of trees and id's
-    def __init__(self, trees, weights = None):
+    def __init__(self, trees, weights = None, samples = None):
         self.trees = trees
 
         if weights is None:
@@ -105,6 +105,7 @@ class Ensemble:
         else:
             self.weights = weights
 
+        self.samples = samples
 
     ## traverses the tree to get to the leaf node.
     def traverse(self, input, num_threads = 8):

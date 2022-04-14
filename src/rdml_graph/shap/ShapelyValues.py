@@ -12,11 +12,14 @@ from rdml_graph.decision_tree import DecisionNode, \
         learn_decision_tree, \
         default_attribute_func,\
         regression_importance, \
-        reg_plurality
+        reg_plurality, \
+        Ensemble
 
 import numpy as np
 import math
 from statistics import mean
+
+from multiprocessing import Pool
 
 import pdb
 
@@ -126,16 +129,33 @@ def SHAP_avg_diff(x, tree):
 
     return feat_shap - avg_shap, feat_shap - med_shap, shap_values
 
+
+def calc_tree_shap_int_all_for_parallel(tree, samples):
+    return np.array([TreeSHAP_INT(s, tree) for s in samples])
+
 ## SHAP_val
 # This function takes as input the input decision tree and finds the SHAP value
 # for all samples in the tree
 # @param tree - the input decision tree to run the function over
 #
 # @return - numpy array of shap values (n, k) (number of samples, number of features)
-def SHAP_all(tree):
+def SHAP_all(tree, num_threads=8):
     samples = [c[0] for c in tree.samples]
 
-    shap_values = np.array([TreeSHAP_INT(s, tree) for s in samples])
+    if isinstance(tree, Ensemble):
+        iteratable = [(t, samples) for t in tree.trees]
+
+        with Pool(num_threads) as p:
+            all_shaps = p.starmap(calc_tree_shap_int_all_for_parallel, iteratable)
+
+        #pdb.set_trace()
+        all_shaps = np.array(all_shaps)
+
+        shap_values = np.average(all_shaps, axis=0, weights=tree.weights)
+
+    else:
+        shap_values = np.array([TreeSHAP_INT(s, tree) for s in samples])
+
     return shap_values
 
 
