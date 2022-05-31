@@ -35,6 +35,7 @@ import math
 import numpy as np
 
 from multiprocessing import Pool
+import time
 
 import pdb
 
@@ -65,7 +66,8 @@ def learn_random_forest(X, \
         plurality_func=class_plurality, \
         same_func=same_class, \
         with_labels=True, \
-        num_threads = 8):
+        num_threads = 12, \
+        progress_cb = None):
     # Start of  function
 
     # create sub-samples of dataset
@@ -77,8 +79,42 @@ def learn_random_forest(X, \
     iteratable = [(subset, types, importance_func, attribute_func, \
                     max_depth, plurality_func, same_func, with_labels) for subset in subsets]
 
+    # t1 = time.time()
+    # This does the same but without any known progress.
+    # with Pool(num_threads) as p:
+    #     trees = p.starmap(learn_decision_tree, iteratable)
+    # t2 = time.time()
+
     with Pool(num_threads) as p:
-        trees = p.starmap(learn_decision_tree, iteratable)
+        #trees = []
+        # start running
+        results = [p.apply_async(learn_decision_tree, it) for it in iteratable]
+
+        # check results
+        completed = 0
+        running = 0
+        while completed != len(results):
+            completed = 0
+            running = 0
+            for i in range(len(results)):
+                try:
+                    if results[i].successful():
+                        completed += 1
+                    else:
+                        print('tree i has an error: ' + str(i))
+                except ValueError:
+                    running += 1
+
+            progress = (completed / len(results))
+            #print('Progress: ' + str(progress))
+            time.sleep(0.2)
+            if progress_cb is not None:
+                progress_cb(progress)
+        # end while loop
+        trees = [result.get() for result in results]
+    # t3 = time.time()
+    # print('Total time without progress: ' + str(t2 - t1))
+    # print('Total time with progress: ' + str(t3 - t2))
 
 
     trees = [t[0] for t in trees]
@@ -108,7 +144,7 @@ class Ensemble:
         self.samples = samples
 
     ## traverses the tree to get to the leaf node.
-    def traverse(self, input, num_threads = 8):
+    def traverse(self, input, num_threads = 12):
         iteratable = [(input, tree) for tree in self.trees]
 
         with Pool(num_threads) as p:
