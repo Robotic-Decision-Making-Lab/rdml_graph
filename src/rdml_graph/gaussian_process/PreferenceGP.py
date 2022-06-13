@@ -24,7 +24,11 @@
 # Essentially optimizes the solution of the samples given to the GP.
 
 import numpy as np
-import collections
+try:
+	from collections import Sequence
+except ImportError:
+	#print('Could not find collections.Sequence trying collections.abc.Sequence')
+	from collections.abc import Sequence 
 from rdml_graph.gaussian_process import GP
 from rdml_graph.gaussian_process import PreferenceProbit, ProbitBase
 from rdml_graph.gaussian_process import k_fold_half, get_dk
@@ -197,7 +201,7 @@ class PreferenceGP(GP):
     #                          accepts scalars or a vector if each sample has
     #                          a different uncertianty.
     def add(self, X, y, type='relative_discrete', training_sigma=0):
-        if not isinstance(training_sigma, collections.Sequence):
+        if not isinstance(training_sigma, Sequence):
             training_sigma = np.ones(len(y)) * training_sigma
 
         if self.X_train is None:

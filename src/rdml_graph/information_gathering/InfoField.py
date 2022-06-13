@@ -24,7 +24,11 @@
 
 import numpy as np
 from scipy.stats import multivariate_normal
-from collections import Sequence
+try:
+	from collections import Sequence
+except ImportError:
+	#print('Could not find collections.Sequence trying collections.abc.Sequence')
+	from collections.abc import Sequence 
 import pdb
 
 
