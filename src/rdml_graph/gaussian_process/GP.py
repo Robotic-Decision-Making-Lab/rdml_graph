@@ -132,6 +132,16 @@ class GP:
     def select(self, candidate_pts, num_alts, prefer_num=-1):
         return self.active_learner.select(candidate_pts, num_alts, prefer_num)
 
+    ## select_best
+    # select the best candidate_pt
+    # @param candidate_pts - list of candidate points to select from.
+    #
+    # @return index of the best candidate pt
+    def select_best(self, candidate_pts):
+        mu, sigma = self.predict(candidate_pts)
+        return np.argmax(mu)
+
+
     ## Predicts the output of the GP at new locations
     # @param X - the input test samples (n,k).
     #
@@ -159,9 +169,9 @@ class GP:
 
         muX_Y = np.matmul(covXY, np.matmul(covYYinv, self.y_train))
         # stored as an instance variable in case it is needed for some reason
-        self.cov_predict = covXX -  np.matmul(np.matmul(covXY, covYYinv), covYX)
+        self.cov = covXX -  np.matmul(np.matmul(covXY, covYYinv), covYX)
 
-        sigmaX_Y = np.diagonal(self.cov_predict)
+        sigmaX_Y = np.diagonal(self.cov)
         # just in case do to numerical instability a negative variance shows up
         sigmaX_Y = np.maximum(0, sigmaX_Y)
 

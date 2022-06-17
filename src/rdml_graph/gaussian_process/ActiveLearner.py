@@ -22,6 +22,7 @@
 # Active learning selection algorithms for Pairwise GP's
 
 import numpy as np
+import random
 import pdb
 
 ## Base Active Learning class.
@@ -45,7 +46,22 @@ class ActiveLearner:
     #          selection values for candidate_pts,
     #          value of the best point.
     def select(self, candidate_pts, num_alts, prefer_num=-1):
-        raise NotImplementedError('ActiveLearner select is not impleneted')
+        raise NotImplementedError('ActiveLearner select is not implemented')
+
+
+    ## select_previous
+    # Selects the active learning selections from the canidate pts with a list of previous 
+    # selections. Particuarly useful for pairwise active learning methods.
+    # @param candidate_pts - a numpy array of points (nxk), n = number points, k = number of dimmensions
+    # @param num_alts - [opt] the number of alternative points to select from.
+    # @param prefer_num - [opt] the number of points at the start of the candidates to prefer
+    #                   selecting from. (This is designed to be used with pareto-optimal
+    #                   selections)
+    #
+    #
+    # @return - index of the selection
+    def select_previous(self, candidate_pts, num_alts=1, prefer_num=-1):
+        raise NotImplementedError('ActiveLearner select_previous is not implemented')
 
     ## select_greedy
     # This function greedily selects the best single data point
@@ -55,7 +71,7 @@ class ActiveLearner:
     #
     # @return the index of the greedy selection.
     def select_greedy(self, cur_selection, data):
-        raise NotImplementedError("ActiveLearner select_greey is not implemented as has been called")
+        raise NotImplementedError("ActiveLearner select_greedy is not implemented as has been called")
 
     # select_greedy_k
     # This function selects the top k canidates given the data and the select greedy
@@ -138,6 +154,58 @@ class ActiveLearner:
 
 
 
+
+class RandomLearner(ActiveLearner):
+    ## Constructor
+    # @param alpha - the scaler value on the UCB equation UCB = mean + alpha*sqrt(variance)
+    def __init__(self):
+        super(RandomLearner, self).__init__()
+
+    ## select
+    # Selects the given points
+    # @param candidate_pts - a numpy array of points (nxk), n = number points, k = number of dimmensions
+    # @param num_alts - the number of alterantives to selec (including the highest mean)
+    # @parm prefer_num - the number of points at the start of the candidates to prefer
+    #                   selecting from. (This is designed to be used with pareto-optimal
+    #                   selections)
+    #
+    # @return [highest_mean, highest_selection, next highest selection, ...],
+    #          selection values for candidate_pts,
+    #          value of the best point.
+    def select(self, candidate_pts, num_alts, prefer_num=-1):
+        mu, variance = self.gp.predict(candidate_pts)
+        UCB = mu + self.alpha*np.sqrt(variance)
+
+        best_idx = np.argmax(mu)
+        selected_idx = random.choice(range(0, best_idx) + range(best_idx+1, len(candidate_pts)), num_alts-1)
+        selected_idx = [best_idx] + selected_idx
+
+        return np.array(selected_idx), UCB[selected_idx], mu[best_idx]
+
+
+
+    ## select_previous
+    # Selects the active learning selections from the canidate pts with a list of previous 
+    # selections. Particuarly useful for pairwise active learning methods.
+    # @param candidate_pts - a numpy array of points (nxk), n = number points, k = number of dimmensions
+    # @param prev_selection - a list of indicies in candidate pts of previously selected paths
+    # @param num_alts - [opt] the number of alternative points to select from.
+    # @param prefer_num - [opt] the number of points at the start of the candidates to prefer
+    #                   selecting from. (This is designed to be used with pareto-optimal
+    #                   selections)
+    #
+    #
+    # @return - index of the selection
+    def select_previous(self, candidate_pts, prev_selection=[], num_alts=1, prefer_num=-1):
+        
+        idxs = np.arange(len(candidate_pts))
+        idxs = np.delete(idxs, prev_selection)
+
+        return np.random.choice(idxs, num_alts)
+
+
+
+
 class UCBLearner(ActiveLearner):
     ## Constructor
     # @param alpha - the scaler value on the UCB equation UCB = mean + alpha*sqrt(variance)
@@ -165,6 +233,31 @@ class UCBLearner(ActiveLearner):
         selected_idx = self.select_best_k(UCB, num_alts, best_idx, prefer_num)
 
         return selected_idx, UCB[selected_idx], mu[best_idx]
+
+
+    ## select_previous
+    # Selects the active learning selections from the canidate pts with a list of previous 
+    # selections. Particuarly useful for pairwise active learning methods.
+    # @param candidate_pts - a numpy array of points (nxk), n = number points, k = number of dimmensions
+    # @param prev_selection - a list of indicies in candidate pts of previously selected paths
+    # @param num_alts - [opt] the number of alternative points to select from.
+    # @param prefer_num - [opt] the number of points at the start of the candidates to prefer
+    #                   selecting from. (This is designed to be used with pareto-optimal
+    #                   selections)
+    #
+    #
+    # @return - index of the selection
+    def select_previous(self, candidate_pts, prev_selection=[], num_alts=1, prefer_num=-1):
+        mu, variance = self.gp.predict(candidate_pts)
+        cov = self.gp.cov
+
+        data = (mu, variance, cov, prefer_num)
+        cur_selection = prev_selection
+
+        selected_idx, USGV = self.select_greedy_k(cur_selection, num_alts, data)
+        #print(selected_idx)
+        return np.array(selected_idx)
+
 
 
 class DetLearner(ActiveLearner):
@@ -195,7 +288,39 @@ class DetLearner(ActiveLearner):
 
         selected_idx, USGV = self.select_greedy_k(cur_selection, num_alts, data)
         print(selected_idx)
-        return np.array(selected_idx), USGV, mu[best_idx]
+        return np.array(selected_idx)
+
+
+
+    ## select_previous
+    # Selects the active learning selections from the canidate pts with a list of previous 
+    # selections. Particuarly useful for pairwise active learning methods.
+    # @param candidate_pts - a numpy array of points (nxk), n = number points, k = number of dimmensions
+    # @param prev_selection - a list of indicies in candidate pts of previously selected paths
+    # @param num_alts - [opt] the number of alternative points to select from.
+    # @param prefer_num - [opt] the number of points at the start of the candidates to prefer
+    #                   selecting from. (This is designed to be used with pareto-optimal
+    #                   selections)
+    #
+    #
+    # @return - index of the selection
+    def select_previous(self, candidate_pts, prev_selection=[], num_alts=1, prefer_num=-1):
+        mu, variance = self.gp.predict(candidate_pts)
+        cov = self.gp.cov
+
+        data = (mu, variance, cov, prefer_num)
+        cur_selection = prev_selection
+
+        selected_idx = []
+        for i in range(num_alts):
+            cur_sel_idx, USGV = self.select_greedy(cur_selection, data)
+
+            selected_idx.append(cur_sel_idx)
+            cur_selection.append(cur_sel_idx)
+
+        #print(selected_idx)
+        return np.array(selected_idx)
+
 
 
     def select_greedy(self, cur_selection, data):
