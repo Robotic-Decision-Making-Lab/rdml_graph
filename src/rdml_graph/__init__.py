@@ -30,3 +30,6 @@ from .shap import *
 
 from . import gaussian_process
 from .gaussian_process import *
+
+from . import rule_based
+from .rule_based import *
