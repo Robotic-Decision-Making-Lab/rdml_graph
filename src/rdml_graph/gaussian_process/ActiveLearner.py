@@ -50,7 +50,7 @@ class ActiveLearner:
 
 
     ## select_previous
-    # Selects the active learning selections from the canidate pts with a list of previous 
+    # Selects the active learning selections from the canidate pts with a list of previous
     # selections. Particuarly useful for pairwise active learning methods.
     # @param candidate_pts - a numpy array of points (nxk), n = number points, k = number of dimmensions
     # @param num_alts - [opt] the number of alternative points to select from.
@@ -185,7 +185,7 @@ class RandomLearner(ActiveLearner):
 
 
     ## select_previous
-    # Selects the active learning selections from the canidate pts with a list of previous 
+    # Selects the active learning selections from the canidate pts with a list of previous
     # selections. Particuarly useful for pairwise active learning methods.
     # @param candidate_pts - a numpy array of points (nxk), n = number points, k = number of dimmensions
     # @param prev_selection - a list of indicies in candidate pts of previously selected paths
@@ -197,7 +197,7 @@ class RandomLearner(ActiveLearner):
     #
     # @return - index of the selection
     def select_previous(self, candidate_pts, prev_selection=[], num_alts=1, prefer_num=-1):
-        
+
         idxs = np.arange(len(candidate_pts))
         idxs = np.delete(idxs, prev_selection)
 
@@ -236,7 +236,7 @@ class UCBLearner(ActiveLearner):
 
 
     ## select_previous
-    # Selects the active learning selections from the canidate pts with a list of previous 
+    # Selects the active learning selections from the canidate pts with a list of previous
     # selections. Particuarly useful for pairwise active learning methods.
     # @param candidate_pts - a numpy array of points (nxk), n = number points, k = number of dimmensions
     # @param prev_selection - a list of indicies in candidate pts of previously selected paths
@@ -293,7 +293,7 @@ class DetLearner(ActiveLearner):
 
 
     ## select_previous
-    # Selects the active learning selections from the canidate pts with a list of previous 
+    # Selects the active learning selections from the canidate pts with a list of previous
     # selections. Particuarly useful for pairwise active learning methods.
     # @param candidate_pts - a numpy array of points (nxk), n = number points, k = number of dimmensions
     # @param prev_selection - a list of indicies in candidate pts of previously selected paths
