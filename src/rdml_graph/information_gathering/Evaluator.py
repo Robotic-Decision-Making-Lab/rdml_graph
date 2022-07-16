@@ -335,7 +335,13 @@ class PathEvaluatorAlongPath(PathEvaluator):
   #   else:
   #     return -1.
 
-
+## applyBudget
+# This function takes a path and reduces the size to the given budget.
+# @param path - input a numpy 2d array (n,2) or k
+# @param budget - the budgeted path length
+# @param verbose - if true, outputs path lengths
+#
+# @return budgeted_path, length of path.
 def applyBudget(path, budget, verbose=False):
   distances = [np.linalg.norm(path[pt_idx-1] - path[pt_idx]) if pt_idx > 0 else 0 for pt_idx in range(len(path))]
   cumulative_distances = np.cumsum(distances)

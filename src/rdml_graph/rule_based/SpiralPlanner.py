@@ -77,8 +77,8 @@ def SpiralPlan(start, map, spacing, CW=True):
 
         # check if the new point will extend beyond the desired bound.
         # if it does than stop at the bound and reverse the direction of the spiral
-        if (m[dir]*val) > (m[dir]*(bounds[dir] - 1.499*m[dir]*spacing)):
-            val = bounds[dir] - m[dir]*spacing
+        if (m[dir]*val) > (m[dir]*(bounds[dir] - 0.75*m[dir]*spacing)):
+            val = bounds[dir] - m[dir]*(spacing*0.5)
             CW = not CW
 
         # update the waypoint with the new direction
