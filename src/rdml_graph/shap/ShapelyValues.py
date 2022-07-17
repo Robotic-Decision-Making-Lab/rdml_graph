@@ -146,8 +146,11 @@ def SHAP_all(tree, num_threads=8):
 
     if isinstance(tree, Ensemble):
         iteratable = [(t, samples) for t in tree.trees]
+        print('Created iteratable')
 
         with Pool(num_threads) as p:
+            print('With pool: ')
+            print(p)
             all_shaps = p.starmap(calc_tree_shap_int_all_for_parallel, iteratable)
 
         #pdb.set_trace()
