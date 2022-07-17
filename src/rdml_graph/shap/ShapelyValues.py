@@ -142,9 +142,12 @@ def calc_tree_shap_int_all_for_parallel(tree, samples):
 #
 # @return - numpy array of shap values (n, k) (number of samples, number of features)
 def SHAP_all(tree, num_threads=8):
+    print('SHAP_all called')
     samples = [c[0] for c in tree.samples]
+    print('Generated samples')
 
     if isinstance(tree, Ensemble):
+        print('Determined tree is Ensemble')
         iteratable = [(t, samples) for t in tree.trees]
         print('Created iteratable')
 
