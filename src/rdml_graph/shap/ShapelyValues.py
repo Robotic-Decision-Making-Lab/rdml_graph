@@ -131,8 +131,6 @@ def SHAP_avg_diff(x, tree):
 
 
 def calc_tree_shap_int_all_for_parallel(tree, samples):
-    print('Starting calling  TreeSHAP_INT for tree')
-    print(tree)
     return np.array([TreeSHAP_INT(s, tree) for s in samples])
 
 ## SHAP_val
