@@ -349,9 +349,9 @@ def applyBudget(path, budget, verbose=False):
 
   if len(budgeted_path) < len(path):
     budget_diff = budget - cumulative_distances[len(budgeted_path)-1]
-    assert budget_diff > 0
-    unit_vec = (path[len(budgeted_path)] - budgeted_path[-1]) / np.linalg.norm(budgeted_path[-1] - path[len(budgeted_path)])
-    budgeted_path.append(budgeted_path[-1] + unit_vec*budget_diff)
+    if budget_diff > 0:
+      unit_vec = (path[len(budgeted_path)] - budgeted_path[-1]) / np.linalg.norm(budgeted_path[-1] - path[len(budgeted_path)])
+      budgeted_path.append(budgeted_path[-1] + unit_vec*budget_diff)
 
   else:
     budgeted_path_len = cumulative_distances[-1]
