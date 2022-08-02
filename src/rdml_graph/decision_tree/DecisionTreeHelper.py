@@ -352,7 +352,7 @@ def bin_float_split_numpy(X, importance_func, parent, id, with_labels=True):
 
     best_atr, best_importance = float_index_split(X, split_pts)
 
-    if best_atr is -1:
+    if best_atr == -1:
         # There are no viable splits
         return None, best_importance
 
