@@ -254,6 +254,7 @@ def data_sort_key(x):
 # @param X - the input data [(x_i, target), ...]
 # @param importance_func - the importance function for the split
 def bin_float_split(X, importance_func, parent, id, with_labels=True):
+    pdb.set_trace()
     X.sort(key=data_sort_key)
 
     best_atr = None
@@ -306,6 +307,57 @@ def bin_float_split(X, importance_func, parent, id, with_labels=True):
 
     return n, best_importance
 
+
+from numba import njit
+@njit
+def numba_float_index_split(X, split_pts):
+    best_split = -1
+    best_importance = -np.inf
+    for split in split_pts:
+        var1 = np.var(X[:split,1])
+        var2 = np.var(X[split:,1])
+        avg_var = -(var1*split + var2*(X.shape[0]-split)) / X.shape[0]
+
+        if avg_var > best_importance:
+            best_importance = avg_var
+            best_split = split
+
+    return best_split, best_importance
+
+## bin_float_split
+# @param X - the input data [(x_i, target), ...]
+# @param importance_func - the importance function for the split
+def bin_float_split_numpy(X, importance_func, parent, id, with_labels=True):
+    if with_labels:
+        X = [[x[0], x[1][0]] for x in X]
+    X = np.array(X)
+    X = X[X[:,0].argsort()]
+
+    # Find each index to split
+    split_pts = np.where(X[1:,0]-X[:-1,0] != 0)[0]+1
+
+    best_atr, best_importance = numba_float_index_split(X, split_pts)
+
+    if best_atr is -1:
+        # There are no viable splits
+        return None, best_importance
+
+    #print('SORTED_X')
+    #print(X)
+
+    if with_labels:
+        value = (X[best_atr-1][0] + X[best_atr][0]) / 2
+    else:
+        value = (X[best_atr-1] + X[best_atr]) / 2
+    # end for loop for all samples
+    n = FloatDecision(id, parent, -1, value)
+
+    #print('\tbest_attribute: ' + str(best_atr))
+    #print('\tvalue: ' + str(value))
+
+    return n, best_importance
+
+
 ######################### ATTRIBUTE FUNCTIONS ##########################
 # These attribute functions can be modified to particular types of objects.
 # Also modded using importance functions and splitter functions.
@@ -324,7 +376,7 @@ def default_attribute_func(X, importance_func, types, parent, id):
     if len(X) <= 0:
         return None
 
-    attribute_handlers = {'float': bin_float_split, 'category': bin_category_split}
+    attribute_handlers = {'float': bin_float_split_numpy, 'category': bin_category_split}
 
     best_attribute = None
     best_importance = -float('inf')
