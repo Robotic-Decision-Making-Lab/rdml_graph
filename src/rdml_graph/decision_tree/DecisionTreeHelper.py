@@ -307,22 +307,36 @@ def bin_float_split(X, importance_func, parent, id, with_labels=True):
 
     return n, best_importance
 
+try:
+    from numba import njit
+    @njit
+    def float_index_split(X, split_pts):
+        best_split = -1
+        best_importance = -np.inf
+        for split in split_pts:
+            var1 = np.var(X[:split,1])
+            var2 = np.var(X[split:,1])
+            avg_var = -(var1*split + var2*(X.shape[0]-split)) / X.shape[0]
 
-from numba import njit
-@njit
-def numba_float_index_split(X, split_pts):
-    best_split = -1
-    best_importance = -np.inf
-    for split in split_pts:
-        var1 = np.var(X[:split,1])
-        var2 = np.var(X[split:,1])
-        avg_var = -(var1*split + var2*(X.shape[0]-split)) / X.shape[0]
+            if avg_var > best_importance:
+                best_importance = avg_var
+                best_split = split
 
-        if avg_var > best_importance:
-            best_importance = avg_var
-            best_split = split
+        return best_split, best_importance
+except:
+    def float_index_split(X, split_pts):
+        best_split = -1
+        best_importance = -np.inf
+        for split in split_pts:
+            var1 = np.var(X[:split,1])
+            var2 = np.var(X[split:,1])
+            avg_var = -(var1*split + var2*(X.shape[0]-split)) / X.shape[0]
 
-    return best_split, best_importance
+            if avg_var > best_importance:
+                best_importance = avg_var
+                best_split = split
+
+        return best_split, best_importance
 
 ## bin_float_split
 # @param X - the input data [(x_i, target), ...]
@@ -336,7 +350,7 @@ def bin_float_split_numpy(X, importance_func, parent, id, with_labels=True):
     # Find each index to split
     split_pts = np.where(X[1:,0]-X[:-1,0] != 0)[0]+1
 
-    best_atr, best_importance = numba_float_index_split(X, split_pts)
+    best_atr, best_importance = float_index_split(X, split_pts)
 
     if best_atr is -1:
         # There are no viable splits
