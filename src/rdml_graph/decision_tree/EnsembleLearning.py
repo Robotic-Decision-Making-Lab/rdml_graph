@@ -152,7 +152,6 @@ class Ensemble:
 
         predictions = np.array(y_pred)
 
-        pdb.set_trace()
         output_prediction = np.dot(predictions, self.weights)
         return output_prediction
 
