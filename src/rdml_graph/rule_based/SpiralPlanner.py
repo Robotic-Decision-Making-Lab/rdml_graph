@@ -44,7 +44,7 @@ import pdb
 # |                                           |  | |  | X | | |
 # |                                           |  | |  o-<-o | |
 # |                                           o<-o o----<---o |
-#  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+#  ____________________________________________________________
 #
 # @param start - starting location for spiral. Numpy (2)
 # @param map - Expects {'x_ticks': numpy array, 'y_ticks': numpy array}
