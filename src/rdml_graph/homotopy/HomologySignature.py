@@ -220,7 +220,7 @@ class HomologySignatureGoal(HSignatureGoal):
         self.sign.sign[id] = 0
 
     ## checkSign
-    # A function to check if the given H signature goal matches the
+    # A function to check if the given H signature goal matches the goal constraint.
     def checkSign(self, other):
         return np.all(np.logical_or(np.logical_not(self.mask),\
                                     np.equal(other.sign, self.sign.sign)))

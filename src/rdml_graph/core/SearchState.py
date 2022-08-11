@@ -68,7 +68,7 @@ class SearchState(TreeNode):
         succ = self.state.successor()
         states = [SearchState(s[0], rCost=self.rCost+s[1], parent=self)  \
                     for s in succ]
-        self.e = [Edge.Edge(self, s, suc[1]) for s, suc in zip(states, succ)]
+        self.e = [Edge(self, s, suc[1]) for s, suc in zip(states, succ)]
         self.calcSucc = True
         return states
 

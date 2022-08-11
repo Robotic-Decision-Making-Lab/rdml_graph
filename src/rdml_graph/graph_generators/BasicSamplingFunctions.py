@@ -90,8 +90,7 @@ def noCollision(u , v, map):
     return False
 
 ## polygon collision check
-# a simple function to always indicate there are no collisions for the PRM
-# to grow.
+# a function to check if there is a collision with a polygonal obstacle
 # @param u - one of the input nodes.
 # @param v - the second input node.
 # @param map - the input map to check for collisions using.
