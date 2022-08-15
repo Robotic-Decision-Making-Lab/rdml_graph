@@ -73,7 +73,7 @@ def pass_all(n, data, goal):
 # @param out_tree - if true, output tree, otherwise do not output a tree.
 #
 # @returns - list, cost
-#   an optimal list states to the goal state. - if no path return empty list.
+#   an optimal list states to the goal state. - if no path return empty list and infinte cost.
 # [first state, ---, goal state]
 def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None, \
             output_tree=False):
@@ -114,7 +114,6 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None, \
                     succ.hCost = h(succ.state, data, goal)
                     heapq.heappush(frontier, succ)
     print(i)
-    pdb.set_trace()
     # End of while, no solution found.
     if output_tree:
         return [], float('inf'), startState

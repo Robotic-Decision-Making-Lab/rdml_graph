@@ -65,7 +65,7 @@ def sample2DPolygonCostmap(map, num_samples, idStart=0):
         geoPt = geo.Point(pt[0],pt[1])
         map_pt = (pt - w_to_img_inter) * w_to_img_scale
         cost_at_point = costmap[round(map_pt[0]), round(map_pt[1])]
-        if bounding.contains(geoPt) and (cost_at_point < max_free):
+        if bounding.contains(geoPt) and (cost_at_point < max_free) and (cost_at_point > 0):
             points[num_pts] = pt
             num_pts += 1
 
