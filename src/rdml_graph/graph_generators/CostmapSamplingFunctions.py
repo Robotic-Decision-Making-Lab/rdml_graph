@@ -63,7 +63,7 @@ def sample2DPolygonCostmap(map, num_samples, idStart=0):
 
         geoPt = geo.Point(pt[0],pt[1])
         map_pt = (pt - w_to_img_inter) * w_to_img_scale
-        cost_at_point = costmap[round(map_pt[0]), round(map_pt[1])]
+        cost_at_point = costmap[int(round(map_pt[0])), int(round(map_pt[1]))]
         if bounding.contains(geoPt) and (cost_at_point < max_free) and (cost_at_point > 0):
             points[num_pts] = pt
             num_pts += 1
@@ -91,8 +91,6 @@ def costmapCollisionPt(u_pt, v_pt, map):
     x_ticks = map['x_ticks']
     y_ticks = map['y_ticks']
     max_free = map['max_free_edge']
-    import pdb
-    pdb.set_trace()
     dist = np.linalg.norm(u_pt - v_pt, ord=2)
 
     num_pts = dist / ((x_ticks[1]-x_ticks[0])*0.6)
@@ -109,7 +107,7 @@ def costmapCollisionPt(u_pt, v_pt, map):
         map_pt = (pt - w_to_img_inter) * w_to_img_scale
 
 
-        cost_at_point = costmap[round(map_pt[0]), round(map_pt[1])]
+        cost_at_point = costmap[int(round(map_pt[0])), int(round(map_pt[1]))]
         #print('map_pt: ' +str(map_pt) + ' pt: ' + str(pt)+' cost: '+str(cost_at_point))
 
         # The path is in collision
