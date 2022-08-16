@@ -91,6 +91,8 @@ def costmapCollisionPt(u_pt, v_pt, map):
     x_ticks = map['x_ticks']
     y_ticks = map['y_ticks']
     max_free = map['max_free_edge']
+    import pdb
+    pdb.set_trace()
     dist = np.linalg.norm(u_pt - v_pt, ord=2)
 
     num_pts = dist / ((x_ticks[1]-x_ticks[0])*0.6)
