@@ -30,7 +30,6 @@ from ..core import Edge
 
 
 
-
 ## sample points inside of a bounding polygon and outside of obstacles
 # @param map - a dictionary with needed parameters for sampling with obstacles
 #           bounding - the bounding polygon (shaply)
@@ -83,11 +82,16 @@ def sample2DPolygonCostmap(map, num_samples, idStart=0):
 #
 # @return - True if there is a collision, false otherwise
 def costmapCollision(u, v, map):
+    costmapCollisionPt(u.pt, v.pt, map)
+
+
+
+def costmapCollisionPt(u_pt, v_pt, map):
     costmap = map['costmap']
     x_ticks = map['x_ticks']
     y_ticks = map['y_ticks']
     max_free = map['max_free_edge']
-    dist = np.linalg.norm(u.pt - v.pt, ord=2)
+    dist = np.linalg.norm(u_pt - v_pt, ord=2)
 
     num_pts = dist / ((x_ticks[1]-x_ticks[0])*0.6)
     ts = np.arange(0, 1, 1 / num_pts)
@@ -99,7 +103,7 @@ def costmapCollision(u, v, map):
 
     for t in ts:
         #print(t)
-        pt = u.pt + t * (v.pt - u.pt)
+        pt = u_pt + t * (v_pt - u_pt)
         map_pt = (pt - w_to_img_inter) * w_to_img_scale
 
 
@@ -112,8 +116,6 @@ def costmapCollision(u, v, map):
 
 
     return False # no found collisions
-
-
 
 
 

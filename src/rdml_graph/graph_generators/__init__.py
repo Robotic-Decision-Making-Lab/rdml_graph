@@ -3,4 +3,4 @@ from .BasicSamplingFunctions import sample2DUniform, sample2DPolygon, \
                     noCollision, polygonCollision, \
                     EdgeConnection, HEdgeConn, HomotopyEdgeConn
 
-from .CostmapSamplingFunctions import sample2DPolygonCostmap, costmapCollision
+from .CostmapSamplingFunctions import sample2DPolygonCostmap, costmapCollision, costmapCollisionPt
