@@ -45,8 +45,8 @@ def sample2DPolygonCostmap(map, num_samples, idStart=0):
     x_ticks = map['x_ticks']
     y_ticks = map['y_ticks']
     max_free = map['max_free_node']
-    w_to_img_scale = np.array([x_ticks.shape[0] / (x_ticks[-1] - x_ticks[0]), \
-                                    y_ticks.shape[0] / (y_ticks[-1] - y_ticks[0])])
+    res = x_ticks[1] - x_ticks[0]
+    w_to_img_scale = np.array([1/res, 1/res])
 
     w_to_img_inter = np.array([x_ticks[0], y_ticks[0]])
 
@@ -63,7 +63,7 @@ def sample2DPolygonCostmap(map, num_samples, idStart=0):
 
         geoPt = geo.Point(pt[0],pt[1])
         map_pt = (pt - w_to_img_inter) * w_to_img_scale
-        cost_at_point = costmap[int(round(map_pt[0])), int(round(map_pt[1]))]
+        cost_at_point = costmap[int(map_pt[0]), int(map_pt[1])]
         if bounding.contains(geoPt) and (cost_at_point < max_free) and (cost_at_point >= 0):
             points[num_pts] = pt
             num_pts += 1
@@ -82,7 +82,7 @@ def sample2DPolygonCostmap(map, num_samples, idStart=0):
 #
 # @return - True if there is a collision, false otherwise
 def costmapCollision(u, v, map):
-    costmapCollisionPt(u.pt, v.pt, map)
+    return costmapCollisionPt(u.pt, v.pt, map)
 
 
 
@@ -93,13 +93,17 @@ def costmapCollisionPt(u_pt, v_pt, map):
     max_free = map['max_free_edge']
     dist = np.linalg.norm(u_pt - v_pt, ord=2)
 
-    num_pts = dist / ((x_ticks[1]-x_ticks[0])*0.6)
+    res = x_ticks[1] - x_ticks[0]
+    num_pts = dist / (res*0.3)
     ts = np.arange(0, 1, 1 / num_pts)
-    w_to_img_scale = np.array([x_ticks.shape[0] / (x_ticks[-1] - x_ticks[0]), \
-                                    y_ticks.shape[0] / (y_ticks[-1] - y_ticks[0])])
+
+    w_to_img_scale = np.array([1/res, 1/res])
 
     w_to_img_inter = np.array([x_ticks[0], y_ticks[0]])
+    #w_to_img_inter = np.array([y_ticks[0], x_ticks[0]])
 
+    #import pdb
+    #pdb.set_trace()
 
     for t in ts:
         #print(t)
@@ -107,7 +111,7 @@ def costmapCollisionPt(u_pt, v_pt, map):
         map_pt = (pt - w_to_img_inter) * w_to_img_scale
 
 
-        cost_at_point = costmap[int(round(map_pt[0])), int(round(map_pt[1]))]
+        cost_at_point = costmap[int(map_pt[0]), int(map_pt[1])]
         #print('map_pt: ' +str(map_pt) + ' pt: ' + str(pt)+' cost: '+str(cost_at_point))
 
         # The path is in collision
