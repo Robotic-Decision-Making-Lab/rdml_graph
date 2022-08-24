@@ -15,7 +15,7 @@ setup(name='rdml_graph',
       #packages=['rdml_graph', 'rdml_graph.core'],
       package_dir={"": "src"},
       packages=find_packages(where="src"),
-      install_requires=['numpy>=1.3.0','matplotlib>=2.0.0', 'scipy>=1.0.0', 'tqdm>=3.0.0', 'shapely>=1.0.0', 'graphviz>=0.16.0', 'haversine>=2.3.0', 'oyaml>=1.0.0', 'statistics'],
+      install_requires=['numpy>=1.3.0','matplotlib>=2.0.0', 'scipy>=1.0.0', 'tqdm>=3.0.0', 'shapely', 'graphviz>=0.16.0', 'haversine>=2.3.0', 'oyaml>=1.0.0', 'statistics'],
       extras_require={'Saving graphs': ["pickle"]},
       python_requires='>=2.7',
       zip_safe=False)
