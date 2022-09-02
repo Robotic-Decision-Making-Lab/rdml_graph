@@ -81,6 +81,7 @@ class ActiveLearner:
 
 
         sel_values = [-float('inf')] * len(cur_selection)
+        pdb.set_trace()
 
         for i in range(num_itr):
             selection, sel_value = self.select_greedy(cur_selection, data)
@@ -254,9 +255,34 @@ class UCBLearner(ActiveLearner):
         data = (mu, variance, cov, prefer_num)
         cur_selection = prev_selection
 
-        selected_idx, USGV = self.select_greedy_k(cur_selection, num_alts, data)
+        selected_idx = []
+        for i in range(num_alts):
+            cur_sel_idx, USGV = self.select_greedy(cur_selection, data)
+
+            selected_idx.append(cur_sel_idx)
+            cur_selection.append(cur_sel_idx)
+
         #print(selected_idx)
         return np.array(selected_idx)
+
+
+    def select_greedy(self, cur_selection, data):
+        mu, variance, cov, prefer_num = data
+
+        best_v = -float('inf')
+        best_i = -1
+
+        exp_v = 1.0 / (len(cur_selection) + 1)
+        for i in [x for x in range(len(mu)) if x not in cur_selection]:
+            vari = cov[i,i]
+
+            value = (1-self.alpha)*mu[i] + self.alpha*np.sqrt(vari)
+
+            if value > best_v:
+                best_v = value
+                best_i = i
+
+        return best_i, best_v
 
 
 
@@ -345,7 +371,7 @@ class DetLearner(ActiveLearner):
                 best_v = value
                 best_i = i
 
-        return best_i, value
+        return best_i, best_v
 
 
 
