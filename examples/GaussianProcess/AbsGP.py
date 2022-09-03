@@ -25,23 +25,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import rdml_graph as gr
-
+import pdb
 
 
 
 if __name__ == '__main__':
-    X_train = np.array([0,1,2,3,4.2,6,7])
-    abs_values = np.array([0.8,0.6,0.3,0.2,0.22  ,0.4,0.5])
+    X_train = np.array([0.4, 0.7, 0.9, 1.1, 1.2, 1.35, 1.4])
+    abs_values = np.array([0.999, 0.6, 0.3, 0.2, 0.22, 0.4, 0.5])
     #abs_values = np.array([0.4, 0.2, 0.2, 0.2, 0.1, 0.11, 0.3])
 
 
-    gp = gr.PreferenceGP(gr.RBF_kern(0.5, 0.7), normalize_gp=False, \
-            normalize_positive=False, \
-            other_probits={'abs': gr.AbsBoundProbit(1.0,5.0)})
+    gp = gr.PreferenceGP(gr.RBF_kern(0.3, 0.25), normalize_gp=True, \
+            normalize_positive=True, \
+            pareto_pairs=True, \
+            other_probits={'abs': gr.AbsBoundProbit(1.0,10.0)})
     #gp = gr.PreferenceGP(gr.periodic_kern(1.2,0.3,5))
     #gp = gr.PreferenceGP(gr.linear_kern(0.2, 0.2, 0.2))
     #gp = gr.PreferenceGP(gr.RBF_kern(0.2,1)+gr.periodic_kern(1,0.2,0)+gr.linear_kern(0.2,0.1,0.3))
     #gp = gr.PreferenceGP(gr.RBF_kern(0.1,1)*gr.linear_kern(0.3,0.2,0.3))
+
+    pdb.set_trace()
 
     gp.add(X_train, abs_values, type='abs')
 
@@ -50,7 +53,7 @@ if __name__ == '__main__':
     #print(gp.calc_ll())
 
 
-    X = np.arange(-0.5, 8, 0.1)
+    X = np.arange(0.0, 1.5, 0.02)
     mu, sigma = gp.predict(X)
     std = np.sqrt(sigma)
 
