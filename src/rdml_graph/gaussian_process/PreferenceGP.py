@@ -211,7 +211,6 @@ class PreferenceGP(GP):
             len_X = len(self.X_train)
             self.X_train = np.append(self.X_train, X, axis=0)
 
-
         if type == 'relative_discrete':
             if y == []:
                 pass
@@ -243,7 +242,7 @@ class PreferenceGP(GP):
                 idxs = y[1]
             elif isinstance(y, np.ndarray):
                 v = y
-                idxs = np.arange(0, y.shape[0])
+                idxs = np.arange(len_X, y.shape[0]+len_X)
             else:
                 print('abs type received unknown type for y')
                 return

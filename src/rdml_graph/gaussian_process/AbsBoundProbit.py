@@ -119,7 +119,8 @@ class AbsBoundProbit(ProbitBase):
     #       dpy_df - the derivative of P(y|x,theta) with respect to F
     #       py - P(y|x,theta) for the given probit
     def derivatives(self, y, F):
-        y_sel = y[0][y[1]]
+        #y_sel = y[0][y[1]]
+        y_sel = y[0]
         f = F[y[1]]
 
         aa, bb = self.get_alpha_beta(f)
@@ -135,7 +136,17 @@ class AbsBoundProbit(ProbitBase):
 
         py = np.log(beta.pdf(y_sel, aa, bb))
 
-        return -W, dpy_df, py
+        # setup the indexing
+        full_W = np.zeros((F.shape[0], F.shape[0]))
+        idx_grid = np.meshgrid(y[1],y[1])
+        full_W[tuple(idx_grid)] = W
+
+        full_dpy_df = np.zeros(F.shape[0])
+        full_py = np.zeros(F.shape[0])
+        full_dpy_df[y[1]] = dpy_df
+        full_py[y[1]] = py
+
+        return -full_W, full_dpy_df, full_py
 
 
     ## likelihood

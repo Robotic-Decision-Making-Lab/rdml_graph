@@ -45,14 +45,10 @@ if __name__ == '__main__':
     #gp = gr.PreferenceGP(gr.RBF_kern(0.1,1)*gr.linear_kern(0.3,0.2,0.3))
 
     X_train = X_train[:, np.newaxis]
-    print(gp.X_train)
-    print(gp.y_train)
     gp.add(X_train[0:3], abs_values[0:3], type='abs')
-    print(gp.X_train)
-    print(gp.y_train)
     gp.add(np.array([[0.6]]), [])
-    print(gp.X_train)
-    print(gp.y_train)
+    
+    gp.add(X_train[3:], abs_values[3:], type='abs')
 
     #gp.optimize(optimize_hyperparameter=True)
     #print('gp.calc_ll()')
@@ -62,13 +58,6 @@ if __name__ == '__main__':
     X = np.arange(0.0, 1.5, 0.02)
     mu, sigma = gp.predict(X)
     std = np.sqrt(sigma)
-
-#     gp.add(X_train[3:], abs_values[3:], type='abs')
-#     gp.add(np.array([[0.6]]), [])
-
-#     X = np.arange(0.0, 1.5, 0.02)
-#     mu, sigma = gp.predict(X)
-#     std = np.sqrt(sigma)
 
     plt.scatter(X_train, abs_values)
     sigma_to_plot = 1
