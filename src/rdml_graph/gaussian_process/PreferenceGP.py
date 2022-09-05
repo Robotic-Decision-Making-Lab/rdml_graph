@@ -357,7 +357,10 @@ class PreferenceGP(GP):
         for j, probit in enumerate(self.probits):
             if y[j] is not None:
                 W_local, dpy_df_local, py_local = probit.derivatives(y[j], self.F)
-                W += W_local
+                try:
+                    W += W_local
+                except:
+                    pdb.set_trace()
                 grad_ll += dpy_df_local
                 log_likelihood += py_local
 
