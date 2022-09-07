@@ -274,7 +274,7 @@ class UCBLearner(ActiveLearner):
 
         exp_v = 1.0 / (len(cur_selection) + 1)
         for i in [x for x in range(len(mu)) if x not in cur_selection]:
-            vari = cov[i,i]
+            vari = variance[i]
 
             value = (1-self.alpha)*mu[i] + self.alpha*np.sqrt(vari)
 
