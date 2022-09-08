@@ -23,6 +23,7 @@
 
 import numpy as np
 import random
+from copy import copy
 import pdb
 
 ## Base Active Learning class.
@@ -253,7 +254,7 @@ class UCBLearner(ActiveLearner):
         cov = self.gp.cov
 
         data = (mu, variance, cov, prefer_num)
-        cur_selection = prev_selection
+        cur_selection = copy(prev_selection)
 
         selected_idx = []
         for i in range(num_alts):
@@ -335,7 +336,7 @@ class DetLearner(ActiveLearner):
         cov = self.gp.cov
 
         data = (mu, variance, cov, prefer_num)
-        cur_selection = prev_selection
+        cur_selection = copy(prev_selection)
 
         selected_idx = []
         for i in range(num_alts):
