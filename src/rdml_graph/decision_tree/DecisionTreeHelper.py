@@ -28,7 +28,7 @@ import numpy as np
 from random import randint
 import math
 from itertools import combinations
-from statistics import variance, mean
+from statistics import variance, mean, median
 
 import pdb
 
@@ -338,6 +338,26 @@ except:
 
         return best_split, best_importance
 
+
+
+
+# bbalance_float_split
+# @param X - the input data [(x_i, target), ...]
+# @param importance_func - the importance function for the split
+def balance_float_split(X, importance_func, parent, id):
+    med = median(X)
+
+    n = FloatDecision(id, parent, -1, med)
+    split_l = [x for x in X if x <= med]
+    split_h = [x for x in X if x > med]
+    splits = [split_l, split_h]
+
+    count = importance_func(splits)
+
+    return n, count
+
+
+
 ## bin_float_split
 # @param X - the input data [(x_i, target), ...]
 # @param importance_func - the importance function for the split
@@ -386,21 +406,27 @@ def bin_float_split_numpy(X, importance_func, parent, id, with_labels=True):
 # @param parent - the parent node for this attribute function
 #
 # @return - the best node given these possible types.
-def default_attribute_func(X, importance_func, types, parent, id):
+def default_attribute_func(X, importance_func, types, parent, id, with_label=True):
     if len(X) <= 0:
         return None
 
-    attribute_handlers = {'float': bin_float_split_numpy, 'category': bin_category_split}
+    attribute_handlers = {'float': bin_float_split_numpy, 'category': bin_category_split, 'float_balance': balance_float_split}
 
     best_attribute = None
     best_importance = -float('inf')
     #best_split = None
 
-    num_dim_x = len(X[0][0])
+    if with_label:
+        num_dim_x = len(X[0][0])
+    else:
+        num_dim_x = len(X[0])
 
     for i in range(num_dim_x):
         handler = attribute_handlers[types[i]]
-        X_i = [(x[0][i], x[1]) for x in X]
+        if with_label:
+            X_i = [(x[0][i], x[1]) for x in X]
+        else:
+            X_i = [x[i] for x in X]
         #targets = [x[1] for x in X]
 
         n, importance = handler(X_i, importance_func, parent, id)

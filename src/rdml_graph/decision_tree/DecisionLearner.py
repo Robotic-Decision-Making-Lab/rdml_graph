@@ -79,7 +79,7 @@ def learn_decision_tree(X, \
         return plurality_func(X), id
     else:
         # find best case
-        n = attribute_func(X, importance_func, types, parent, id)
+        n = attribute_func(X, importance_func, types, parent, id, with_label=with_labels)
         if n is None:
             #print('Attribute function returned None, and I do not know why, debug this!')
             #pdb.set_trace()
