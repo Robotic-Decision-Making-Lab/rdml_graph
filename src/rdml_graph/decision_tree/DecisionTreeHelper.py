@@ -362,6 +362,7 @@ def balance_float_split(X, importance_func, parent, id):
 # @param X - the input data [(x_i, target), ...]
 # @param importance_func - the importance function for the split
 def bin_float_split_numpy(X, importance_func, parent, id, with_labels=True):
+    pdb.set_trace()
     if with_labels:
         X = [[x[0], x[1][0]] for x in X]
     X = np.array(X)
@@ -416,6 +417,7 @@ def default_attribute_func(X, importance_func, types, parent, id, with_label=Tru
     best_importance = -float('inf')
     #best_split = None
 
+    pdb.set_trace()
     if with_label:
         num_dim_x = len(X[0][0])
     else:

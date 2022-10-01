@@ -22,11 +22,15 @@ def create_balanced_decision_tree(X):
     n = learn_decision_tree(X,
             types = types,
             importance_func=balanced_importance,
-            plurality_func=reg_plurality, \
+            plurality_func=input_plurality, \
             with_labels=False)
 
 
     return n
+
+
+def input_plurality(X):
+    return X
 
 
 ## balanced_importance
