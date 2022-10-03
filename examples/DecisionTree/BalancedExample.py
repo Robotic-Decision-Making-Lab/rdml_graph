@@ -5,7 +5,7 @@
 
 import rdml_graph as gr
 
-
+import pdb
 
 if __name__ == "__main__":
     import sklearn.datasets as dt
@@ -18,4 +18,7 @@ if __name__ == "__main__":
     view = root.get_viz(labels=True)
     view.view()
 
-    pdb.set_trace()
+    print(X[10])
+    ans = root.traverse(X[10])
+
+    print(ans)

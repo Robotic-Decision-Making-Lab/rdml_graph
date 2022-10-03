@@ -39,7 +39,7 @@ def main():
                     attribute_func=gr.default_attribute_func,\
                     importance_func=gr.regression_importance, \
                     plurality_func=gr.reg_plurality,\
-                    with_labels=False, \
+                    with_labels=True, \
                     max_depth=100)
 
     t = root.get_viz(labels=True)

@@ -45,6 +45,8 @@ import pdb
 #               can stop.
 # @param types - [opt] a list of types of the input tree to use with the attribute function
 # @param with_labels - [opt] defines if it is a classification or regression problem with labels on X
+        
+# @param X_only - [opt] defines if X includes labels for regression or classification or a balanced tree tree type problem.
 # @param max_depth - [opt] the max_depth to allow the tree to go
 #
 # FOR RECURSION (DON'T USE)
@@ -62,6 +64,7 @@ def learn_decision_tree(X, \
         plurality_func=class_plurality, \
         same_func=same_class, \
         with_labels=True, \
+        X_only=False, \
         cur_depth=0, \
         parent=None, \
         parent_samples=None,
@@ -79,7 +82,7 @@ def learn_decision_tree(X, \
         return plurality_func(X), id
     else:
         # find best case
-        n = attribute_func(X, importance_func, types, parent, id, with_label=with_labels)
+        n = attribute_func(X, importance_func, types, parent, id, with_label=with_labels, X_only=X_only)
         if n is None:
             #print('Attribute function returned None, and I do not know why, debug this!')
             #pdb.set_trace()
@@ -87,6 +90,7 @@ def learn_decision_tree(X, \
             return plurality_func(X), id
         n.samples = X
         n.types = types
+        #pdb.set_trace()
         splits = n.separate(X, with_label=with_labels)
 
         for i, sub_X in enumerate(splits):
@@ -100,6 +104,7 @@ def learn_decision_tree(X, \
                     same_func=same_func, \
                     types=types, \
                     with_labels = with_labels, \
+                    X_only = X_only, \
                     cur_depth = cur_depth + 1, \
                     parent = n, \
                     parent_samples = X, \
