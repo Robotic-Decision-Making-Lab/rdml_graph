@@ -22,9 +22,14 @@
 # A base Gaussian process implementation
 # Starting framework for the user preference GP.
 
+import sys
 import numpy as np
 from rdml_graph.gaussian_process import ActiveLearner, UCBLearner
-import collections
+
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
+    from collections.abc import Sequence
+else:
+    from collections import Sequence
 
 import pdb
 
@@ -92,7 +97,7 @@ class GP:
     #                          accepts scalars or a vector if each sample has
     #                          a different uncertianty.
     def add(self, X, y, training_sigma=0):
-        if not isinstance(training_sigma, collections.Sequence):
+        if not isinstance(training_sigma, Sequence):
             training_sigma = np.ones(len(y)) * training_sigma
 
         y = y - self.mean_func(X)
