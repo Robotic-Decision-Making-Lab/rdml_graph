@@ -82,7 +82,6 @@ class ActiveLearner:
 
 
         sel_values = [-float('inf')] * len(cur_selection)
-        pdb.set_trace()
 
         for i in range(num_itr):
             selection, sel_value = self.select_greedy(cur_selection, data)
@@ -315,7 +314,7 @@ class DetLearner(ActiveLearner):
 
         selected_idx, USGV = self.select_greedy_k(cur_selection, num_alts, data)
         print(selected_idx)
-        return np.array(selected_idx)
+        return np.array(selected_idx), USGV, mu[best_idx]
 
 
 

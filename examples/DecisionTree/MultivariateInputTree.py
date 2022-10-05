@@ -28,6 +28,7 @@ def main():
     xs = [[random.uniform(0,10) for j in range(num_dim)]  for i in range(num_samps)]
     X = [(x, f(x)+random.uniform(-0.5, 0.5)) for x in xs]
 
+    X = np.array(X)
     #print(xs)
     #print(X)
 
@@ -38,6 +39,7 @@ def main():
                     attribute_func=gr.default_attribute_func,\
                     importance_func=gr.regression_importance, \
                     plurality_func=gr.reg_plurality,\
+                    with_labels=True, \
                     max_depth=100)
 
     t = root.get_viz(labels=True)

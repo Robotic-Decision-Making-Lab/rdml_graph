@@ -19,8 +19,8 @@ def main():
     X_in = np.array([[0,1,2,3], [1,2,3,4], [0,0,0,0], [1,1,1,1], [2,1,1,1]])
     types = ['float'] * len(X_in[0])
     Y = X_in[:,0] + 0.7*X_in[:,1] + X_in[:,2]**2 + X_in[:,3]
-    X_in = X_in.tolist()
-    Y = Y.tolist()
+    #X_in = X_in.tolist()
+    #Y = Y.tolist()
 
     X = list(zip(X_in, Y))
 

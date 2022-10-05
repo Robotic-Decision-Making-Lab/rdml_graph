@@ -28,7 +28,7 @@ import numpy as np
 from random import randint
 import math
 from itertools import combinations
-from statistics import variance, mean
+from statistics import variance, mean, median
 
 import pdb
 
@@ -254,7 +254,7 @@ def data_sort_key(x):
 # @param X - the input data [(x_i, target), ...]
 # @param importance_func - the importance function for the split
 def bin_float_split(X, importance_func, parent, id, with_labels=True):
-    pdb.set_trace()
+    #pdb.set_trace()
     X.sort(key=data_sort_key)
 
     best_atr = None
@@ -338,12 +338,46 @@ except:
 
         return best_split, best_importance
 
+
+
+
+# bbalance_float_split
+# @param X - the input data [(x_i, target), ...]
+# @param importance_func - the importance function for the split
+def balance_float_split(X, importance_func, parent, id):
+    med = median(X)
+
+    
+    split_l = [x for x in X if x <= med]
+    split_h = [x for x in X if x > med]
+    splits = [split_l, split_h]
+
+    count1 = importance_func(splits)
+
+    split_l = [x for x in X if x < med]
+    split_h = [x for x in X if x >= med]
+    splits = [split_l, split_h]
+
+    count2 = importance_func(splits)    
+
+    if count1 > count2:
+        n = FloatDecision(id, parent, -1, med+0.0000001)
+        count = count1
+    else:
+        n = FloatDecision(id, parent, -1, med-0.0000001)
+        count = count2
+
+    return n, count
+
+
+
 ## bin_float_split
 # @param X - the input data [(x_i, target), ...]
 # @param importance_func - the importance function for the split
-def bin_float_split_numpy(X, importance_func, parent, id, with_labels=True):
-    if with_labels:
-        X = [[x[0], x[1][0]] for x in X]
+def bin_float_split_numpy(X, importance_func, parent, id, with_labels=False):
+    #pdb.set_trace()
+    #if with_labels:
+    #    X = [[x[0], x[1][0]] for x in X]
     X = np.array(X)
     X = X[X[:,0].argsort()]
 
@@ -359,10 +393,7 @@ def bin_float_split_numpy(X, importance_func, parent, id, with_labels=True):
     #print('SORTED_X')
     #print(X)
 
-    if with_labels:
-        value = (X[best_atr-1][0] + X[best_atr][0]) / 2
-    else:
-        value = (X[best_atr-1] + X[best_atr]) / 2
+    value = (X[best_atr-1][0] + X[best_atr][0]) / 2
     # end for loop for all samples
     n = FloatDecision(id, parent, -1, value)
 
@@ -386,21 +417,28 @@ def bin_float_split_numpy(X, importance_func, parent, id, with_labels=True):
 # @param parent - the parent node for this attribute function
 #
 # @return - the best node given these possible types.
-def default_attribute_func(X, importance_func, types, parent, id):
+def default_attribute_func(X, importance_func, types, parent, id, with_label=True, X_only=False):
     if len(X) <= 0:
         return None
 
-    attribute_handlers = {'float': bin_float_split_numpy, 'category': bin_category_split}
+    attribute_handlers = {'float': bin_float_split_numpy, 'category': bin_category_split, 'float_balance': balance_float_split}
 
     best_attribute = None
     best_importance = -float('inf')
     #best_split = None
 
-    num_dim_x = len(X[0][0])
+    #pdb.set_trace()
+    if not X_only:
+        num_dim_x = len(X[0][0])
+    else:
+        num_dim_x = len(X[0])
 
     for i in range(num_dim_x):
         handler = attribute_handlers[types[i]]
-        X_i = [(x[0][i], x[1]) for x in X]
+        if not X_only:
+            X_i = [(x[0][i], x[1]) for x in X]
+        else:
+            X_i = [x[i] for x in X]
         #targets = [x[1] for x in X]
 
         n, importance = handler(X_i, importance_func, parent, id)
