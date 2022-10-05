@@ -37,7 +37,8 @@ from rdml_graph.plot import plot2DPath
 # @param y_ticks - [opt] the y ticks of the image (numpy (n,))
 # @param fig - [opt] the input figure
 def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
-        cmap='viridis', radius=None, x_ticks=None, y_ticks=None, legend=True, fig= None):
+        cmap='viridis', radius=None, x_ticks=None, y_ticks=None, legend=True,
+        arrow_width=0.75, fig= None, colors=None):
     if fig is None:
         fig =plt.figure(constrained_layout=True)
     if x_ticks is None:
@@ -49,11 +50,12 @@ def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
     num_info = info_field.shape[2]
     height = 5
 
-    colors = ['black', 'white', 'red', 'green', 'blue', 'purple', 'turquoise', \
-            'crimson', 'navy', 'brown', 'yellow', 'orange', 'gray', 'indigo', \
-            'lime', 'cyan', 'orangered', 'teal', 'magenta', 'peru', 'olive', \
-            'aquamarine', 'orchid', 'lightcoral', 'khaki', 'dodgerblue', \
-            'fuchsia', 'silver', 'navajowhite', 'limegreen']
+    if colors is None:
+        colors = ['black', 'white', 'red', 'green', 'blue', 'purple', 'turquoise', \
+                'crimson', 'navy', 'brown', 'yellow', 'orange', 'gray', 'indigo', \
+                'lime', 'cyan', 'orangered', 'teal', 'magenta', 'peru', 'olive', \
+                'aquamarine', 'orchid', 'lightcoral', 'khaki', 'dodgerblue', \
+                'fuchsia', 'silver', 'navajowhite', 'limegreen']
     line_styles = ['solid', 'dashed', 'dashdot', 'dotted']
 
     if info_names is None:
@@ -86,6 +88,7 @@ def plot_multi(info_field, paths=[], info_names=None, path_names=None, \
             for j, path in enumerate(paths):
                 p = plot2DPath(path, color=colors[j % len(colors)], \
                                 label=path_names[j], radius=radius, \
+                                head_width=arrow_width, \
                                 line_style=line_styles[j % len(line_styles)])
                 ps.append(p)
             # end for (paths)
