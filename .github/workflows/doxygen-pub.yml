@@ -22,7 +22,7 @@ jobs:
         shell: bash
 
       - name: Generate Documentation
-        run: doxgen doc/Doxyfile
+        run: doxygen doc/Doxyfile
         shell: bash
       
       - name: Create .nojekyll (ensures pages with underscores work on gh pages)
