@@ -91,7 +91,7 @@ def learn_decision_tree(X, \
         n.samples = X
         n.types = types
         #pdb.set_trace()
-        splits = n.separate(X, with_label=with_labels)
+        splits = n.separate(X, X_only=X_only)
 
         for i, sub_X in enumerate(splits):
             id += 1

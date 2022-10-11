@@ -39,7 +39,6 @@ def main():
                     attribute_func=gr.default_attribute_func,\
                     importance_func=gr.regression_importance, \
                     plurality_func=gr.reg_plurality,\
-                    with_labels=True, \
                     max_depth=100)
 
     t = root.get_viz(labels=True)
@@ -63,7 +62,7 @@ def main():
 
     y_pred = np.array(y_pred)
     #ax.contour3D(x_0, x_1, y_pred, 50, cmap='viridis', linewidth=0.5)
-    #ax.scatter(x_0, x_1, y_pred, c=y_pred, cmap='viridis', linewidth=0.5)
+    ax.scatter(x_0, x_1, y_pred, c=y_pred, cmap='viridis', linewidth=0.5)
     ax.scatter(x_0, x_1, y_actual, c=y_actual, cmap='magma', linewidth=0.5)
     #ax.scatter([x[0][0] for x in X], [x[0][1] for x in X], [x[1] for x in X], c=[x[1] for x in X], cmap='plasma', linewidth=1.0)
 

@@ -380,7 +380,8 @@ def bin_float_split_numpy(X, importance_func, parent, id, with_labels=False):
     #pdb.set_trace()
     if with_labels:
         X = [[x[0], x[1][0]] for x in X]
-    X = np.array(X)
+    #pdb.set_trace()
+    X = np.array(X, dtype=float)
     X = X[X[:,0].argsort()]
 
     # Find each index to split

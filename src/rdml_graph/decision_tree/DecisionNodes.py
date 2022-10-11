@@ -61,15 +61,15 @@ class DecisionNode(TreeNode):
     ## seperate
     # @override
     # @param X - the input data
-    # @param with_label - set true if the input data includes
-    def separate(self, X, with_label=False):
+    # @param X_only - set true if the input data includes label on the y of the sample
+    def separate(self, X, X_only=False):
         splits = [[] for i in range(len(self.e))]
 
         for x in X:
-            if with_label:
-                x_data = x[0]
-            else:
+            if X_only:
                 x_data = x
+            else:
+                x_data = x[0]
 
             for i, edge in enumerate(self.e):
                 if x_data[self.idx] in edge:
