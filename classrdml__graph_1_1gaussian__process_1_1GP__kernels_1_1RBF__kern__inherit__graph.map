@@ -1,0 +1,4 @@
+<map id="rdml_graph.gaussian_process.GP_kernels.RBF_kern" name="rdml_graph.gaussian_process.GP_kernels.RBF_kern">
+<area shape="rect" id="node1" title="RBF_kern Radial basis function for two points." alt="" coords="13,95,233,136"/>
+<area shape="rect" id="node2" href="$classrdml__graph_1_1gaussian__process_1_1GP__kernels_1_1kernel__func.html" title="Base kernel function class." alt="" coords="5,5,240,47"/>
+</map>

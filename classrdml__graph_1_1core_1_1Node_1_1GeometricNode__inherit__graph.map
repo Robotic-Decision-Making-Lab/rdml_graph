@@ -1,0 +1,7 @@
+<map id="rdml_graph.core.Node.GeometricNode" name="rdml_graph.core.Node.GeometricNode">
+<area shape="rect" id="node1" title="GeometricNode that includes a geometric point as part of the node as well as the graph structure." alt="" coords="5,229,277,256"/>
+<area shape="rect" id="node5" href="$classrdml__graph_1_1homotopy_1_1FeatureNode_1_1FeatureNode.html" title=" " alt="" coords="33,304,250,345"/>
+<area shape="rect" id="node2" href="$classrdml__graph_1_1core_1_1Node_1_1Node.html" title="Node class for a node of a graph structure." alt="" coords="39,155,243,181"/>
+<area shape="rect" id="node3" href="$classrdml__graph_1_1core_1_1State_1_1State.html" title="The generic State object for searches." alt="" coords="39,80,243,107"/>
+<area shape="rect" id="node4" title=" " alt="" coords="110,5,173,32"/>
+</map>

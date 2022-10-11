@@ -1,0 +1,17 @@
+digraph "rdml_graph.decision_tree.DecisionNodes.FloatDecision"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="rdml_graph.decision\l_tree.DecisionNodes.FloatDecision",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="A bi-decision decision node All values greater than value are in the second edge."];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="rdml_graph.decision\l_tree.DecisionNodes.DecisionNode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1DecisionNode.html",tooltip="While it currently does nothing, this leaves me with the option to add something to all decision node..."];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="rdml_graph.core.Node.TreeNode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1core_1_1Node_1_1TreeNode.html",tooltip="TreeNode class This class extends node with an additional pointer to it's parent for easy traversal."];
+  Node4 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="rdml_graph.core.Node.Node",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1core_1_1Node_1_1Node.html",tooltip="Node class for a node of a graph structure."];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="rdml_graph.core.State.State",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1core_1_1State_1_1State.html",tooltip="The generic State object for searches."];
+  Node6 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="object",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+}

@@ -1,0 +1,14 @@
+digraph "rdml_graph.gaussian_process.ActiveLearner.ActiveLearner"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="rdml_graph.gaussian\l_process.ActiveLearner.Active\lLearner",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Base Active Learning class."];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="rdml_graph.gaussian\l_process.ActiveLearner.Det\lLearner",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1DetLearner.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="rdml_graph.gaussian\l_process.ActiveLearner.Random\lLearner",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1RandomLearner.html",tooltip=" "];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="rdml_graph.gaussian\l_process.ActiveLearner.UCBLearner",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1UCBLearner.html",tooltip=" "];
+}

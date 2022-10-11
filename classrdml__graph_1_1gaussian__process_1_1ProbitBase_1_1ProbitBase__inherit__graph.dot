@@ -1,0 +1,14 @@
+digraph "rdml_graph.gaussian_process.ProbitBase.ProbitBase"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="rdml_graph.gaussian\l_process.ProbitBase.ProbitBase",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="ProbitBase Abstract class for a probit for the user GP."];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="rdml_graph.gaussian\l_process.AbsBoundProbit.Abs\lBoundProbit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1gaussian__process_1_1AbsBoundProbit_1_1AbsBoundProbit.html",tooltip="AbsBoundProbit This is almost directly Nick's code, for absolute bounded inputs."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="rdml_graph.gaussian\l_process.OrdinalProbit.Ordinal\lProbit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1gaussian__process_1_1OrdinalProbit_1_1OrdinalProbit.html",tooltip="OrdinalProbit This is almost directly Nick's code, for Ordinal regression."];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="rdml_graph.gaussian\l_process.PreferenceProbit.\lPreferenceProbit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1gaussian__process_1_1PreferenceProbit_1_1PreferenceProbit.html",tooltip="PreferenceProbit A relative discrete probit Partially taken from Nick's code this calculates the prob..."];
+}

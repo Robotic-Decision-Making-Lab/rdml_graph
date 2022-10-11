@@ -1,0 +1,14 @@
+digraph "rdml_graph.homotopy.HGoalSignature.HSignatureGoal"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="rdml_graph.homotopy.HGoal\lSignature.HSignatureGoal",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="abstract class for an Hsignature goal"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="object",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="rdml_graph.homotopy.Homology\lSignature.HomologySignatureGoal",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1homotopy_1_1HomologySignature_1_1HomologySignatureGoal.html",tooltip="Goal signature for a homology signature."];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="rdml_graph.homotopy.Homotopy\lSignature.HomotopySignatureGoal",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classrdml__graph_1_1homotopy_1_1HomotopySignature_1_1HomotopySignatureGoal.html",tooltip="Signature goal for homotopy."];
+}
