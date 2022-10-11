@@ -25,10 +25,6 @@ jobs:
         run: doxygen doc/Doxyfile
         shell: bash
       
-      - name: Create .nojekyll (ensures pages with underscores work on gh pages)
-        run: doc/html/.nojekyll
-        shell: bash
-      
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:

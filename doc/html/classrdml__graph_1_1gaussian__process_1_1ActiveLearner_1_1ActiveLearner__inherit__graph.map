@@ -1,0 +1,6 @@
+<map id="rdml_graph.gaussian_process.ActiveLearner.ActiveLearner" name="rdml_graph.gaussian_process.ActiveLearner.ActiveLearner">
+<area shape="rect" id="node1" title="Base Active Learning class." alt="" coords="5,85,223,141"/>
+<area shape="rect" id="node2" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1DetLearner.html" title=" " alt="" coords="298,5,497,61"/>
+<area shape="rect" id="node3" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1RandomLearner.html" title=" " alt="" coords="282,85,513,141"/>
+<area shape="rect" id="node4" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1UCBLearner.html" title=" " alt="" coords="271,166,524,207"/>
+</map>

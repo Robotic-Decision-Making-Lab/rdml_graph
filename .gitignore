@@ -3,7 +3,8 @@
 *.gv.pdf
 
 # ignore doc folders
-doc/html/
+doc/html/**.html
+doc/html/**.png
 doc/latex/
 
 # Byte-compiled / optimized / DLL files
