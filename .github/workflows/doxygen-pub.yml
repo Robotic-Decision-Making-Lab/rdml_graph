@@ -1,0 +1,36 @@
+# Workflow to generate doxygen and publish them
+# to a github pages.
+name: 
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubunut-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: "true"
+      
+      - name: Install Dependencies
+        run: sudo apt-get install doxygen -y
+        shell: bash
+
+      - name: Generate Documentation
+        run: doxgen doc/Doxyfile
+        shell: bash
+      
+      - name: Create .nojekyll (ensures pages with underscores work on gh pages)
+        run: docs/html/.nojekyll
+        shell: bash
+      
+      -name: Deploy
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          github_token: ${{ secrets.ACCESS_TOKEN }}
+          branch: gh-pages
+          folder: doc/html
