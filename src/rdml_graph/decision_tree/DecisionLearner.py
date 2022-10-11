@@ -63,7 +63,7 @@ def learn_decision_tree(X, \
         max_depth=float('inf'),\
         plurality_func=class_plurality, \
         same_func=same_class, \
-        with_labels=True, \
+        with_labels=False, \
         X_only=False, \
         cur_depth=0, \
         parent=None, \

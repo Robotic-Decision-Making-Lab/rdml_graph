@@ -346,7 +346,7 @@ except:
 # bbalance_float_split
 # @param X - the input data [(x_i, target), ...]
 # @param importance_func - the importance function for the split
-def balance_float_split(X, importance_func, parent, id):
+def balance_float_split(X, importance_func, parent, id, with_labels=False):
     med = median(X)
 
     
