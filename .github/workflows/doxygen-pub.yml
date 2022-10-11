@@ -9,7 +9,7 @@ on:
 
 jobs:
   publish:
-    runs-on: ubunut-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
