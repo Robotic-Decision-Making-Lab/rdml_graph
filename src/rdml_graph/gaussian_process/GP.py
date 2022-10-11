@@ -26,7 +26,7 @@ import sys
 import numpy as np
 from rdml_graph.gaussian_process import ActiveLearner, UCBLearner
 
-if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
     from collections.abc import Sequence
 else:
     from collections import Sequence
