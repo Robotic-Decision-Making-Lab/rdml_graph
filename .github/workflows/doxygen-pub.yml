@@ -8,9 +8,9 @@ on:
       - main
 
 jobs:
-  publish:
+  build:
 
-    #runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     using: "composite"
 
     steps:
