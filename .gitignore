@@ -5,6 +5,8 @@
 # ignore doc folders
 doc/html/**.html
 doc/html/**.png
+doc/html/**.js
+doc/html/search/
 doc/latex/
 
 # Byte-compiled / optimized / DLL files
