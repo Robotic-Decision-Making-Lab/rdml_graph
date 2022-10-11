@@ -265,6 +265,8 @@ def bin_float_split(X, importance_func, parent, id, with_labels=True):
     else:
         x_prev = X[0]
 
+    pdb.set_trace()
+
     for i in range(1, len(X)):
         if with_labels:
             x_i = X[i][0]
@@ -376,13 +378,14 @@ def balance_float_split(X, importance_func, parent, id):
 # @param importance_func - the importance function for the split
 def bin_float_split_numpy(X, importance_func, parent, id, with_labels=False):
     #pdb.set_trace()
-    #if with_labels:
-    #    X = [[x[0], x[1][0]] for x in X]
+    if with_labels:
+        X = [[x[0], x[1][0]] for x in X]
     X = np.array(X)
     X = X[X[:,0].argsort()]
 
     # Find each index to split
     split_pts = np.where(X[1:,0]-X[:-1,0] != 0)[0]+1
+
 
     best_atr, best_importance = float_index_split(X, split_pts)
 
@@ -441,7 +444,7 @@ def default_attribute_func(X, importance_func, types, parent, id, with_label=Tru
             X_i = [x[i] for x in X]
         #targets = [x[1] for x in X]
 
-        n, importance = handler(X_i, importance_func, parent, id)
+        n, importance = handler(X_i, importance_func, parent, id, with_labels=with_label)
 
         # if types[i] == 'category':
         #     print(n)
