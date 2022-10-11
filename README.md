@@ -1,4 +1,6 @@
 # rdml_graph
+[![Python Testing](https://github.com/Robotic-Decision-Making-Lab/rdml_graph/actions/workflows/python-test.yml/badge.svg)](https://github.com/Robotic-Decision-Making-Lab/rdml_graph/actions/workflows/python-test.yml)
+
 
 Set of graph function including:
 graph
