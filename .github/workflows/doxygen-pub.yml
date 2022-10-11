@@ -1,6 +1,6 @@
 # Workflow to generate doxygen and publish them
 # to a github pages.
-name: 
+name: Doxygen Publish
 
 on:
   push:
