@@ -11,10 +11,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          submodules: "true"
+      # - name: Checkout repository
+      #   uses: actions/checkout@v2
+      #   with:
+      #     submodules: "true"
       
       - name: Install Dependencies
         run: sudo apt-get install doxygen -y
