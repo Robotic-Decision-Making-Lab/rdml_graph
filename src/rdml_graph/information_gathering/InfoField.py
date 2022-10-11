@@ -28,7 +28,7 @@ import sys
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
     from collections.abc import Sequence
 else:
-    from collections import Sequence	from collections import Sequence
+    from collections import Sequence
 
 import pdb
 
