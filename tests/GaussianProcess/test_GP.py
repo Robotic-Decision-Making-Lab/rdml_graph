@@ -77,7 +77,7 @@ def GP_active_learning(func):
 def test_GP_active_learning_linear():
     Z_lin = GP_active_learning(f_lin)
 
-    pre = 5
+    pre = 15
     assert Z_lin[-1,-1] > 50-pre
     assert Z_lin[-1,-1] < 50+pre
 
