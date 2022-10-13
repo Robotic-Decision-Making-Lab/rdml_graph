@@ -50,7 +50,7 @@ def test_iris_classification(iris):
         assert (ans == y_i).all()
 
 
-    
+
 def test_regression_test():
     X_in = np.array([[0,1,2,3], [1,2,3,4], [0,0,0,0], [1,1,1,1], [2,1,1,1]])
     types = ['float'] * len(X_in[0])
@@ -136,6 +136,4 @@ def test_multivariate_tree():
 
 
 if __name__ == '__main__':
-    test_multivariate_tree()
-
-
+    test_regression_test_with_labels()

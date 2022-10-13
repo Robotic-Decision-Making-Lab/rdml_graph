@@ -349,7 +349,7 @@ except:
 def balance_float_split(X, importance_func, parent, id, with_labels=False):
     med = median(X)
 
-    
+
     split_l = [x for x in X if x <= med]
     split_h = [x for x in X if x > med]
     splits = [split_l, split_h]
@@ -360,7 +360,7 @@ def balance_float_split(X, importance_func, parent, id, with_labels=False):
     split_h = [x for x in X if x >= med]
     splits = [split_l, split_h]
 
-    count2 = importance_func(splits)    
+    count2 = importance_func(splits)
 
     if count1 > count2:
         n = FloatDecision(id, parent, -1, med+0.0000001)
