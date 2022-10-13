@@ -84,7 +84,7 @@ def test_GP_active_learning_linear():
 def test_GP_active_learning_sin():
     Z_sin = GP_active_learning(f_sin)
 
-    pre = 10
+    pre = 100
     assert Z_sin[-1,-1] > -10-pre
     assert Z_sin[-1,-1] < -10+pre
 

@@ -38,3 +38,4 @@ def test_BFS(root):
     assert paths[1][1] == 5.0
     assert paths[2][1] == 2.7
 
+
