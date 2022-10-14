@@ -22,7 +22,12 @@
 # A set of kernels for gaussian processes.
 
 import numpy as np
-import collections
+import sys
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
+    from collections.abc import Sequence
+else:
+    from collections import Sequence
+
 import pdb
 
 ## Base kernel function class
@@ -115,7 +120,7 @@ class dual_kern(kernel_func):
     # update the parameters
     # @param theta - vector of parameters to update
     def set_param(self, theta):
-        if isinstance(theta, collections.Sequence) and not isinstance(theta, np.ndarray):
+        if isinstance(theta, Sequence) and not isinstance(theta, np.ndarray):
             theta = np.array(theta)
 
         self.a.set_param(theta[:len(self.a)])

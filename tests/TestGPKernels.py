@@ -25,12 +25,12 @@ print(combined(1,2))
 
 print(combined.get_param())
 print(combined.gradient(1,2))
-combined.set_param([2,3,5,4,7, 1,1,2])
-print(combined.get_param())
+#combined.set_param([2,3,5,4,7, 1,1,2])
+#print(combined.get_param())
 
-x = np.array([0,1,4,5,6,7])
+#x = np.array([0,1,4,5,6,7])
 
-print(combined.cov(x,x))
+#print(combined.cov(x,x))
 
 rbf_test = gr.RBF_kern(1, 1)
 
