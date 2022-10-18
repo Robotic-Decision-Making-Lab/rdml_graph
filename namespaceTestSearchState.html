@@ -71,15 +71,15 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:aa23d4dc4cf2622bfe77cd3892b3dbabe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTestSearchState.html#aa23d4dc4cf2622bfe77cd3892b3dbabe">z</a> = 42</td></tr>
-<tr class="separator:aa23d4dc4cf2622bfe77cd3892b3dbabe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9f01be5248329d47dbea23be7bb2d80"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTestSearchState.html#aa9f01be5248329d47dbea23be7bb2d80">x</a> = gr.SearchState(state=<a class="el" href="namespaceTestSearchState.html#aa23d4dc4cf2622bfe77cd3892b3dbabe">z</a>, rCost=4)</td></tr>
+<tr class="memitem:a589834dd37e294f68deb102cf3c15e20"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTestSearchState.html#a589834dd37e294f68deb102cf3c15e20">z</a> = gr.State()</td></tr>
+<tr class="separator:a589834dd37e294f68deb102cf3c15e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f01be5248329d47dbea23be7bb2d80"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTestSearchState.html#aa9f01be5248329d47dbea23be7bb2d80">x</a> = gr.SearchState(state=<a class="el" href="namespaceTestSearchState.html#a589834dd37e294f68deb102cf3c15e20">z</a>, rCost=4)</td></tr>
 <tr class="separator:aa9f01be5248329d47dbea23be7bb2d80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb4a0bbf34ce142ad60bc9bca0c4cefd"><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTestSearchState.html#adb4a0bbf34ce142ad60bc9bca0c4cefd">heap</a> = []</td></tr>
 <tr class="separator:adb4a0bbf34ce142ad60bc9bca0c4cefd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35f53169fb19dede33b8f3ded1bedaa7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTestSearchState.html#a35f53169fb19dede33b8f3ded1bedaa7">r</a> = np.random.random()</td></tr>
 <tr class="separator:a35f53169fb19dede33b8f3ded1bedaa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe7d916aca06ee501d75673a0ef7ffd5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTestSearchState.html#abe7d916aca06ee501d75673a0ef7ffd5">s</a> = gr.SearchState(state=i,rCost=<a class="el" href="namespaceTestSearchState.html#a35f53169fb19dede33b8f3ded1bedaa7">r</a>, parent=<a class="el" href="namespaceTestSearchState.html#aa9f01be5248329d47dbea23be7bb2d80">x</a>)</td></tr>
+<tr class="memitem:abe7d916aca06ee501d75673a0ef7ffd5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTestSearchState.html#abe7d916aca06ee501d75673a0ef7ffd5">s</a> = gr.SearchState(state=gr.State(),rCost=<a class="el" href="namespaceTestSearchState.html#a35f53169fb19dede33b8f3ded1bedaa7">r</a>, parent=<a class="el" href="namespaceTestSearchState.html#aa9f01be5248329d47dbea23be7bb2d80">x</a>)</td></tr>
 <tr class="separator:abe7d916aca06ee501d75673a0ef7ffd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a759d4bdff8fafba800c7677dd7ac6e78"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceTestSearchState.html#a759d4bdff8fafba800c7677dd7ac6e78">invertCmp</a></td></tr>
 <tr class="separator:a759d4bdff8fafba800c7677dd7ac6e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,7 +136,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">TestSearchState.s = gr.SearchState(state=i,rCost=<a class="el" href="namespaceTestSearchState.html#a35f53169fb19dede33b8f3ded1bedaa7">r</a>, parent=<a class="el" href="namespaceTestSearchState.html#aa9f01be5248329d47dbea23be7bb2d80">x</a>)</td>
+          <td class="memname">TestSearchState.s = gr.SearchState(state=gr.State(),rCost=<a class="el" href="namespaceTestSearchState.html#a35f53169fb19dede33b8f3ded1bedaa7">r</a>, parent=<a class="el" href="namespaceTestSearchState.html#aa9f01be5248329d47dbea23be7bb2d80">x</a>)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -164,21 +164,21 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">TestSearchState.x = gr.SearchState(state=<a class="el" href="namespaceTestSearchState.html#aa23d4dc4cf2622bfe77cd3892b3dbabe">z</a>, rCost=4)</td>
+          <td class="memname">TestSearchState.x = gr.SearchState(state=<a class="el" href="namespaceTestSearchState.html#a589834dd37e294f68deb102cf3c15e20">z</a>, rCost=4)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="aa23d4dc4cf2622bfe77cd3892b3dbabe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa23d4dc4cf2622bfe77cd3892b3dbabe">&#9670;&nbsp;</a></span>z</h2>
+<a id="a589834dd37e294f68deb102cf3c15e20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a589834dd37e294f68deb102cf3c15e20">&#9670;&nbsp;</a></span>z</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int TestSearchState.z = 42</td>
+          <td class="memname">TestSearchState.z = gr.State()</td>
         </tr>
       </table>
 </div><div class="memdoc">
