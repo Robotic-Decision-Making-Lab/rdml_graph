@@ -30,9 +30,9 @@ import rdml_graph as gr
 
 # Create HSignature
 
-x = gr.HSignature(10)
-y = gr.HSignature(10)
-z = gr.HSignature(10)
+x = gr.HomologySignature(10)
+y = gr.HomologySignature(10)
+z = gr.HomologySignature(10)
 
 print('x[5:7] = ' + str(x[5:7]))
 
