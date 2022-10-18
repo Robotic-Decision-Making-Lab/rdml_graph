@@ -29,7 +29,7 @@ import numpy as np
 
 
 
-z = 42
+z = gr.State()
 
 x = gr.SearchState(state=z, rCost=4)
 
@@ -39,7 +39,7 @@ heap = []
 
 for i in range(15):
     r = np.random.random()
-    s = gr.SearchState(state=i,rCost=r, parent=x)
+    s = gr.SearchState(state=gr.State(),rCost=r, parent=x)
     s.invertCmp = True
     heapq.heappush(heap, s)
 
