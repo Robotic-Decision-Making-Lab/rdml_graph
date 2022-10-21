@@ -13,7 +13,7 @@ var searchData=
   ['install_5frequires_291',['install_requires',['../namespacesetup.html#abead4f26b530856f858f0d44c7cf2588',1,'setup']]],
   ['invert_5ffunction_292',['invert_function',['../classrdml__graph_1_1gaussian__process_1_1GP_1_1GP.html#ab1d34457e71ad81d4cc3630327870bd1',1,'rdml_graph::gaussian_process::GP::GP']]],
   ['invertcmp_293',['invertCmp',['../classrdml__graph_1_1core_1_1SearchState_1_1SearchState.html#a6113c4f2745093365a561924a86087b1',1,'rdml_graph.core.SearchState.SearchState.invertCmp()'],['../namespaceTestSearchState.html#a759d4bdff8fafba800c7677dd7ac6e78',1,'TestSearchState.invertCmp()']]],
-  ['iris_294',['iris',['../namespaceBalancedExample.html#a29fb8149dadbd0ed9fdfea5b27dff8f9',1,'BalancedExample.iris()'],['../namespaceTestDecisionTree.html#a01d8154cc08d63c69e1a9bd3b6ad4a3a',1,'TestDecisionTree.iris()'],['../namespacetest__decision__tree.html#af1fce45e68650286c864679a49ae039a',1,'test_decision_tree.iris()']]],
+  ['iris_294',['iris',['../namespaceBalancedExample.html#a29fb8149dadbd0ed9fdfea5b27dff8f9',1,'BalancedExample.iris()'],['../namespaceTestDecisionTree.html#a01d8154cc08d63c69e1a9bd3b6ad4a3a',1,'TestDecisionTree.iris()'],['../namespacetest__decision__tree.html#af1fce45e68650286c864679a49ae039a',1,'test_decision_tree.iris()'],['../namespacetest__random__forest.html#a0aa66638b2f3c5c9ea49e54dedb80947',1,'test_random_forest.iris()']]],
   ['irisclassification_295',['IrisClassification',['../namespaceIrisClassification.html',1,'']]],
   ['irisclassification_2epy_296',['IrisClassification.py',['../IrisClassification_8py.html',1,'']]],
   ['py_297',['py',['../namespaceInfoField_1_1py.html',1,'InfoField']]]
