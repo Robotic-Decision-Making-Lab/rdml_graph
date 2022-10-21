@@ -24,11 +24,11 @@
 # Essentially optimizes the solution of the samples given to the GP.
 
 import numpy as np
-try:
-	from collections import Sequence
-except ImportError:
-	#print('Could not find collections.Sequence trying collections.abc.Sequence')
-	from collections.abc import Sequence 
+import sys
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
+    from collections.abc import Sequence
+else:
+    from collections import Sequence
 from rdml_graph.gaussian_process import GP
 from rdml_graph.gaussian_process import PreferenceProbit, ProbitBase
 from rdml_graph.gaussian_process import k_fold_half, get_dk

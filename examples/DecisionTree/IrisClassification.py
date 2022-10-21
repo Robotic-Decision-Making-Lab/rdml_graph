@@ -25,7 +25,7 @@ def main():
 
 
 
-
+    #root,_ = gr.learn_decision_tree(X, \
     root,_ = gr.learn_random_forest(X, \
                     num_trees = 10, \
                     types=types, \
@@ -38,6 +38,8 @@ def main():
 
     #t = root.get_viz(labels=True)
     #t.view()
+
+
 
     # xs = np.arange(0,10,0.1)
     # xs = np.transpose([np.tile(xs, len(xs)), np.repeat(xs, len(xs))])

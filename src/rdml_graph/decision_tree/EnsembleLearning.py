@@ -65,7 +65,7 @@ def learn_random_forest(X, \
         max_depth=float('inf'),\
         plurality_func=class_plurality, \
         same_func=same_class, \
-        with_labels=True, \
+        with_labels=False, \
         num_threads = 12, \
         progress_cb = None):
     # Start of  function
@@ -111,6 +111,7 @@ def learn_random_forest(X, \
             if progress_cb is not None:
                 progress_cb(progress)
         # end while loop
+        
         trees = [result.get() for result in results]
     # t3 = time.time()
     # print('Total time without progress: ' + str(t2 - t1))
