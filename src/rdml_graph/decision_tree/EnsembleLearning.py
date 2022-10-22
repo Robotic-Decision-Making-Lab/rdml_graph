@@ -120,7 +120,7 @@ def learn_random_forest(X, \
 
     trees = [t[0] for t in trees]
 
-    model = Ensemble(trees, samples=X)
+    model = Ensemble(trees, samples=X, with_labels=with_labels)
 
     return model, 0
 
@@ -134,7 +134,7 @@ class Ensemble:
     ## init
     # constructor for the Ensemble learning algorithm
     # @param trees a list of trees and id's
-    def __init__(self, trees, weights = None, samples = None):
+    def __init__(self, trees, weights = None, samples = None, with_labels=False):
         self.trees = trees
 
         if weights is None:
@@ -143,6 +143,7 @@ class Ensemble:
             self.weights = weights
 
         self.samples = samples
+        self.with_labels = with_labels
 
     ## traverses the tree to get to the leaf node.
     def traverse(self, input, num_threads = 12):
@@ -151,7 +152,11 @@ class Ensemble:
         with Pool(num_threads) as p:
             y_pred = p.starmap(predict_parallel, iteratable)
 
-        predictions = np.array(y_pred)
+        if self.with_labels:
+            y_pred_short = [y[0] for y in y_pred]
+            predictions = np.array(y_pred_short)
+        else:
+            predictions = np.array(y_pred)
 
         output_prediction = np.dot(predictions, self.weights)
         return output_prediction
