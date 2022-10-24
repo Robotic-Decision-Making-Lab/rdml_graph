@@ -146,6 +146,12 @@ class Ensemble:
         self.with_labels = with_labels
 
     ## traverses the tree to get to the leaf node.
+    # Important difference from traverse with a standard decision tree is that
+    # it will not return labels with it, since they could come from a multitude of trees
+    # @param input - the same input type the forest trained with typically numpy array
+    # @param num_threads - [opt] the number of threads to kick off to run the traverse with
+    #
+    # @return output prediction this is the average prediction from each decision tree (scalar value)
     def traverse(self, input, num_threads = 12):
         iteratable = [(input, tree) for tree in self.trees]
 
