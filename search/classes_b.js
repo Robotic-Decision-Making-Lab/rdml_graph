@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['node_809',['Node',['../classrdml__graph_1_1core_1_1Node_1_1Node.html',1,'rdml_graph::core::Node']]]
+  ['node_828',['Node',['../classrdml__graph_1_1core_1_1Node_1_1Node.html',1,'rdml_graph::core::Node']]]
 ];

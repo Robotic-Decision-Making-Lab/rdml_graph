@@ -184,6 +184,14 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>traverses the tree to get to the leaf node. </p>
+<p>Important difference from traverse with a standard decision tree is that it will not return labels with it, since they could come from a multitude of trees </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">input</td><td>- the same input type the forest trained with typically numpy array </td></tr>
+    <tr><td class="paramname">num_threads</td><td>- [opt] the number of threads to kick off to run the traverse with</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>output prediction this is the average prediction from each decision tree (scalar value) </dd></dl>
 
 </div>
 </div>
