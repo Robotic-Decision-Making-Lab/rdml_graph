@@ -8,12 +8,14 @@
 #       (2020) Scott Lundberg, et al.
 
 import rdml_graph as gr
-from rdml_graph.decision_tree import DecisionNode, \
-        learn_decision_tree, \
-        default_attribute_func,\
-        regression_importance, \
-        reg_plurality, \
-        Ensemble
+from rdml_graph.decision_tree import DecisionNode, Ensemble
+
+
+import sys
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
+    from collections.abc import Sequence
+else:
+    from collections import Sequence
 
 import numpy as np
 import math
@@ -87,13 +89,14 @@ def TreeSHAP_idx(x, feature_idx, tree):
 # get the value of the leaf node
 # for multiple inputs, the mean of the target values
 def leaf_value(leaf):
-    #pdb.set_trace()
-
     if isinstance(leaf, list):
         if len(leaf) > 0:
-            if isinstance(leaf[0], list) or isinstance(leaf[0], tuple):
+            if isinstance(leaf[0], Sequence) or isinstance(leaf[0], tuple):
+                if isinstance(leaf[0][0], (Sequence, np.ndarray)):
+                    vals = [x[0][0] for x in leaf]
+                else:
+                    vals = [x[0] for x in leaf]
                 # mean of the leaf objects
-                vals = [x[0] for x in leaf]
                 return mean(vals)
             else:
                 # no attached object just numbers
@@ -102,7 +105,10 @@ def leaf_value(leaf):
             print('leaf_value does not make sense, returning none')
             return None
     elif isinstance(leaf, tuple):
-        return leaf[0]
+        if isinstance(leaf[0], Sequence):
+            return leaf[0][0]
+        else:
+            return leaf[0]
     else:
         # not a list just return the raw value.
         return leaf
@@ -187,16 +193,14 @@ def TreeSHAP_INT(x, tree):
 
 # Shapely value weight for a set size and number of features.
 def calc_weight(U, V):
-    try:
-        return math.factorial(U) * math.factorial(V-U-1) / math.factorial(V)
-    except:
-        pdb.set_trace()
+    return math.factorial(U) * math.factorial(V-U-1) / math.factorial(V)
 
 ## TODO multiply by Vj (tree)???
 
 def SHAP_recurse(tree, U, V, xlist, clist, x, c, phi):
     # base case - check if tree is a leaf node
     if not isinstance(tree, gr.DecisionNode):
+        #pdb.set_trace()
         pos = neg = 0
         if U == 0:
             return (pos, neg)
