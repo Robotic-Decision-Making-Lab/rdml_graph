@@ -66,7 +66,8 @@ def TreeSHAP_idx(x, feature_idx, tree):
     else:
         # weight children by their coverage (number of samples)
         sum_var = 0
-        splits = tree.separate([s[0] for s in tree.samples])
+        #pdb.set_trace()
+        splits = tree.separate(tree.samples)
 
         for i, e in enumerate(tree.e):
             val = TreeSHAP_idx(x, feature_idx, e.c)
