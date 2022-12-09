@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['edge_806',['Edge',['../classrdml__graph_1_1core_1_1Edge_1_1Edge.html',1,'rdml_graph::core::Edge']]],
-  ['ensemble_807',['Ensemble',['../classrdml__graph_1_1decision__tree_1_1EnsembleLearning_1_1Ensemble.html',1,'rdml_graph::decision_tree::EnsembleLearning']]]
+  ['edge_822',['Edge',['../classrdml__graph_1_1core_1_1Edge_1_1Edge.html',1,'rdml_graph::core::Edge']]],
+  ['ensemble_823',['Ensemble',['../classrdml__graph_1_1decision__tree_1_1EnsembleLearning_1_1Ensemble.html',1,'rdml_graph::decision_tree::EnsembleLearning']]]
 ];
