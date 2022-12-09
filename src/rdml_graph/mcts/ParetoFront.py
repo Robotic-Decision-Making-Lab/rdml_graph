@@ -28,7 +28,7 @@ import pdb
 class ParetoFront:
     def __init__(self, reward_dim=3, alloc_size=30):
         self.front = np.empty((alloc_size, reward_dim))
-        self.front_val = np.empty(alloc_size, dtype=np.object)
+        self.front_val = np.empty(alloc_size, dtype=object)
         self.size = 0
 
 
@@ -80,6 +80,8 @@ class ParetoFront:
 
     def add(self, r, n):
         # check if size is not zero
+        print(r)
+        print(n)
         if self.size > 0:
 
             #is_dominated = np.all(self.front[:self.size] <= r, axis=1)
@@ -112,6 +114,7 @@ class ParetoFront:
             #print(indicies)
             # TODO: this op is slow
             self.front[indicies] = copy.copy(self.front[:self.size])
+            self.front_val[indicies] = copy.copy(self.front_val[:self.size])
             # TODO: end operation that may be slow
             self.size -= np.sum(is_dominated)
 
