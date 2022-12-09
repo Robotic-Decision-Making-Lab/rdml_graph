@@ -55,6 +55,9 @@ def select_alts_from_shap_diff(best_path_idx, shap_values, num_paths,
             # print('PREFER_PARETO')
             # print('\tpareto_idx: ' + str(pareto_idx))
             # print('\tpert_feat: ' + str(pert_feat))
+            if isinstance(pareto_idx, list):
+                pareto_idx = np.array(pareto_idx)
+
             alt_idx = select_prefer_pareto(best_path_idx, pareto_idx, \
                                 pert_feat, shap_values, \
                                 greater, set(alts_to_show), exclude_func=exclude_func,
