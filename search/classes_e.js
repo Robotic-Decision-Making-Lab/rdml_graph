@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['randomlearner_859',['RandomLearner',['../classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1RandomLearner.html',1,'rdml_graph::gaussian_process::ActiveLearner']]],
-  ['rbf_5fkern_860',['RBF_kern',['../classrdml__graph_1_1gaussian__process_1_1GP__kernels_1_1RBF__kern.html',1,'rdml_graph::gaussian_process::GP_kernels']]]
+  ['randomlearner_865',['RandomLearner',['../classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1RandomLearner.html',1,'rdml_graph::gaussian_process::ActiveLearner']]],
+  ['rbf_5fkern_866',['RBF_kern',['../classrdml__graph_1_1gaussian__process_1_1GP__kernels_1_1RBF__kern.html',1,'rdml_graph::gaussian_process::GP_kernels']]]
 ];
