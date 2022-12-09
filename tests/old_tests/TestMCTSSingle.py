@@ -38,7 +38,7 @@ def rewardDumb(sequence, budget, data):
 
 
 start = IncrementState(0)
-solution, reward = gr.MCTS(start, 500, rewardDumb, budget=0.5, solutionFunc=gr.highestReward)
+solution, reward, data = gr.MCTS(start, 500, rewardDumb, budget=0.5, solutionFunc=gr.highestReward)
 
 print('Solution reward = ' + str(reward))
 for state in solution:
