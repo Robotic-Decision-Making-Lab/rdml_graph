@@ -7,3 +7,4 @@ from .OrdinalProbit import OrdinalProbit
 from .AbsBoundProbit import AbsBoundProbit
 from .GP_utils import k_fold_half, generate_fake_pairs, get_dk, gen_pairs_from_idx, ranked_pairs_from_fake
 from .PreferenceGP import PreferenceGP
+from .HumanChoiceModel import p_human_choice, sample_human_choice
