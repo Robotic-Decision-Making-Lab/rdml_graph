@@ -22,7 +22,13 @@ from scipy import stats
 # @return output probability distribution of human choice
 def p_human_choice(r):
     e = np.exp(r) # exponent of r
-    return e / sum(e)
+    if len(r.shape) > 1:
+        sum_e = np.sum(e,axis=-1)
+        return e / sum_e[:,np.newaxis]
+    else:
+        return e / np.sum(e)
+
+    
 
 
 
