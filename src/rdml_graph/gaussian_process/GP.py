@@ -153,22 +153,22 @@ class GP:
     # @return an array of output values (n)
     def predict(self, X):
         if self.X_train is None:
-            cov = self.cov_func.cov(X,X)
-            sigma = np.diagonal(cov)
+            self.cov = self.cov_func.cov(X,X)
+            sigma = np.diagonal(self.cov)
             # just in case do to numerical instability a negative variance shows up
             sigma = np.maximum(0, sigma)
             return np.zeros(len(X)), sigma
 
         #### This function treats Y as the training data
         Y = self.X_train
-        covXX = covMatrix(X, X, self.cov_func)
-        covXY = covMatrix(X, Y, self.cov_func)
+        covXX = self.cov_func.cov(X,X) # covMatrix(X, X, self.cov_func)
+        covXY = self.cov_func.cov(X,Y) #covMatrix(X, Y, self.cov_func)
         covYX = np.transpose(covXY)
 
         error = np.zeros((len(Y), len(Y)))
         np.fill_diagonal(error, self.training_sigma)
 
-        covYY = covMatrix(Y, Y, self.cov_func) + error
+        covYY = self.cov_func.cov(Y, Y) + error #covMatrix(Y, Y, self.cov_func) + error
 
         covYYinv = self.invert_function(covYY)
 

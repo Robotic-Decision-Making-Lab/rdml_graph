@@ -1,4 +1,4 @@
-from .ActiveLearner import ActiveLearner, UCBLearner, DetLearner
+from .ActiveLearner import ActiveLearner, UCBLearner, DetLearner, RandomLearner
 from .GP import GP, covMatrix
 from .GP_kernels import kernel_func, dual_kern, RBF_kern, periodic_kern, linear_kern
 from .ProbitBase import ProbitBase, std_norm_pdf, std_norm_cdf, calc_pdf_cdf_ratio
@@ -9,3 +9,4 @@ from .GP_utils import k_fold_half, generate_fake_pairs, get_dk, gen_pairs_from_i
 from .PreferenceGP import PreferenceGP
 from .HumanChoiceModel import p_human_choice, sample_human_choice
 from .MutualInformationLearner import MutualInformationLearner
+from .MutualUCBLearner import MutualUCBLearner

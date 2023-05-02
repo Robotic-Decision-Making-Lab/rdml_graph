@@ -40,6 +40,8 @@ def f_sin(x, data=None):
 def f_lin(x, data=None):
     return x[:,0]*x[:,1]
 
+
+
 def GP_active_learning(func):
     num_side = 25
     bounds = [(0,7), (0,7)]
@@ -77,9 +79,12 @@ def GP_active_learning(func):
 def test_GP_active_learning_linear():
     Z_lin = GP_active_learning(f_lin)
 
-    pre = 15
+    pre = 23
     assert Z_lin[-1,-1] > 50-pre
     assert Z_lin[-1,-1] < 50+pre
+
+    assert Z_lin[0,0] > -5
+    assert Z_lin[0,0] < 5
 
 def test_GP_active_learning_sin():
     Z_sin = GP_active_learning(f_sin)

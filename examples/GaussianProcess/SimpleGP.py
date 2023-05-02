@@ -36,10 +36,13 @@ if __name__ == '__main__':
     #training_sigma = 0
     training_sigma=np.array([1, 0.5, 0.1, 0.1, 0.2, 0])
 
-    #gp = gr.GP(gr.RBF_kern, {'rbf_sigma': 1, 'rbf_l': 1})
-    #gp = gr.GP(gr.periodic_kern, {'periodic_sigma': 1, 'periodic_l': 1, 'periodic_p': 20})
-    #gp = gr.GP(gr.linear_kern, {'linear_sigma': 5, 'linear_sigma_b': 5, 'linear_offset': 0.2})
+    ##gp = gr.GP(gr.RBF_kern, {'rbf_sigma': 1, 'rbf_l': 1})
+    ##gp = gr.GP(gr.periodic_kern, {'periodic_sigma': 1, 'periodic_l': 1, 'periodic_p': 20})
+    ##gp = gr.GP(gr.linear_kern, {'linear_sigma': 5, 'linear_sigma_b': 5, 'linear_offset': 0.2})
     gp = gr.GP(gr.RBF_kern(1,1)+gr.periodic_kern(1,1,10)+gr.linear_kern(3,1,0.3))
+    #gp = gr.GP(gr.RBF_kern(1,1))
+    #gp = gr.GP(gr.linear_kern(3,5,3))
+    #gp = gr.GP(gr.periodic_kern(1, 1, 20))
     gp.add(X_train, y_train, training_sigma=training_sigma)
 
     mu, sigma = gp.predict(X)

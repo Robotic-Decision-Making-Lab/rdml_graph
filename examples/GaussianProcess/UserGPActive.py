@@ -55,7 +55,7 @@ if __name__ == '__main__':
     #gp = gr.PreferenceGP(gr.linear_kern(0.3, 0.1, 0.0))
     gp = gr.PreferenceGP(gr.RBF_kern(1.0, 1.0), pareto_pairs=True, \
                         use_hyper_optimization=False, \
-                        active_learner = gr.MutualInformationLearner())
+                        active_learner = gr.MutualUCBLearner(alpha=0.8))
     gp.add_prior(bounds=np.array(bounds), num_pts=20)
 
 

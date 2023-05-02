@@ -126,6 +126,27 @@ class dual_kern(kernel_func):
         self.a.set_param(theta[:len(self.a)])
         self.b.set_param(theta[len(self.a):])
 
+
+    ## get covariance matrix
+    # calculate the covariance matrix between the samples given in X
+    # overiding the kernel_func get covariance matrix in order to vectorize
+    # and increase the speed of computation.
+    # @param X - samples (n1,k) numpy array where n is the number of samples,
+    #        and k is the dimension of the samples
+    # @param Y - samples (n2, k) numpy array
+    #
+    # @return the covariance matrix of the samples.
+    def cov(self, X, Y):
+        a_f = self.a.cov(X,Y)
+        b_f = self.b.cov(X,Y)
+
+        if self.operator == '+':
+            return a_f + b_f
+        elif self.operator == '*':
+            return a_f * b_f
+        else:
+            raise NotImplementedError('dual_kern does not have operator `'+self.operator+'` implemented')
+
     # get_param
     # get a vector of the parameters for the kernel function (used for hyper-parameter optimization)
     def get_param(self):
@@ -161,9 +182,6 @@ class dual_kern(kernel_func):
         return len(self.a)+len(self.b)
 
 
-
-
-
 ## RBF_kern
 # Radial basis function for two points.
 # This is a single input sample (v (k) and u (k))
@@ -191,6 +209,37 @@ class RBF_kern(kernel_func):
     def get_param(self):
         theta = np.array([self.sigma, self.l])
         return theta
+
+
+
+
+    ## get covariance matrix
+    # calculate the covariance matrix between the samples given in X
+    # overiding the kernel_func get covariance matrix in order to vectorize
+    # and increase the speed of computation.
+    # @param X - samples (n1,k) numpy array where n is the number of samples,
+    #        and k is the dimension of the samples
+    # @param Y - samples (n2, k) numpy array
+    #
+    # @return the covariance matrix of the samples.
+    def cov(self, X, Y):
+        N = X.shape[0]
+        M = Y.shape[0]
+
+        if len(X.shape) == 1:
+            X = X[:,np.newaxis]
+        if len(Y.shape) == 1:
+            Y = Y[:,np.newaxis]
+
+
+        X_expanded = np.repeat(X[:,np.newaxis,:], M, axis=1)
+        Y_expanded = np.repeat(Y[np.newaxis,:,:], N, axis=0)
+        diff = X_expanded - Y_expanded
+        top = np.sum(diff*diff, axis=2)
+
+        cov = self.sigma * self.sigma * np.exp(-top / (2 * self.l*self.l))
+        return cov
+
 
     def gradient(self, u, v):
         top = (u-v)
@@ -229,6 +278,37 @@ class periodic_kern(kernel_func):
         self.sigma = sigma
         self.l = l
         self.p = p
+
+
+    ## get covariance matrix
+    # calculate the covariance matrix between the samples given in X
+    # overiding the kernel_func get covariance matrix in order to vectorize
+    # and increase the speed of computation.
+    # @param X - samples (n1,k) numpy array where n is the number of samples,
+    #        and k is the dimension of the samples
+    # @param Y - samples (n2, k) numpy array
+    #
+    # @return the covariance matrix of the samples.
+    def cov(self, X, Y):
+        N = X.shape[0]
+        M = Y.shape[0]
+
+        if len(X.shape) == 1:
+            X = X[:,np.newaxis]
+        if len(Y.shape) == 1:
+            Y = Y[:,np.newaxis]
+
+        X_expanded = np.repeat(X[:,np.newaxis,:], M, axis=1)
+        Y_expanded = np.repeat(Y[np.newaxis,:,:], N, axis=0)
+        diff = X_expanded - Y_expanded
+        uv_norm = np.sum(np.abs(diff), axis=2)
+        
+        sin_tmp = np.sin(np.pi*uv_norm / self.p)
+        exp_tmp = -2 * sin_tmp * sin_tmp / (self.l * self.l)
+
+        cov = self.sigma * self.sigma * np.exp(exp_tmp)
+        return cov
+
 
     # update the parameters
     # @param theta - vector of parameters to update
@@ -300,6 +380,33 @@ class linear_kern(kernel_func):
     def get_param(self):
         theta = np.array([self.sigma, self.sigma_b, self.c])
         return theta
+
+    ## get covariance matrix
+    # calculate the covariance matrix between the samples given in X
+    # overiding the kernel_func get covariance matrix in order to vectorize
+    # and increase the speed of computation.
+    # @param X - samples (n1,k) numpy array where n is the number of samples,
+    #        and k is the dimension of the samples
+    # @param Y - samples (n2, k) numpy array
+    #
+    # @return the covariance matrix of the samples.
+    def cov(self, X, Y):
+        N = X.shape[0]
+        M = Y.shape[0]
+
+        if len(X.shape) == 1:
+            X = X[:,np.newaxis]
+        if len(Y.shape) == 1:
+            Y = Y[:,np.newaxis]
+
+        X_expanded = np.repeat(X[:,np.newaxis,:], M, axis=1)
+        Y_expanded = np.repeat(Y[np.newaxis,:,:], N, axis=0)
+        
+        tmp = np.sum((X_expanded-self.c) * ( Y_expanded-self.c), axis=2)
+
+        cov = (self.sigma_b**2) + ((self.sigma**2) * tmp)
+        return cov
+
 
     def gradient(self, u, v):
         dSigma_b = 2 * self.sigma_b

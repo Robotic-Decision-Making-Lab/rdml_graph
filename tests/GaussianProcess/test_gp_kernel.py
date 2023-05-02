@@ -11,6 +11,94 @@ import numpy as np
 
 
 
+def test_vectorization_rbf():
+    k = gr.RBF_kern(1,0.8)
+
+    X = np.array([1,3,4,5,6,7])
+    Y = np.array([-1,-0.5,0,1,2,3])
+
+
+    cov = np.empty((len(X), len(Y)))
+
+    for i,x1 in enumerate(X):
+        for j,x2 in enumerate(Y):
+            cov_ij = k(x1, x2)
+            cov[i,j] = cov_ij
+
+
+    cov_vec = k.cov(X,Y)
+
+    for i in range(cov_vec.shape[0]):
+        for j in range(cov_vec.shape[1]):
+            assert cov[i,j] == cov_vec[i,j]
+
+def test_vectorization_linear():
+    k = gr.linear_kern(1,0.8, 0.5)
+
+    X = np.array([1,3,4,5,6,7])
+    Y = np.array([-1,-0.5,0,1,2,3])
+
+
+    cov = np.empty((len(X), len(Y)))
+
+    for i,x1 in enumerate(X):
+        for j,x2 in enumerate(Y):
+            cov_ij = k(x1, x2)
+            cov[i,j] = cov_ij
+
+
+    cov_vec = k.cov(X,Y)
+
+    for i in range(cov_vec.shape[0]):
+        for j in range(cov_vec.shape[1]):
+            assert cov[i,j] == cov_vec[i,j]
+
+def test_vectorization_periodic():
+    k = gr.periodic_kern(1,0.8, 10)
+
+    X = np.array([1,3,4,5,6,7])
+    Y = np.array([-1,-0.5,0,1,2,3])
+
+
+    cov = np.empty((len(X), len(Y)))
+
+    for i,x1 in enumerate(X):
+        for j,x2 in enumerate(Y):
+            cov_ij = k(x1, x2)
+            cov[i,j] = cov_ij
+
+
+    cov_vec = k.cov(X,Y)
+
+    for i in range(cov_vec.shape[0]):
+        for j in range(cov_vec.shape[1]):
+            assert cov[i,j] == cov_vec[i,j]
+
+
+def test_vectorization_dual():
+    k = gr.RBF_kern(1,0.8) + (gr.periodic_kern(1,0.8, 10) * gr.linear_kern(1,0.8, 0.5))
+
+    X = np.array([1,3,4,5,6,7])
+    Y = np.array([-1,-0.5,0,1,2,3])
+
+
+    cov = np.empty((len(X), len(Y)))
+
+    for i,x1 in enumerate(X):
+        for j,x2 in enumerate(Y):
+            cov_ij = k(x1, x2)
+            cov[i,j] = cov_ij
+
+
+    cov_vec = k.cov(X,Y)
+
+    for i in range(cov_vec.shape[0]):
+        for j in range(cov_vec.shape[1]):
+            assert cov[i,j] == cov_vec[i,j]
+
+
+
+
 def test_rbf():
     rbf = gr.RBF_kern(1, 1)
     assert rbf(1,2) > 0.5 # probably right
