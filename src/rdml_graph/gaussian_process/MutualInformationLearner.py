@@ -21,6 +21,7 @@ import numpy as np
 
 from copy import copy
 
+import pdb
 
 class MutualInformationLearner(ActiveLearner):
 
@@ -28,6 +29,7 @@ class MutualInformationLearner(ActiveLearner):
     def __init__(self):
         super(MutualInformationLearner, self).__init__()
         self.M = 50 # random value at the moment
+        self.peakiness = 10
 
     
     ## select
@@ -149,9 +151,12 @@ class MutualInformationLearner(ActiveLearner):
 
     def calc_info_gain(self, Q, all_w):
         # Find the probabilities of human selecting a query given the possible reward values
-        p = p_human_choice(all_w[:,Q])
+        p = p_human_choice(all_w[:,Q], self.peakiness)
         # find the sum of the probabilities of w
         sum_p_over_w = np.sum(p, axis=0)
+
+        #pdb.set_trace()
+
         # Find the information gain using the sample equation (4) in [1]
         info_gain = np.sum(p * np.log2(self.M * p / sum_p_over_w)) / self.M
 

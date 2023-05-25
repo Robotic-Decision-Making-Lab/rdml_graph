@@ -85,10 +85,10 @@ class MutualUCBLearner(MutualInformationLearner):
             info_gain = self.calc_info_gain(idxs, all_w)
             value = (self.alpha * mu[i]) + ((1 - self.alpha) * info_gain)
 
-            print('i: ' + str(i))
-            print('info_gain: ' + str(info_gain))
-            print('mu: ' + str(mu[i]))
-            print('value: ' + str(value))
+            # print('i: ' + str(i))
+            # print('info_gain: ' + str(info_gain))
+            # print('mu: ' + str(mu[i]))
+            # print('value: ' + str(value))
 
             if value > best_v:
                 best_v = value

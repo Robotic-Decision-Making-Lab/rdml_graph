@@ -43,7 +43,7 @@ def test_human_sample_single_value():
 def test_human_sample_single_many():
     r = np.array([500,0,0])
 
-    samples = gr.sample_human_choice(r, 600)
+    samples = gr.sample_human_choice(r, samples=600)
 
     for s in samples:
         assert s == 0
@@ -52,7 +52,7 @@ def test_human_sample_single_many():
 def test_human_sample_same():
     r = np.array([5,5,5,5,5,5,5,5])
 
-    samples = gr.sample_human_choice(r, 20)
+    samples = gr.sample_human_choice(r, samples=20)
 
     assert len(samples) == 20
     for s in samples:
