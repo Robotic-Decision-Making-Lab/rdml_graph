@@ -1,7 +1,0 @@
-<map id="rdml_graph.gaussian_process.GP_kernels.kernel_func" name="rdml_graph.gaussian_process.GP_kernels.kernel_func">
-<area shape="rect" id="node1" title="Base kernel function class." alt="" coords="5,104,240,145"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1gaussian__process_1_1GP__kernels_1_1RBF__kern.html" title="RBF_kern Radial basis function for two points." alt="" coords="301,5,521,47"/>
-<area shape="rect" id="node3" href="$classrdml__graph_1_1gaussian__process_1_1GP__kernels_1_1dual__kern.html" title="kernel function class to handle adding or multiplying kernel functions together." alt="" coords="300,71,523,112"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1gaussian__process_1_1GP__kernels_1_1linear__kern.html" title="linear_kern A linear kernel for gaussian processes" alt="" coords="296,136,527,177"/>
-<area shape="rect" id="node5" href="$classrdml__graph_1_1gaussian__process_1_1GP__kernels_1_1periodic__kern.html" title="periodic_kern A periodic kernel for gaussian processes" alt="" coords="288,201,535,243"/>
-</map>

@@ -3,7 +3,9 @@
 *.gv.pdf
 
 # ignore doc folders
+doc/html/
 doc/html/**.html
+doc/html/**.md5
 doc/html/**.png
 doc/html/**.js
 doc/html/search/

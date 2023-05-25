@@ -1,6 +1,0 @@
-<map id="rdml_graph.gaussian_process.ProbitBase.ProbitBase" name="rdml_graph.gaussian_process.ProbitBase.ProbitBase">
-<area shape="rect" id="node1" title="ProbitBase Abstract class for a probit for the user GP." alt="" coords="5,93,232,134"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1gaussian__process_1_1AbsBoundProbit_1_1AbsBoundProbit.html" title="AbsBoundProbit This is almost directly Nick&#39;s code, for absolute bounded inputs." alt="" coords="282,5,497,61"/>
-<area shape="rect" id="node3" href="$classrdml__graph_1_1gaussian__process_1_1OrdinalProbit_1_1OrdinalProbit.html" title="OrdinalProbit This is almost directly Nick&#39;s code, for Ordinal regression." alt="" coords="280,85,499,141"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1gaussian__process_1_1PreferenceProbit_1_1PreferenceProbit.html" title="PreferenceProbit A relative discrete probit Partially taken from Nick&#39;s code this calculates the prob..." alt="" coords="292,165,487,221"/>
-</map>

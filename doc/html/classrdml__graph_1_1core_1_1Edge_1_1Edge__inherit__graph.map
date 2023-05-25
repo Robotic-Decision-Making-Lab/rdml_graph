@@ -1,8 +1,0 @@
-<map id="rdml_graph.core.Edge.Edge" name="rdml_graph.core.Edge.Edge">
-<area shape="rect" id="node1" title="Rather a directed edge, but called an edge for short." alt="" coords="116,78,316,105"/>
-<area shape="rect" id="node3" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1DecisionEdge.html" title=" " alt="" coords="364,37,612,79"/>
-<area shape="rect" id="node6" href="$classrdml__graph_1_1homotopy_1_1HEdge_1_1HEdge.html" title="Homotopy augumented edge." alt="" coords="381,103,595,144"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,78,68,105"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryEdge.html" title=" " alt="" coords="660,5,911,47"/>
-<area shape="rect" id="node5" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatEdge.html" title=" " alt="" coords="673,71,898,112"/>
-</map>

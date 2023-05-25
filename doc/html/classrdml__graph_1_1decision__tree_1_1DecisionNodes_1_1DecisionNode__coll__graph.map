@@ -1,7 +1,0 @@
-<map id="rdml_graph.decision_tree.DecisionNodes.DecisionNode" name="rdml_graph.decision_tree.DecisionNodes.DecisionNode">
-<area shape="rect" id="node1" title="While it currently does nothing, this leaves me with the option to add something to all decision node..." alt="" coords="5,304,256,345"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1core_1_1Node_1_1TreeNode.html" title="TreeNode class This class extends node with an additional pointer to it&#39;s parent for easy traversal." alt="" coords="15,229,246,256"/>
-<area shape="rect" id="node3" href="$classrdml__graph_1_1core_1_1Node_1_1Node.html" title="Node class for a node of a graph structure." alt="" coords="29,155,233,181"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1core_1_1State_1_1State.html" title="The generic State object for searches." alt="" coords="29,80,233,107"/>
-<area shape="rect" id="node5" title=" " alt="" coords="99,5,162,32"/>
-</map>

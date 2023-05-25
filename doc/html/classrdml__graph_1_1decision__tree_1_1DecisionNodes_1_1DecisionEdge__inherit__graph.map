@@ -1,7 +1,0 @@
-<map id="rdml_graph.decision_tree.DecisionNodes.DecisionEdge" name="rdml_graph.decision_tree.DecisionNodes.DecisionEdge">
-<area shape="rect" id="node1" title=" " alt="" coords="364,39,612,80"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryEdge.html" title=" " alt="" coords="660,5,911,47"/>
-<area shape="rect" id="node5" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatEdge.html" title=" " alt="" coords="673,71,898,112"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1core_1_1Edge_1_1Edge.html" title="Rather a directed edge, but called an edge for short." alt="" coords="116,46,316,73"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,46,68,73"/>
-</map>
