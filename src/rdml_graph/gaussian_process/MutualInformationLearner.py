@@ -26,10 +26,11 @@ import pdb
 class MutualInformationLearner(ActiveLearner):
 
     ## constructor for the mutual information learner.
-    def __init__(self):
+    def __init__(self, fake_func=None):
         super(MutualInformationLearner, self).__init__()
         self.M = 50 # random value at the moment
         self.peakiness = 10
+        self.fake_func = fake_func
 
     
     ## select
@@ -48,7 +49,12 @@ class MutualInformationLearner(ActiveLearner):
         cov = self.gp.cov
         # sample M possible parameters w (reward values of the GP)
         all_w = np.random.multivariate_normal(mu, cov, size=self.M)
-        
+
+        if self.fake_func is not None:
+            fake_f_mean = np.mean(self.fake_func(candidate_pts))
+            samp_mean = np.mean(all_w)
+
+            all_w = all_w * (fake_f_mean / samp_mean)        
 
         data = (mu, all_w)
         cur_selection = [np.argmax(mu)]
@@ -94,6 +100,13 @@ class MutualInformationLearner(ActiveLearner):
         # sample M possible parameters w (reward values of the GP)
         all_w = np.random.multivariate_normal(mu, cov, size=self.M)
         
+        if self.fake_func is not None:
+            fake_f_mean = np.mean(self.fake_func(candidate_pts))
+            samp_mean = np.mean(all_w)
+
+            print('Scaling using fake function: ' + str(fake_f_mean / samp_mean))
+            all_w = all_w * (fake_f_mean / samp_mean)
+
 
         data = (mu, all_w)
         cur_selection = copy(prev_selection)
