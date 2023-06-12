@@ -80,6 +80,7 @@ Variables</h2></td></tr>
 <tr class="memitem:a7f87c6f679372a7fca736ca60cfeb755"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSimpleGP.html#a7f87c6f679372a7fca736ca60cfeb755">training_sigma</a> = np.array([1, 0.5, 0.1, 0.1, 0.2, 0])</td></tr>
 <tr class="separator:a7f87c6f679372a7fca736ca60cfeb755"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6053bf7b53240685e52f1f1d1ddd19c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSimpleGP.html#a6053bf7b53240685e52f1f1d1ddd19c2">gp</a> = gr.GP(gr.RBF_kern(1,1)+gr.periodic_kern(1,1,10)+gr.linear_kern(3,1,0.3))</td></tr>
+<tr class="memdesc:a6053bf7b53240685e52f1f1d1ddd19c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">gp = gr.GP(gr.RBF_kern, {'rbf_sigma': 1, 'rbf_l': 1}) gp = gr.GP(gr.periodic_kern, {'periodic_sigma': 1, 'periodic_l': 1, 'periodic_p': 20}) gp = gr.GP(gr.linear_kern, {'linear_sigma': 5, 'linear_sigma_b': 5, 'linear_offset': 0.2})  <a href="namespaceSimpleGP.html#a6053bf7b53240685e52f1f1d1ddd19c2">More...</a><br /></td></tr>
 <tr class="separator:a6053bf7b53240685e52f1f1d1ddd19c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae217d341bd47eb73cfef4f282a8c792b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceSimpleGP.html#ae217d341bd47eb73cfef4f282a8c792b">mu</a></td></tr>
 <tr class="separator:ae217d341bd47eb73cfef4f282a8c792b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,6 +119,8 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>gp = gr.GP(gr.RBF_kern, {'rbf_sigma': 1, 'rbf_l': 1}) gp = gr.GP(gr.periodic_kern, {'periodic_sigma': 1, 'periodic_l': 1, 'periodic_p': 20}) gp = gr.GP(gr.linear_kern, {'linear_sigma': 5, 'linear_sigma_b': 5, 'linear_offset': 0.2}) </p>
 
 </div>
 </div>

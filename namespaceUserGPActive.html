@@ -377,7 +377,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;=  gr.PreferenceGP(gr.RBF_kern(1.0, 1.0), pareto_pairs=<span class="keyword">True</span>, \</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;                        use_hyper_optimization=<span class="keyword">False</span>, \</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;                        active_learner = gr.DetLearner(1.0))</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;                        active_learner = gr.MutualUCBLearner(alpha=0.8))</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -1,0 +1,5 @@
+<map id="rdml_graph.gaussian_process.MutualInformationLearner.MutualInformationLearner" name="rdml_graph.gaussian_process.MutualInformationLearner.MutualInformationLearner">
+<area shape="rect" id="node1" title=" " alt="" coords="5,109,249,165"/>
+<area shape="rect" id="node3" href="$classrdml__graph_1_1gaussian__process_1_1MutualUCBLearner_1_1MutualUCBLearner.html" title=" " alt="" coords="23,213,231,269"/>
+<area shape="rect" id="node2" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1ActiveLearner.html" title="Base Active Learning class." alt="" coords="19,5,236,61"/>
+</map>
