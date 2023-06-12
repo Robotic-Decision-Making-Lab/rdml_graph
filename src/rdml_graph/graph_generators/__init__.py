@@ -4,3 +4,4 @@ from .BasicSamplingFunctions import sample2DUniform, sample2DPolygon, \
                     EdgeConnection, HEdgeConn, HomotopyEdgeConn
 
 from .CostmapSamplingFunctions import sample2DPolygonCostmap, costmapCollision, costmapCollisionPt
+from .ConnectedGrid import connected_grid
