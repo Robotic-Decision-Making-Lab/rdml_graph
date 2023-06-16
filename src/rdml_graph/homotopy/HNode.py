@@ -137,11 +137,30 @@ class HPath():
         return self
 
     def __str__(self):
-        return 'HPath(h-sign='+ str(self.h_sign)+', path='+str(self.path)
+        return 'HPath(h-sign='+ str(self.h_sign)+', path='+str(self.path)+')'
 
 
+class HNodeNoBacktrack(HNode):
+    ## successor function for Homotopy node.
+    def successor(self):
+        if self.e is not None:
+            return [(e.c, e.getCost()) for e in self.e]
 
+        self.e = []
+        # self.e = [Edge(self, HNode(n=edge.c, h_sign=self.h_sign.copy(), parent=self, root=self.root), edge.getCost()) \
+        #     for edge in self.node.e if (self.h_sign.copy()).edge_cross(edge)]
+        node_set = set([n.node for n in self.get_parent_path()])
+        node_edges = [e for e in self.node.e if e.c not in node_set]
+        for edge in node_edges:
+            newHSign = self.h_sign.copy()
+            goodHSign = newHSign.edge_cross(edge)
 
+            if goodHSign:
+                succ = HNodeNoBacktrack(n=edge.c, h_sign=newHSign,\
+                                parent=self, root=self.root)
+                self.e.append(Edge(self, succ, edge.getCost()))
+        #pdb.set_trace()
+        return [(e.c, e.getCost()) for e in self.e]
 
 
 
