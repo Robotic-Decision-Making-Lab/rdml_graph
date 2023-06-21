@@ -52,18 +52,24 @@ def connected_grid(map, x_ticks, y_ticks, collision=noCollision, connection=Edge
     id_num = 0
     G = []
 
+    x_size = 0
+    y_size = 0
+
     # generate all needed nodes
     for i in range(0, len(x_ticks), grid_size):
+        y_size = 0
+        x_size += 1
         for j in range(0, len(y_ticks), grid_size):
             pt = np.array([x_ticks[i], y_ticks[j]])
 
             n = GeometricNode(id_num, pt)
             G.append(n)
             id_num += 1
+            y_size += 1
 
     # generate edge connections
-    x_size = int(len(x_ticks) / grid_size)
-    y_size = int(len(y_ticks) / grid_size)
+    #x_size = int(len(x_ticks) / grid_size)
+    #y_size = int(len(y_ticks) / grid_size)
 
     for i in range(0, x_size):
         for j in range(0, y_size):

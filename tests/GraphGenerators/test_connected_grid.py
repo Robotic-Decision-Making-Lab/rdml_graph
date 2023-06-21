@@ -66,17 +66,24 @@ def test_simple_grid_2():
 
 
 def main():
+    import matplotlib.pyplot as plt
     x_ticks = [0,1,2,3,4,5,6]
     y_ticks = [0,2,4,6,8]
+    x_ticks = np.arange(0,20)
+    y_ticks = np.arange(0,20)
     map = {}
 
-    G = gr.connected_grid(map, x_ticks, y_ticks)
+    G = gr.connected_grid(map, x_ticks, y_ticks, grid_size=5)
 
-    print(G[0])
-    print(G[1])
-    print(G[7])
-    print(len(G[7].e))
-    print(G[34])
+    gr.plot2DGeoGraph(G)
+    
+
+    #print(G[0])
+    #print(G[1])
+    #print(G[7])
+    #print(len(G[7].e))
+    #print(G[34])
+    plt.show()
 
 
 if __name__ == '__main__':
