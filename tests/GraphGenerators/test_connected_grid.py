@@ -73,7 +73,7 @@ def main():
     y_ticks = np.arange(0,20)
     map = {}
 
-    G = gr.connected_grid(map, x_ticks, y_ticks, grid_size=5)
+    G = gr.connected_grid(map, x_ticks, y_ticks, grid_size=3)
 
     gr.plot2DGeoGraph(G)
     

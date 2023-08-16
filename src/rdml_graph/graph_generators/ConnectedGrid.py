@@ -25,6 +25,7 @@ from ..core import GeometricNode
 import shapely.geometry as geo
 
 import numpy as np
+import scipy.spatial as spa
 from .BasicSamplingFunctions import sample2DUniform, noCollision, EdgeConnection
 
 import pdb
@@ -48,7 +49,7 @@ import pdb
 #                if bidirectional collisions and costs need to be checked.
 #
 # @return a list of nodes with grid conencted edges
-def connected_grid(map, x_ticks, y_ticks, collision=noCollision, connection=EdgeConnection, grid_size=1, conn_8=True, bidirectional=True):
+def connected_grid(map, x_ticks, y_ticks, collision=noCollision, connection=EdgeConnection, grid_size=1, conn_8=True, bidirectional=True, initial_nodes=[]):
     id_num = 0
     G = []
 
@@ -120,6 +121,29 @@ def connected_grid(map, x_ticks, y_ticks, collision=noCollision, connection=Edge
                         connection(edge_n, n, map)
         # end for loop j
     # end for loop i 
+
+
+
+    if len(initial_nodes) > 0:
+        distance = x_ticks[grid_size] - x_ticks[0]
+        pts = np.array([n.pt for n in G])
+        kd = spa.KDTree(pts)
+
+        initial_nodes_pts = [n.pt for n in initial_nodes]
+        close_n_idx = kd.query_ball_point(initial_nodes_pts, distance)
+
+        for i,n in enumerate(initial_nodes):
+            for j, idx in enumerate(close_n_idx[i]):
+                edge_n = G[idx]
+                # check for collisions
+                if not collision(n, edge_n, map):
+                    connection(n, edge_n, map)
+                    if bidirectional:
+                        connection(edge_n, n, map)
+                if not bidirectional:
+                    if not collision(n, edge_n, map):
+                        connection(edge_n, n, map)
+
 
     return G
 # end connected_grid
