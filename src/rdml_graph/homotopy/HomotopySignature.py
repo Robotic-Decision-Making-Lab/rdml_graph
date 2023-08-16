@@ -154,6 +154,18 @@ class HomotopySignature(HSignature):
         else:
             self.sign.append(value)
 
+    ## is_loop
+    # This function checkes to see if there is a loop in the homotopy signature.
+    # @return true if there is a loop, otherwise false.
+    def is_loop(self):
+        occurrence = set()
+        for cross in self.sign:
+            if cross in occurrence:
+                return True
+            else:
+                occurrence.add(cross)
+        
+        return False
 
     def copy(self):
         return copy.deepcopy(self)
