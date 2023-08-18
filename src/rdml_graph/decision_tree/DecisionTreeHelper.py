@@ -200,7 +200,7 @@ def same_class(X):
 # best split.
 # @param X - the input data [(x_i, target), ...]
 # @param importance_func - the importance function for the split
-def bin_category_split(X, importance_func, parent, id):
+def bin_category_split(X, importance_func, parent, id, with_labels=True):
     categories = set()
 
     for (v, target) in X:
