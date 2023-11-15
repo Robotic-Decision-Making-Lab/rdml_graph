@@ -32,9 +32,9 @@ else:
 from rdml_graph.gaussian_process import GP
 from rdml_graph.gaussian_process import PreferenceProbit, ProbitBase
 from rdml_graph.gaussian_process import k_fold_half, get_dk
+from rdml_graph.gaussian_process import PreferenceModel
 
 import scipy.optimize as op
-import scipy.stats as st
 import math
 
 import pdb
@@ -53,7 +53,7 @@ import pdb
 # Pairwise Judgements and Absolute Ratings with Gaussian Process Priors
 #  - a collection of technical details (2014)
 # Bjorn Sand Jenson, Jens Brehm, Nielsen
-class PreferenceGP(GP):
+class PreferenceGP(GP, PreferenceModel):
     ## constructor
     # @param cov_func - the covariance function to use
     # @param mat_inv - [opt] the matrix inversion function to use. By default
@@ -62,132 +62,32 @@ class PreferenceGP(GP):
                 normalize_positive=False, other_probits={}, mat_inv=np.linalg.pinv, \
                 use_hyper_optimization=False, active_learner=None):
         super(PreferenceGP, self).__init__(cov_func, mat_inv, active_learner=active_learner)
-
-        self.optimized = False
+        PreferenceModel.__init__(self, pareto_pairs, other_probits)
+        
         self.lambda_gp = 0.1
 
         self.normalize_gp = normalize_gp
-        self.pareto_pairs = pareto_pairs
+        
         self.normalize_positive = normalize_positive
         self.use_hyper_optimization = use_hyper_optimization
 
         # sigma on the likelihood function.
         #self.sigma_L = 1.0
         self.probits = [PreferenceProbit(sigma = 1.0)]
-        self.probit_idxs = {'relative_discrete': 0}
+        
 
-        i = 1
+
         for key in other_probits:
-            self.probit_idxs[key] = i
             self.probits.append(other_probits[key])
-            i += 1
 
-        self.y_train = [None] * len(self.probits)
-        self.X_train = None
-
-        self.prior_idx = None
+        
 
         self.delta_f = 0.002 # set the convergence to stop
         self.maxloops = 100
 
 
-    ## add_prior
-    # this function adds prioir data to the GP if desired. Desigend to work with
-    # the pareto_pairs constraint to generate a function that ensures pareto_pairs
-    # @param bounds - the bounds for the prior pts numpy array (nxn)
-    # @param num_pts - the number of prior pts to add
-    def add_prior(self, bounds = np.array([[0,1],[0,1]]), num_pts = 100, \
-                    method='random', pts=None):
-        scaler = bounds[:,1] - bounds[:,0]
-        bias = bounds[:,0]
-
-        if method == 'random':
-            pts = np.random.random((num_pts, bounds.shape[0])) * scaler + bias
-
-            # replace 2 of the points with the min a max of the prior bounds
-            if num_pts > 2:
-                pts[0] = bounds[:,0]
-                pts[1] = bounds[:,1]
-
-            print(pts)
-
-        elif method == 'exact':
-            pts = pts
-            num_pts = pts.shape[0]
-
-        if self.X_train is not None:
-            self.prior_idx = (self.X_train.shape[0], self.X_train.shape[0]+num_pts)
-        else:
-            self.prior_idx = (0, num_pts)
-        self.add(pts, [], type='relative_discrete')
-        self.remove_without_reference()
-
-
-
-    ## This function removes all training points with no references
-    # This is used because prior points can have no references and cause problems
-    # during optimization because of it.
-    #
-    # @post - X_train has removed indicies, all references in y_train have been
-    #          decremented
-    def remove_without_reference(self, remove_prior=True):
-        counts = np.zeros(self.X_train.shape[0])
-
-        # iterate through each type of training data
-        for type in self.probit_idxs:
-            y = self.y_train[self.probit_idxs[type]]
-            if type == 'relative_discrete':
-                for pair in y:
-                    counts[pair[1]] += 1
-                    counts[pair[2]] += 1
-
-        # check which pts don't have any counts
-        #idx_to_rm = [x for x in range(len(counts)) if counts[x] == 0]
-        idx_to_rm = []
-        cur_cts = 0
-        for i in range(len(counts)):
-            if counts[i] == 0:
-                idx_to_rm.append(i)
-                cur_cts += 1
-
-            counts[i] = cur_cts
-
-        # remove X_train points to remove
-        self.X_train = np.delete(self.X_train, idx_to_rm, axis=0)
-
-        # reduce indicies of y_train to match removed indicies
-        for type in self.probit_idxs:
-            y = self.y_train[self.probit_idxs[type]]
-            if type == 'relative_discrete':
-                for pair in y:
-                    pair[1] -= counts[pair[1]]
-                    pair[2] -= counts[pair[2]]
-
-
-        if remove_prior:
-            # update the index if they have been removed
-            prior_idx = (self.prior_idx[0], self.prior_idx[1] - len(idx_to_rm))
-            self.prior_idx = prior_idx
-
-
-
-    ## get_prior_pts
-    # get the set of prior points if they exist
-    # @return numpy array of X_train if it exists, None otherwise
-    def get_prior_pts(self):
-        if self.prior_idx is not None:
-            return self.X_train[self.prior_idx[0]:self.prior_idx[1]]
-        else:
-            return None
-
-    ## reset
-    # This function resets all points for the GP
-    def reset(self):
-        self.y_train = [None] * len(self.probits)
-        self.X_train = None
-        self.prior_idx = None
-
-    ## add_training
+    
+    ## add
     # adds training data to the gaussian process
     # appends the data if there already is some training data
     # @param X - the input training data
@@ -201,79 +101,7 @@ class PreferenceGP(GP):
     #                          accepts scalars or a vector if each sample has
     #                          a different uncertianty.
     def add(self, X, y, type='relative_discrete', training_sigma=0):
-        if not isinstance(training_sigma, Sequence):
-            training_sigma = np.ones(len(y)) * training_sigma
-
-        if self.X_train is None:
-            self.X_train = X
-            len_X = 0
-        else:
-            len_X = len(self.X_train)
-            self.X_train = np.append(self.X_train, X, axis=0)
-
-        if type == 'relative_discrete':
-            if y == []:
-                pass
-            elif self.y_train[self.probit_idxs[type]] is None:
-                self.y_train[self.probit_idxs[type]] = np.array(y)
-            else:
-                # reset index of pairwise comparisons
-                y = [(d, u+len_X, v+len_X) for d, u, v in y]
-
-                self.y_train[self.probit_idxs[type]] = \
-                    np.append(self.y_train[self.probit_idxs[type]], np.array(y), axis=0)
-        elif type == 'ordinal':
-            if not isinstance(y, np.ndarray):
-                y = np.array(y)
-            if len(y.shape) == 1:
-                new_y = np.empty((y.shape[0], 2), dtype=int)
-                new_y[:,0] = y
-                new_y[:,1] = np.arange(0, y.shape[0])
-            else:
-                new_y = y
-            if self.y_train[self.probit_idxs[type]] is None:
-                self.y_train[self.probit_idxs[type]] = new_y
-            else:
-                self.y_train[self.probit_idxs[type]] = \
-                    np.append(self.y_train[self.probit_idxs[type]], new_y, axis=0)
-        elif type == 'abs':
-            if isinstance(y, tuple):
-                v = y[0]
-                idxs = y[1]
-            elif isinstance(y, np.ndarray):
-                v = y
-                idxs = np.arange(len_X, y.shape[0]+len_X)
-            else:
-                print('abs type received unknown type for y')
-                return
-
-            if self.y_train[self.probit_idxs[type]] is not None:
-                v = np.append(self.y_train[self.probit_idxs[type]][0], v, axis=0)
-                idxs = np.append(self.y_train[self.probit_idxs[type]][1], idxs, axis=0)
-
-            self.y_train[self.probit_idxs[type]] = (v, idxs)
-
-
-        if self.pareto_pairs:
-            pairs = []
-            d_better = get_dk(1,0)
-            # Go through each new sample and check if it pareto optimal to others
-            for i, x in enumerate(X):
-                dominate = np.all(x > self.X_train, axis=1)
-
-                cur_pairs = [(d_better, i+len_X, j) for j in range(len(dominate)) if dominate[j]]
-                pairs += cur_pairs
-
-            if self.y_train[self.probit_idxs['relative_discrete']] is None:
-                self.y_train[self.probit_idxs['relative_discrete']] = np.array(pairs)
-            else:
-                self.y_train[self.probit_idxs['relative_discrete']] = \
-                    np.append(self.y_train[self.probit_idxs['relative_discrete']], \
-                                np.array(pairs), axis=0)
-        # end if for pareto_pairs
-
-
-        self.optimized = False
+        PreferenceModel.add(self, X,y,type,training_sigma)
 
 
 
