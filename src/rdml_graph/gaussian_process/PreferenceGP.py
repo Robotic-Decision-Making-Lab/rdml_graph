@@ -355,7 +355,7 @@ class PreferenceGP(GP):
 
         for j, probit in enumerate(self.probits):
             if y[j] is not None:
-                W_local, dpy_df_local, py_local = probit.derivatives(y[j], self.F)
+                W_local, dpy_df_local, py_local = probit.derivatives(y[j], F)
                 try:
                     W += W_local
                 except:
@@ -485,7 +485,6 @@ class PreferenceGP(GP):
         if not self.optimized:
             self.optimize(optimize_hyperparameter=self.use_hyper_optimization)
 
-        W = self.W
         X_test = X
         X_train = self.X_train
         F = self.F
