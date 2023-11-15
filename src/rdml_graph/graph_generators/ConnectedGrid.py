@@ -125,7 +125,7 @@ def connected_grid(map, x_ticks, y_ticks, collision=noCollision, connection=Edge
 
 
     if len(initial_nodes) > 0:
-        distance = x_ticks[grid_size] - x_ticks[0]
+        distance = (x_ticks[grid_size] - x_ticks[0]) * np.sqrt(2) + 0.1
         pts = np.array([n.pt for n in G])
         kd = spa.KDTree(pts)
 
