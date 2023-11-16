@@ -78,6 +78,9 @@ class PreferenceGP(GP, PreferenceModel):
 
 
         for key in other_probits:
+            if not isinstance(other_probits[key], ProbitBase):
+                raise TypeError("Preference Linear pased a probit that is not a probit: " + str(other_probits[key]))
+
             self.probits.append(other_probits[key])
 
         

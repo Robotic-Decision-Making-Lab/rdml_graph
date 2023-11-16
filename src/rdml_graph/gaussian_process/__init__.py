@@ -8,6 +8,7 @@ from .PreferenceProbit import PreferenceProbit
 from .OrdinalProbit import OrdinalProbit
 from .AbsBoundProbit import AbsBoundProbit
 from .PreferenceGP import PreferenceGP
+from .PreferenceLinear import PreferenceLinear
 from .HumanChoiceModel import p_human_choice, sample_human_choice
 from .MutualInformationLearner import MutualInformationLearner
 from .MutualUCBLearner import MutualUCBLearner

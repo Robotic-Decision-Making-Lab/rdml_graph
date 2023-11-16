@@ -237,3 +237,11 @@ class PreferenceModel():
         self.optimized = False
 
 
+
+    ## optimize
+    # Runs the optimization step required by the user preference GP.
+    # @param optimize_hyperparameter - [opt] sets whether to optimize the hyperparameters
+    def optimize(self, optimize_hyperparameter=False):
+        raise NotImplementedError("PreferenceModel optimize function not implemented")
+        self.optimized = True
+
