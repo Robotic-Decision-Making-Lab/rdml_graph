@@ -42,18 +42,14 @@ def test_user_gp():
     #print('gp.calc_ll()')
     #print(gp.calc_ll())
 
-
-    X = np.arange(-0.5, 8, 0.1)
-    mu, sigma = gp.predict(X)
-    std = np.sqrt(sigma)
-
-    y, sigma = gp.predict(X_train)
+    
+    y = gp.predict(X_train)
 
     for i in range(len(X_train)):
-        if i != 0:
-            assert y[0] > y[i]
-        if i!= 1:
-            assert y[1] < y[i]
+        if i != 6:
+            assert y[6] > y[i]
+        if i!= 0:
+            assert y[0] < y[i]
 
 
 

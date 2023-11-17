@@ -38,18 +38,21 @@ class PreferenceLinear(PreferenceModel):
     ## init function
     # @param pareto_pairs - [opt] sets whether to assume pareto optimal user preferences.
     # @param other_probits - [opt] sets additional types of probits to add.
-    def __init__(self, pareto_pairs=False, other_probits={}):
+    def __init__(self, pareto_pairs=False, other_probits={},mat_inv=np.linalg.pinv):
         super(PreferenceLinear, self).__init__(pareto_pairs, other_probits)
 
 
         self.probits = [PreferenceProbit(sigma = 1.0)]
         
-        self.lambda_newton = 0.3
+        self.lambda_newton = 0.5
         for key in other_probits:
             if not isinstance(other_probits[key], ProbitBase):
                 raise TypeError("PreferenceLinear pased a probit that is not a probit: " + str(other_probits[key]))
 
-            self.probits.append(other_probits[key])        
+            self.probits.append(other_probits[key])
+
+        self.mat_inv = mat_inv
+        self.delta_f = 0.002
 
 
 
@@ -102,19 +105,43 @@ class PreferenceLinear(PreferenceModel):
     # @param optimize_hyperparameter - [opt] sets whether to optimize the hyperparameters
     def optimize(self, optimize_hyperparameter=False):
         if len(self.X_train.shape) > 1:
-            self.w = np.random.random(self.X_train.shape[1])
+            w = np.random.random(self.X_train.shape[1])
+            w = w / np.linalg.norm(w, ord=2)
         else:
             print('Only 1 reward parameter... linear model practically does not make sense')
             self.w = np.random.random(1)
 
 
-        # just do gradient decent.
-        W, dpy_dw, py = self.derivatives(self.X_train, self.y_train, self.w)
+        
+        # damped newton method        
+        w_err = self.delta_f + 1
+        n_loops = 0
+        while w_err > self.delta_f:
+            # damped newton update (to find max, hence plus sign rather than negative sign.)
+            W, dpy_dw, py = self.derivatives(self.X_train, self.y_train, w)
+            w_new = w + self.lambda_newton * (self.mat_inv(W) @ dpy_dw)
+            w_new = w_new / np.linalg.norm(w_new, ord=2)
 
-        pdb.set_trace()
+            w_err = np.linalg.norm(w_new - w, ord=2)
+            
+            w = w_new
+            n_loops += 1
 
+        self.w = w
         self.optimized = True
 
 
 
+
+    ## Predicts the output of the linear model at new locations
+    # @param X - the input test samples (n,k).
+    #
+    # @return an array of output values (n)
+    def predict(self, X):
+        F = (X @ self.w[:,np.newaxis])[:,0]
+        return F        
+
+
+    def predict_large(self, X):
+        return self.predict(X)
 
