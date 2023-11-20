@@ -22,6 +22,9 @@
 # A Gaussian Process implementation that handles ordered pairs of preferences
 # for the training data rather than direct absolute samples.
 # Essentially optimizes the solution of the samples given to the GP.
+# Pairwise Judgements and Absolute Ratings with Gaussian Process Priors
+#  - a collection of technical details (2014)
+# Bjorn Sand Jenson, Jens Brehm, Nielsen
 
 import numpy as np
 import sys
@@ -310,6 +313,7 @@ class PreferenceGP(GP, PreferenceModel):
             sigma = np.diagonal(cov)
             # just in case do to numerical instability a negative variance shows up
             sigma = np.maximum(0, sigma)
+            self.cov = cov
             return np.zeros(len(X)), sigma
 
         # lazy optimization of GP

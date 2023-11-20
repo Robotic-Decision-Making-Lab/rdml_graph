@@ -59,6 +59,10 @@ class PreferenceModel():
     # @param num_pts - the number of prior pts to add
     def add_prior(self, bounds = np.array([[0,1],[0,1]]), num_pts = 100, \
                     method='random', pts=None):
+        if self.pareto_pairs == False:
+            print('Asked to add prior information without setting pareto pairs to be used. Not adding prior points')
+            return
+
         scaler = bounds[:,1] - bounds[:,0]
         bias = bounds[:,0]
 

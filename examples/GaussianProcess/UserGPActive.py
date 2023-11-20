@@ -48,23 +48,24 @@ if __name__ == '__main__':
     num_train_pts = 40
     num_alts = 4
 
-    utility_f = f_sq
-
+    utility_f = f_sin
+    #learner = gr.DetLearner(1.0)
+    learner = gr.MutualInformationLearner()
+    #learner = gr.RandomLearner()
 
     #gp = gr.PreferenceGP(gr.RBF_kern(0.2,0.5)*gr.linear_kern(0.2, 0.1, 0))
     #gp = gr.PreferenceGP(gr.linear_kern(0.3, 0.1, 0.0))
-    gp = gr.PreferenceGP(gr.RBF_kern(1.0, 1.0), pareto_pairs=True, \
+    gp = gr.PreferenceGP(gr.RBF_kern(1.0, 1.0), pareto_pairs=False, \
                         use_hyper_optimization=False, \
-                        active_learner = gr.MutualUCBLearner(alpha=0.8))
+                        active_learner = learner)
     gp.add_prior(bounds=np.array(bounds), num_pts=20)
 
 
 
-    for i in tqdm.tqdm(range(10)):
+    for i in tqdm.tqdm(range(40)):
         train_X = np.random.random((num_train_pts,2)) * np.array([bounds[0][1]-bounds[0][0], bounds[1][1]-bounds[1][0]]) + np.array([bounds[0][0], bounds[1][0]])
         train_Y = utility_f(train_X)#f_lin(train_X)
 
-        #pdb.set_trace()
         selected_idx, UCB, best_value = gp.select(train_X, num_alts)
         #selected_idx = gp.active_learner.select_previous(train_X, num_alts=num_alts)
 
@@ -96,11 +97,12 @@ if __name__ == '__main__':
     Z_pred = np.reshape(z_predicted, (num_side, num_side))
     UCB_pred = np.reshape(ucb_pred, (num_side, num_side))
 
+
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     #ax.contour3D(X, Y, Z_pred, 50, cmap='binary')
     ax.plot_wireframe(X, Y, Z, color= 'black')
-    ax.plot_wireframe(X, Y, UCB_pred, color= 'red')
+    #ax.plot_wireframe(X, Y, UCB_pred, color= 'red')
     ax.plot_surface(X, Y, Z_pred, rstride=1, cstride=1, cmap='magma', edgecolor='none')
     ax.scatter(gp.X_train[:,0], gp.X_train[:,1], gp.F)
     ax.set_xlabel('x')

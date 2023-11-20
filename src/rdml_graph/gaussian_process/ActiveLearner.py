@@ -175,10 +175,11 @@ class RandomLearner(ActiveLearner):
     #          value of the best point.
     def select(self, candidate_pts, num_alts, prefer_num=-1):
         mu, variance = self.gp.predict(candidate_pts)
-        UCB = mu + self.alpha*np.sqrt(variance)
+        UCB = mu + 1.0*np.sqrt(variance)
 
         best_idx = np.argmax(mu)
-        selected_idx = random.choice(range(0, best_idx) + range(best_idx+1, len(candidate_pts)), num_alts-1)
+        indicies = list(range(0, best_idx)) + list(range(best_idx+1, len(candidate_pts)))
+        selected_idx = list(np.random.choice(indicies, num_alts-1))
         selected_idx = [best_idx] + selected_idx
 
         return np.array(selected_idx), UCB[selected_idx], mu[best_idx]

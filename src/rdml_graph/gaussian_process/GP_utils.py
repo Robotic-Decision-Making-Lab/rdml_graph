@@ -24,11 +24,18 @@
 # anywhere else.
 
 import numpy as np
+import sys
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
+    from collections.abc import Sequence
+else:
+    from collections import Sequence
 import pdb
 
 
 
 def get_dk(u, v):
+    if (not isinstance(u, (int, float))) or (not isinstance(v, (int, float))):
+        raise TypeError("get_dk was not passed a scalar value")
     if u > v:
         return -1
     elif u < v:
