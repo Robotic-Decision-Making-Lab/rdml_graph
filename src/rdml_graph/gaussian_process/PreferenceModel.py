@@ -241,6 +241,17 @@ class PreferenceModel():
         self.optimized = False
 
 
+    # calculate the log_likelyhood of the training data.
+    # log p(Y|F)
+    def log_likelyhood_training(self, F):
+        log_p_w = 0.0
+        for j, probit in enumerate(self.probits):
+            if self.y_train[j] is not None:
+                p_w_local = probit.log_likelihood(self.y_train[j], F)
+
+                log_p_w += p_w_local
+
+        return log_p_w
 
     ## optimize
     # Runs the optimization step required by the user preference GP.

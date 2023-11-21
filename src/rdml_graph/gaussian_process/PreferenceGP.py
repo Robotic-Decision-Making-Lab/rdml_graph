@@ -122,6 +122,23 @@ class PreferenceGP(GP, PreferenceModel):
 
         return logpYF - term2 - term3
 
+    ## calculates the loss function of the log liklihood with prior
+    # this is equation (139)
+    def loss_F(self, F):
+        try:
+            K = self.K
+        except:
+            K = self.cov_func.cov(self.X_train, self.X_train)
+
+        # calculate the log-likelyhood of the data given F
+        log_py_f = self.log_likelyhood_training(F)
+        K_inv = self.invert_function(K)
+        term1 = 0.5*(np.transpose(F) @ K_inv @ F)
+        term2 = np.log(np.linalg.det(K))
+        term3 = 0.5*len(F) * np.log(2 * np.pi)
+        log_prior = log_py_f - term1 - term2 - term3
+        return log_prior
+
     def calc_ll_param(self, hyperparameters, X_train, y_train):
         sigma_L = hyperparameters[0]
 
@@ -206,17 +223,19 @@ class PreferenceGP(GP, PreferenceModel):
 
         self.K = self.cov_func.cov(X_train, X_train)
 
-        # check convergence using f_error (the max change in the f vector)
-        f_error = self.delta_f + 1 # force at least one iteration to be used
+        F = np.random.random(len(self.X_train))
+        
+        # damped newton method
         n_loops = 0
+        f_err = self.delta_f + 1
 
-        # TODO good way to check for convergence
-        while f_error > self.delta_f:
+        # checking for convergence by optimization amount
+        while f_err > self.delta_f:
             self.W, self.grad_ll, self.log_likelihood = \
-                                            self.derivatives(y_train, self.F)
+                                            self.derivatives(y_train, F)
 
-            F_new = damped_newton_update(
-                                        self.F, # estimated training values
+            F_new = damped_newton_update_old(
+                                        F, # estimated training values
                                         self.K, # covariance of training data
                                         self.W, # The W matrix (d2py/ d2df)
                                         self.grad_ll, # The gradient of the log likelihood
@@ -234,25 +253,18 @@ class PreferenceGP(GP, PreferenceModel):
                     F_norm = np.linalg.norm(F_new, ord=np.inf)
                     F_new = F_new / F_norm
 
-            # check for convergence and add noise if there is an error
-            df = np.abs((F_new - self.F))
-            if n_loops > 0 and df.max() > f_error:
-                print("Laplace error increase, adding noise")
-                F_new = F_new + np.random.normal(0, df.max()/10.0, F_new.shape)
-            f_error = np.max(df)
-            #print('f_error: ' + str(f_error))
+            # check for convergence
+            f_err = np.linalg.norm((F_new - F), ord=np.inf)
+            F = F_new
 
-            self.F = F_new
-
-            if n_loops % 50 == 0 and n_loops != 0:
-                self.F = np.random.random(len(self.X_train))
 
             n_loops += 1
             if n_loops > self.maxloops:
                 print('WARNING: maximum loops in findMode exceeded. Returning current solution')
                 break
 
-        # normalize W
+        self.F = F
+        # calculate W with final F
         self.W, self.grad_ll, self.log_likelihood = \
                                         self.derivatives(y_train, self.F)
 
@@ -353,6 +365,13 @@ class PreferenceGP(GP, PreferenceModel):
         return mu, sigma
 
 
+    # using
+    def damped_newton_update(F,K,W,grad_ll,
+                                invert_function=np.linalg.inv):
+        # First calculate the g
+        pass
+
+
 
 ############################# Optimization functions
 
@@ -367,7 +386,7 @@ class PreferenceGP(GP, PreferenceModel):
 # @param invert_function - [opt] the matrix invertion function to use.
 #
 # @return the updated F for the newton update
-def damped_newton_update(F, K, W, grad_ll, lamda, \
+def damped_newton_update_old(F, K, W, grad_ll, lamda, \
                             invert_function=np.linalg.inv):
     term1 = invert_function(K) + W - lamda*np.identity(len(W))
     term1_inv = invert_function(term1)

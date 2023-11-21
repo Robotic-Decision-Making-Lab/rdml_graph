@@ -59,14 +59,8 @@ class PreferenceLinear(PreferenceModel):
     ## P_w
     # Probability of w given the training data
     def log_P_w(self, w):
-        log_p_w = 0.0
-        for j, probit in enumerate(self.probits):
-            if self.y_train[j] is not None:
-                p_w_local = probit.log_likelihood(self.y_train[j], F)
-
-                log_p_w += p_w_local
-
-        return log_p_w
+        F = (self.X_train @ w[:,np.newaxis])[:,0]
+        return self.log_likelyhood_training(F)
         
 
     ## derivatives
