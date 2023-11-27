@@ -232,9 +232,11 @@ class PreferenceModel():
             if self.y_train[self.probit_idxs['relative_discrete']] is None:
                 self.y_train[self.probit_idxs['relative_discrete']] = np.array(pairs)
             else:
-                self.y_train[self.probit_idxs['relative_discrete']] = \
-                    np.append(self.y_train[self.probit_idxs['relative_discrete']], \
-                                np.array(pairs), axis=0)
+                # only add pairs if there is any pareto pairs to add.
+                if len(pairs) > 0:
+                    self.y_train[self.probit_idxs['relative_discrete']] = \
+                        np.append(self.y_train[self.probit_idxs['relative_discrete']], \
+                                    np.array(pairs), axis=0)
         # end if for pareto_pairs
 
 

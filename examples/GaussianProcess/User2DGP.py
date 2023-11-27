@@ -56,7 +56,7 @@ if __name__ == '__main__':
     #gp = gr.PreferenceGP(gr.RBF_kern(0.2,0.5)*gr.linear_kern(0.2, 0.1, 0))
     #gp = gr.PreferenceGP(gr.linear_kern(0.3, 0.1, 0.0))
     gp = gr.PreferenceGP(gr.RBF_kern(1.0, 1.0), pareto_pairs=True, \
-                        use_hyper_optimization=False)
+                        use_hyper_optimization=False, normalize_positive=True)
     gp.add_prior(bounds=np.array(bounds))
 
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     ax = plt.axes(projection='3d')
     #ax.contour3D(X, Y, Z_pred, 50, cmap='binary')
     ax.plot_wireframe(X, Y, Z, color= 'black')
-    ax.plot_wireframe(X, Y, UCB_pred, color= 'red')
+    #ax.plot_wireframe(X, Y, UCB_pred, color= 'red')
     ax.plot_surface(X, Y, Z_pred, rstride=1, cstride=1, cmap='magma', edgecolor='none')
     ax.scatter(gp.X_train[:,0], gp.X_train[:,1], gp.F)
     ax.set_xlabel('x')
