@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     gp.add(X_train, pairs)
 
-    gp.optimize(optimize_hyperparameter=True)
+    gp.optimize(optimize_hyperparameter=False)
     print('gp.calc_ll()')
     print(gp.calc_ll())
 

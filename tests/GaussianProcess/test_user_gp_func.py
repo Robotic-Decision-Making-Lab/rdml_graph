@@ -24,6 +24,7 @@ def test_loss_f():
     gp = gr.PreferenceGP(gr.RBF_kern(0.5, 0.7))
     gp.add(X_train, pairs)
 
+    
     l_f = gp.loss_F(np.random.random(len(X_train)))
 
     assert l_f is not None

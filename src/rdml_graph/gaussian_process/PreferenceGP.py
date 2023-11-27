@@ -234,12 +234,11 @@ class PreferenceGP(GP, PreferenceModel):
             self.W, self.grad_ll, self.log_likelihood = \
                                             self.derivatives(y_train, F)
 
-            F_new = damped_newton_update_old(
+            F_new = self.newton_update(
                                         F, # estimated training values
                                         self.K, # covariance of training data
                                         self.W, # The W matrix (d2py/ d2df)
                                         self.grad_ll, # The gradient of the log likelihood
-                                        self.lambda_gp, # lambda on the newton update
                                         self.invert_function)
 
             # normalize F
@@ -365,12 +364,31 @@ class PreferenceGP(GP, PreferenceModel):
         return mu, sigma
 
 
-    # using
-    def damped_newton_update(F,K,W,grad_ll,
-                                invert_function=np.linalg.inv):
-        # First calculate the g
-        pass
+    ## newton_update
+    # This function runs a damped newton update to calculate the next step of the
+    # optimization.
+    # Can be used with or without line search for selecting the lambda function
+    def newton_update(self, F,K,W,grad_ll,
+                                invert_function=np.linalg.inv,
+                                line_search=False):
+        # First calculate the descent direction using the gradient and hessian.
+        # gradient:
+        K_inv = invert_function(K)
+        gradient = grad_ll - (K_inv @ F)
 
+        # Hessian:
+        hess = -W - K_inv
+
+        # positive since we are searching for the max.
+        descent = gradient @ invert_function(hess)
+
+        if line_search:
+            pass
+        else:
+            lamb = self.lambda_gp
+
+        F_new = F - lamb * descent
+        return F_new
 
 
 ############################# Optimization functions
