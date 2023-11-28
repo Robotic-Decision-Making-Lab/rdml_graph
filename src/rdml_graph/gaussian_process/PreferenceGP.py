@@ -76,7 +76,7 @@ class PreferenceGP(GP, PreferenceModel):
 
         # sigma on the likelihood function.
         #self.sigma_L = 1.0
-        self.probits = [PreferenceProbit(sigma = 0.05)]
+        self.probits = [PreferenceProbit(sigma = 0.5)]
         
 
 
@@ -125,10 +125,7 @@ class PreferenceGP(GP, PreferenceModel):
     ## calculates the loss function of the log liklihood with prior
     # this is equation (139)
     def loss_F(self, F):
-        try:
-            K = self.K
-        except:
-            K = self.cov_func.cov(self.X_train, self.X_train)
+        K = self.cov_func.cov(self.X_train, self.X_train)
 
         # calculate the log-likelyhood of the data given F
         log_py_f = self.log_likelyhood_training(F)
@@ -177,7 +174,7 @@ class PreferenceGP(GP, PreferenceModel):
         print('ll_pre = ' + str(ll_pre))
 
         #bounds=[(0.0001, 100), (0.0001, 10), (0.001,30)],
-        bounds = [(0.1, 15) for i in range(len(x))]
+        bounds = [(0.01, 15) for i in range(len(x))]
         calc_ll = lambda x, *args : -self.calc_ll_param(x, args[0], args[1])
         theta = op.minimize(fun=calc_ll, args=(x_train, y_train), x0=x0, bounds=bounds, tol=0.01, options={'maxiter': 300, 'disp': False})
         x = theta.x
@@ -240,7 +237,9 @@ class PreferenceGP(GP, PreferenceModel):
                                         self.K, # covariance of training data
                                         self.W, # The W matrix (d2py/ d2df)
                                         self.grad_ll, # The gradient of the log likelihood
-                                        self.invert_function)
+                                        self.invert_function,
+                                        lambda_type="binary", # sets the type of line search or static to perform
+                                        line_search_max_itr=5)
 
             # normalize F
             if self.normalize_gp:
@@ -375,9 +374,19 @@ class PreferenceGP(GP, PreferenceModel):
     # This function runs a damped newton update to calculate the next step of the
     # optimization.
     # Can be used with or without line search for selecting the lambda function
+    # @param F - the current estimate of the parameters
+    # @param K - the current covariance matrix
+    # @param W - the Hessian of the loss function
+    # @param grad_ll - the gradient of the loss function
+    # @param invert_function - [opt] the matrix inversion function to use
+    # @param lambda_type - [opt default "static"] sets the type of lambda search, options include ("static", "binary", "iter")
+    # @param line_search_max_itr - [opt (5)] line_search_max_itr
+    #
+    # @return F_new after the update function
     def newton_update(self, F,K,W,grad_ll,
                                 invert_function=np.linalg.inv,
-                                line_search=False):
+                                lambda_type="static",
+                                line_search_max_itr = 5):
         # First calculate the descent direction using the gradient and hessian.
         # gradient:
         K_inv = invert_function(K)
@@ -389,13 +398,83 @@ class PreferenceGP(GP, PreferenceModel):
         # positive since we are searching for the max.
         descent = gradient @ invert_function(hess)
 
-        if line_search:
-            pass
-        else:
+        if lambda_type == "binary":
+            # search along the descent direction for the min point.
+            lamb = self.binary_line_search(F, descent, max_itr=line_search_max_itr)
+        elif lambda_type == "iter":
+            lamb = self.iterative_line_search(F, descent, max_itr=line_search_max_itr)
+        elif lambda_type == "static":
             lamb = self.lambda_gp
+        else:
+            raise ValueError("newton update given bad lambda type of: " + str(lambda_type))
+
+        print("\t lambda = " + str(lamb))
 
         F_new = F - lamb * descent
         return F_new
+
+
+    ## binary_line_search
+    # performs a binary line search by splitting the search
+    # along the descent direction to find the best location.
+    # @param F - the input parameters
+    # @param descent - the desecent direction scaled to the taylor polynomial
+    # @param min_lambda - [opt] the minumum lambda location to search (0.01 default)
+    # @param max_lambda - [opt] the maxmimum lambda to search (1.5, default)
+    # @param max_itr - [opt] the maximum number of iterations allowed to search
+    #
+    # @return lambda for the binary search.
+    def binary_line_search(self, F, descent, min_lambda=0.0, max_lambda=1.5, max_itr=5):
+        # search along the descent direction for the min point.
+
+        #max_lamda = 1.5 # set the max value away from the decent direction to search
+        # sets the minimum value to search for
+        #min_lamda = 0.001
+
+        for i in range(max_itr):
+            lam_dis = max_lambda - min_lambda
+            mid_lambda = (lam_dis*0.5 + min_lambda)
+            lam_1 = lam_dis * 0.25 + min_lambda
+            lam_2 = lam_dis * 0.75 + min_lambda
+
+            loss_1 = self.loss_F(F - lam_1 * descent)
+            loss_2 = self.loss_F(F - lam_2 * descent)
+
+            if loss_1 > loss_2:
+                max_lambda = mid_lambda
+            else:
+                min_lambda = mid_lambda
+        
+        # return the mid point between the search values.
+        return 0.5 * (min_lambda + max_lambda)
+                
+    # @param F - the input parameters
+    # @param descent - the desecent direction scaled to the taylor polynomial
+    # @param min_lambda - [opt] the minumum lambda location to search (0.01 default)
+    # @param max_lambda - [opt] the maxmimum lambda to search (1.5, default)
+    # @param max_itr - [opt] the maximum number of iterations allowed to search
+    #
+    # @return lambda for the binary search.
+    def iterative_line_search(self, F, descent, min_lambda=0.01, max_lambda=1.5, max_itr=10):
+        lambda_search_pts = np.arange(min_lambda, max_lambda, (max_lambda - min_lambda)/max_itr)
+        best_lamb = -1
+        best_loss = -np.inf
+
+        for lamb in lambda_search_pts:
+            loss = self.loss_F(F - lamb * descent)
+            if loss > best_loss:
+                best_lamb = lamb
+                best_loss = loss
+
+        if best_lamb == -1:
+            raise Exception("Iterative line search failed to get a non infinite loss value")
+
+        return best_lamb
+
+
+
+
+
 
 
 ############################# Optimization functions
