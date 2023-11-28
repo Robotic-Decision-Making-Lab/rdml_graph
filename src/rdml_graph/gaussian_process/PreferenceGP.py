@@ -67,7 +67,7 @@ class PreferenceGP(GP, PreferenceModel):
         super(PreferenceGP, self).__init__(cov_func, mat_inv, active_learner=active_learner)
         PreferenceModel.__init__(self, pareto_pairs, other_probits)
         
-        self.lambda_gp = 0.1
+        self.lambda_gp = 0.9
 
         self.normalize_gp = normalize_gp
         
@@ -76,7 +76,7 @@ class PreferenceGP(GP, PreferenceModel):
 
         # sigma on the likelihood function.
         #self.sigma_L = 1.0
-        self.probits = [PreferenceProbit(sigma = 1.0)]
+        self.probits = [PreferenceProbit(sigma = 0.05)]
         
 
 
@@ -88,7 +88,7 @@ class PreferenceGP(GP, PreferenceModel):
 
         
 
-        self.delta_f = 0.002 # set the convergence to stop
+        self.delta_f = 0.0002 # set the convergence to stop
         self.maxloops = 100
 
 
@@ -144,14 +144,15 @@ class PreferenceGP(GP, PreferenceModel):
 
         self.probits[self.probit_idxs['relative_discrete']].set_sigma(sigma_L)
         self.cov_func.set_param(hyperparameters[1:])
-        K = self.cov_func.cov(X_train, X_train)
+        # K = self.cov_func.cov(X_train, X_train)
 
-        W, dpy_df, logpYF = self.derivatives(y_train, self.F)
+        # W, dpy_df, logpYF = self.derivatives(y_train, self.F)
 
-        Kinv = self.invert_function(K)
-        term2 = 0.5 * np.matmul(np.matmul(np.transpose(self.F), Kinv), self.F)
+        # Kinv = self.invert_function(K)
+        # term2 = 0.5 * np.matmul(np.matmul(np.transpose(self.F), Kinv), self.F)
 
-        term3 = 0.5 * np.log(np.linalg.det(np.identity(len(K)) + np.matmul(K, W)))
+        # term3 = 0.5 * np.log(np.linalg.det(np.identity(len(K)) + np.matmul(K, W)))
+        return self.loss_F(self.F)
 
         #return logpYF
         return logpYF - term2 - term3
@@ -254,6 +255,7 @@ class PreferenceGP(GP, PreferenceModel):
 
             # check for convergence
             f_err = np.linalg.norm((F_new - F), ord=np.inf)
+            print("\tf_err="+str(f_err))
             F = F_new
 
 
@@ -262,10 +264,15 @@ class PreferenceGP(GP, PreferenceModel):
                 print('WARNING: maximum loops in findMode exceeded. Returning current solution')
                 break
 
+        print('Optimization ran for: '+str(n_loops))
+        
+
         self.F = F
         # calculate W with final F
         self.W, self.grad_ll, self.log_likelihood = \
                                         self.derivatives(y_train, self.F)
+
+        print('Best solution, training data likelyhood = '+str(self.log_likelihood))
 
 
     ## optimize
