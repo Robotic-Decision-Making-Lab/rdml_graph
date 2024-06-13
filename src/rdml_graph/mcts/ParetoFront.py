@@ -124,7 +124,7 @@ class ParetoFront:
             tmp = self.front
             tmp_val = self.front_val
             self.front = np.empty((self.front.shape[0]*2, self.front.shape[1]))
-            self.front_val = np.empty(self.size*s, dtype=np.object)
+            self.front_val = np.empty(self.size*2, dtype=np.object)
             self.front[:self.size] = tmp
             self.front_val[:self.size] = tmp_val
 
