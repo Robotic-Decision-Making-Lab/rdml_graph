@@ -80,8 +80,8 @@ class ParetoFront:
 
     def add(self, r, n):
         # check if size is not zero
-        print(r)
-        print(n)
+        #print(r)
+        #print(n)
         if self.size > 0:
 
             #is_dominated = np.all(self.front[:self.size] <= r, axis=1)
