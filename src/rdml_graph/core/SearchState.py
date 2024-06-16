@@ -46,8 +46,8 @@ class SearchState(TreeNode):
             self.id = id
         SearchState.__search_state_id_num_global__ += 1
 
-        if not isinstance(state, State):
-            raise TypeError("Search state given argument state not of type 'State', instead is type: " + str(type(state)))
+        #if not isinstance(state, State):
+        #    raise TypeError("Search state given argument state not of type 'State', instead is type: " + str(type(state)))
         self.rCost = rCost # real cost
         self.hCost = hCost # estimated cost
         self.state = state # The actual state
