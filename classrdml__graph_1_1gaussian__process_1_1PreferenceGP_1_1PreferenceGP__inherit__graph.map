@@ -1,4 +1,5 @@
 <map id="rdml_graph.gaussian_process.PreferenceGP.PreferenceGP" name="rdml_graph.gaussian_process.PreferenceGP.PreferenceGP">
-<area shape="rect" id="node1" title="PreferenceGP A Gaussian Process implementation that handles ordered pairs of preferences for the trai..." alt="" coords="5,95,267,136"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1gaussian__process_1_1GP_1_1GP.html" title="Base Gaussian process class." alt="" coords="57,5,215,47"/>
+<area shape="rect" id="Node000001" title="PreferenceGP A Gaussian Process implementation that handles ordered pairs of preferences for the trai..." alt="" coords="5,93,267,133"/>
+<area shape="rect" id="Node000002" href="$classrdml__graph_1_1gaussian__process_1_1GP_1_1GP.html" title="Base Gaussian process class." alt="" coords="57,5,215,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="139,59,139,93,133,93,133,59"/>
 </map>

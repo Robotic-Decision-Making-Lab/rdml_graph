@@ -1,7 +1,11 @@
 <map id="rdml_graph.information_gathering.Evaluator.PathEvaluator" name="rdml_graph.information_gathering.Evaluator.PathEvaluator">
-<area shape="rect" id="node1" title=" " alt="" coords="116,93,367,134"/>
-<area shape="rect" id="node3" href="$classrdml__graph_1_1information__gathering_1_1Evaluator_1_1PathEvaluatorAlongPath.html" title=" " alt="" coords="419,5,670,61"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1information__gathering_1_1Evaluator_1_1PathEvaluatorWithRadius.html" title=" " alt="" coords="419,85,670,141"/>
-<area shape="rect" id="node5" href="$classrdml__graph_1_1information__gathering_1_1MaskedEvaluator_1_1MaskedEvaluator.html" title=" " alt="" coords="415,165,675,221"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,100,68,127"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="116,91,367,131"/>
+<area shape="rect" id="Node000003" href="$classrdml__graph_1_1information__gathering_1_1Evaluator_1_1PathEvaluatorAlongPath.html" title=" " alt="" coords="419,5,670,60"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="332,85,438,58,439,63,333,90"/>
+<area shape="rect" id="Node000004" href="$classrdml__graph_1_1information__gathering_1_1Evaluator_1_1PathEvaluatorWithRadius.html" title=" " alt="" coords="419,84,670,139"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="380,109,419,109,419,114,380,114"/>
+<area shape="rect" id="Node000005" href="$classrdml__graph_1_1information__gathering_1_1MaskedEvaluator_1_1MaskedEvaluator.html" title=" " alt="" coords="415,163,675,217"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="333,132,439,160,438,165,332,137"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,99,68,124"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="82,109,116,109,116,114,82,114"/>
 </map>

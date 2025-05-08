@@ -1,4 +1,13 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classrdml__graph_1_1gaussian__process_1_1GP_1_1GP.html" title="Base Gaussian process class." alt="" coords="5,5,164,47"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1gaussian__process_1_1PreferenceGP_1_1PreferenceGP.html" title="PreferenceGP A Gaussian Process implementation that handles ordered pairs of preferences for the trai..." alt="" coords="212,5,473,47"/>
+<area shape="rect" id="Node000000" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1ActiveLearner.html" title="Base Active Learning class." alt="" coords="5,120,223,175"/>
+<area shape="rect" id="Node000001" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1DetLearner.html" title=" " alt="" coords="298,5,497,60"/>
+<area shape="poly" id="edge34_Node000000_Node000001" title=" " alt="" coords="177,111,270,69,301,58,303,63,272,74,179,116"/>
+<area shape="rect" id="Node000002" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1RandomLearner.html" title=" " alt="" coords="282,84,513,139"/>
+<area shape="poly" id="edge35_Node000000_Node000002" title=" " alt="" coords="236,129,281,123,282,129,237,134"/>
+<area shape="rect" id="Node000003" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1UCBLearner.html" title=" " alt="" coords="271,163,524,203"/>
+<area shape="poly" id="edge36_Node000000_Node000003" title=" " alt="" coords="237,160,271,165,270,170,236,166"/>
+<area shape="rect" id="Node000004" href="$classrdml__graph_1_1gaussian__process_1_1MutualInformationLearner_1_1MutualInformationLearner.html" title=" " alt="" coords="275,228,519,283"/>
+<area shape="poly" id="edge37_Node000000_Node000004" title=" " alt="" coords="188,178,272,213,307,225,305,230,270,218,186,183"/>
+<area shape="rect" id="Node000005" href="$classrdml__graph_1_1gaussian__process_1_1MutualUCBLearner_1_1MutualUCBLearner.html" title=" " alt="" coords="572,228,780,283"/>
+<area shape="poly" id="edge38_Node000004_Node000005" title=" " alt="" coords="533,253,572,253,572,258,533,258"/>
 </map>

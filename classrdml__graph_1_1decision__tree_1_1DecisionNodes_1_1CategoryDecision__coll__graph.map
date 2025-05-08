@@ -1,8 +1,13 @@
 <map id="rdml_graph.decision_tree.DecisionNodes.CategoryDecision" name="rdml_graph.decision_tree.DecisionNodes.CategoryDecision">
-<area shape="rect" id="node1" title=" " alt="" coords="21,393,240,449"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1DecisionNode.html" title="While it currently does nothing, this leaves me with the option to add something to all decision node..." alt="" coords="5,304,256,345"/>
-<area shape="rect" id="node3" href="$classrdml__graph_1_1core_1_1Node_1_1TreeNode.html" title="TreeNode class This class extends node with an additional pointer to it&#39;s parent for easy traversal." alt="" coords="15,229,246,256"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1core_1_1Node_1_1Node.html" title="Node class for a node of a graph structure." alt="" coords="29,155,233,181"/>
-<area shape="rect" id="node5" href="$classrdml__graph_1_1core_1_1State_1_1State.html" title="The generic State object for searches." alt="" coords="29,80,233,107"/>
-<area shape="rect" id="node6" title=" " alt="" coords="99,5,162,32"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="21,387,240,441"/>
+<area shape="rect" id="Node000002" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1DecisionNode.html" title="While it currently does nothing, this leaves me with the option to add something to all decision node..." alt="" coords="5,299,256,339"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="133,352,133,387,128,387,128,352"/>
+<area shape="rect" id="Node000003" href="$classrdml__graph_1_1core_1_1Node_1_1TreeNode.html" title="TreeNode class This class extends node with an additional pointer to it&#39;s parent for easy traversal." alt="" coords="15,225,246,251"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="133,264,133,299,128,299,128,264"/>
+<area shape="rect" id="Node000004" href="$classrdml__graph_1_1core_1_1Node_1_1Node.html" title="Node class for a node of a graph structure." alt="" coords="29,152,233,177"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="133,191,133,225,128,225,128,191"/>
+<area shape="rect" id="Node000005" href="$classrdml__graph_1_1core_1_1State_1_1State.html" title="The generic State object for searches." alt="" coords="29,79,233,104"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="133,118,133,152,128,152,128,118"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="99,5,162,31"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="133,44,133,79,128,79,128,44"/>
 </map>

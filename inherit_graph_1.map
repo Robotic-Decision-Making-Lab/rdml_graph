@@ -1,3 +1,61 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classrdml__graph_1_1decision__tree_1_1EnsembleLearning_1_1Ensemble.html" title=" " alt="" coords="5,5,252,47"/>
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,335,68,361"/>
+<area shape="rect" id="Node000001" href="$classrdml__graph_1_1core_1_1Edge_1_1Edge.html" title="Rather a directed edge, but called an edge for short." alt="" coords="141,125,341,150"/>
+<area shape="poly" id="edge5_Node000000_Node000001" title=" " alt="" coords="44,321,70,262,90,229,114,199,156,168,200,148,203,153,159,173,118,203,94,232,75,264,49,323"/>
+<area shape="rect" id="Node000006" href="$classrdml__graph_1_1core_1_1State_1_1State.html" title="The generic State object for searches." alt="" coords="139,214,343,239"/>
+<area shape="poly" id="edge10_Node000000_Node000006" title=" " alt="" coords="60,324,115,282,161,256,206,237,208,242,164,261,117,286,63,328"/>
+<area shape="rect" id="Node000019" href="$classrdml__graph_1_1homotopy_1_1HGoalSignature_1_1HSignatureGoal.html" title="abstract class for an Hsignature goal" alt="" coords="137,296,345,336"/>
+<area shape="poly" id="edge23_Node000000_Node000019" title=" " alt="" coords="81,338,137,330,137,335,82,344"/>
+<area shape="rect" id="Node000022" href="$classrdml__graph_1_1homotopy_1_1HSignature_1_1HSignature.html" title=" " alt="" coords="119,360,363,400"/>
+<area shape="poly" id="edge26_Node000000_Node000022" title=" " alt="" coords="82,352,120,358,119,364,81,358"/>
+<area shape="rect" id="Node000025" href="$classrdml__graph_1_1information__gathering_1_1Evaluator_1_1PathEvaluator.html" title=" " alt="" coords="116,496,367,536"/>
+<area shape="poly" id="edge29_Node000000_Node000025" title=" " alt="" coords="66,368,217,494,214,498,63,372"/>
+<area shape="rect" id="Node000029" href="$classrdml__graph_1_1information__gathering_1_1StochasticOptimizer_1_1StochasticOptimizer.html" title="Class for using stocastic optimization for updating a path." alt="" coords="127,561,356,615"/>
+<area shape="poly" id="edge33_Node000000_Node000029" title=" " alt="" coords="44,374,51,412,65,459,86,506,118,546,134,558,131,563,114,550,82,508,60,460,46,414,38,375"/>
+<area shape="rect" id="Node000002" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1DecisionEdge.html" title=" " alt="" coords="421,53,669,93"/>
+<area shape="poly" id="edge6_Node000001_Node000002" title=" " alt="" coords="315,119,449,91,450,96,316,124"/>
+<area shape="rect" id="Node000005" href="$classrdml__graph_1_1homotopy_1_1HEdge_1_1HEdge.html" title="Homotopy augumented edge." alt="" coords="437,117,652,157"/>
+<area shape="poly" id="edge9_Node000001_Node000005" title=" " alt="" coords="355,135,437,135,437,140,355,140"/>
+<area shape="rect" id="Node000003" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryEdge.html" title=" " alt="" coords="733,5,984,45"/>
+<area shape="poly" id="edge7_Node000002_Node000003" title=" " alt="" coords="682,50,733,42,734,47,683,55"/>
+<area shape="rect" id="Node000004" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatEdge.html" title=" " alt="" coords="746,69,971,109"/>
+<area shape="poly" id="edge8_Node000002_Node000004" title=" " alt="" coords="683,78,746,81,746,86,683,83"/>
+<area shape="rect" id="Node000007" href="$classrdml__graph_1_1core_1_1Node_1_1Node.html" title="Node class for a node of a graph structure." alt="" coords="443,182,647,207"/>
+<area shape="poly" id="edge11_Node000006_Node000007" title=" " alt="" coords="357,212,442,203,443,208,358,217"/>
+<area shape="rect" id="Node000008" href="$classrdml__graph_1_1core_1_1Node_1_1GeometricNode.html" title="GeometricNode that includes a geometric point as part of the node as well as the graph structure." alt="" coords="723,166,995,191"/>
+<area shape="poly" id="edge12_Node000007_Node000008" title=" " alt="" coords="661,186,722,183,722,188,661,191"/>
+<area shape="rect" id="Node000010" href="$classrdml__graph_1_1core_1_1Node_1_1TreeNode.html" title="TreeNode class This class extends node with an additional pointer to it&#39;s parent for easy traversal." alt="" coords="743,238,974,263"/>
+<area shape="poly" id="edge14_Node000007_Node000010" title=" " alt="" coords="631,207,787,235,786,241,630,212"/>
+<area shape="rect" id="Node000009" href="$classrdml__graph_1_1homotopy_1_1FeatureNode_1_1FeatureNode.html" title=" " alt="" coords="1059,135,1277,175"/>
+<area shape="poly" id="edge13_Node000008_Node000009" title=" " alt="" coords="1008,164,1059,160,1060,166,1009,170"/>
+<area shape="rect" id="Node000011" href="$classrdml__graph_1_1core_1_1SearchState_1_1SearchState.html" title=" " alt="" coords="1061,199,1275,239"/>
+<area shape="poly" id="edge15_Node000010_Node000011" title=" " alt="" coords="987,235,1060,227,1061,232,988,240"/>
+<area shape="rect" id="Node000013" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1DecisionNode.html" title="While it currently does nothing, this leaves me with the option to add something to all decision node..." alt="" coords="1043,263,1293,303"/>
+<area shape="poly" id="edge17_Node000010_Node000013" title=" " alt="" coords="988,261,1043,267,1042,272,988,267"/>
+<area shape="rect" id="Node000016" href="$classrdml__graph_1_1homotopy_1_1HNode_1_1HNode.html" title=" " alt="" coords="1060,363,1276,403"/>
+<area shape="poly" id="edge20_Node000010_Node000016" title=" " alt="" coords="904,267,1121,360,1119,365,901,271"/>
+<area shape="rect" id="Node000012" href="$classrdml__graph_1_1mcts_1_1MCTSTree_1_1MCTSTree.html" title="MCTSTree The search tree for MCTS." alt="" coords="1364,155,1568,195"/>
+<area shape="poly" id="edge16_Node000011_Node000012" title=" " alt="" coords="1288,198,1363,187,1364,192,1289,204"/>
+<area shape="rect" id="Node000014" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryDecision.html" title=" " alt="" coords="1357,219,1575,274"/>
+<area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="1307,263,1356,257,1357,263,1307,269"/>
+<area shape="rect" id="Node000015" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatDecision.html" title="A bi&#45;decision decision node All values greater than value are in the second edge." alt="" coords="1341,299,1591,339"/>
+<area shape="poly" id="edge19_Node000013_Node000015" title=" " alt="" coords="1307,297,1341,301,1341,306,1307,302"/>
+<area shape="rect" id="Node000017" href="$classrdml__graph_1_1homotopy_1_1FeatureNode_1_1HomotopyFeatureState.html" title="A state that incapsulates the set of states of Homotopy and features." alt="" coords="1357,363,1575,403"/>
+<area shape="poly" id="edge21_Node000016_Node000017" title=" " alt="" coords="1290,380,1357,380,1357,385,1290,385"/>
+<area shape="rect" id="Node000018" href="$classrdml__graph_1_1homotopy_1_1HNode_1_1HNodeNoBacktrack.html" title=" " alt="" coords="1358,427,1574,467"/>
+<area shape="poly" id="edge22_Node000016_Node000018" title=" " alt="" coords="1276,403,1373,424,1372,429,1275,408"/>
+<area shape="rect" id="Node000020" href="$classrdml__graph_1_1homotopy_1_1HomologySignature_1_1HomologySignatureGoal.html" title="Goal signature for a homology signature." alt="" coords="421,232,668,272"/>
+<area shape="poly" id="edge24_Node000019_Node000020" title=" " alt="" coords="350,291,449,269,450,275,351,296"/>
+<area shape="rect" id="Node000021" href="$classrdml__graph_1_1homotopy_1_1HomotopySignature_1_1HomotopySignatureGoal.html" title="Signature goal for homotopy." alt="" coords="421,296,669,336"/>
+<area shape="poly" id="edge25_Node000019_Node000021" title=" " alt="" coords="359,313,420,313,420,319,359,319"/>
+<area shape="rect" id="Node000023" href="$classrdml__graph_1_1homotopy_1_1HomologySignature_1_1HomologySignature.html" title="Homology signature A discrete homology signature." alt="" coords="427,360,662,400"/>
+<area shape="poly" id="edge27_Node000022_Node000023" title=" " alt="" coords="377,377,427,377,427,383,377,383"/>
+<area shape="rect" id="Node000024" href="$classrdml__graph_1_1homotopy_1_1HomotopySignature_1_1HomotopySignature.html" title="A basic structure to handle HSignatures These are implemented as the homotopy signature given in: S." alt="" coords="427,424,663,464"/>
+<area shape="poly" id="edge28_Node000022_Node000024" title=" " alt="" coords="351,400,450,421,449,427,350,405"/>
+<area shape="rect" id="Node000026" href="$classrdml__graph_1_1information__gathering_1_1Evaluator_1_1PathEvaluatorAlongPath.html" title=" " alt="" coords="419,489,670,543"/>
+<area shape="poly" id="edge30_Node000025_Node000026" title=" " alt="" coords="380,513,419,513,419,519,380,519"/>
+<area shape="rect" id="Node000027" href="$classrdml__graph_1_1information__gathering_1_1Evaluator_1_1PathEvaluatorWithRadius.html" title=" " alt="" coords="419,567,670,622"/>
+<area shape="poly" id="edge31_Node000025_Node000027" title=" " alt="" coords="334,537,367,545,441,565,439,570,366,551,333,542"/>
+<area shape="rect" id="Node000028" href="$classrdml__graph_1_1information__gathering_1_1MaskedEvaluator_1_1MaskedEvaluator.html" title=" " alt="" coords="415,646,675,701"/>
+<area shape="poly" id="edge32_Node000025_Node000028" title=" " alt="" coords="361,541,368,546,386,567,393,590,400,611,416,631,435,644,432,648,413,635,395,613,388,591,382,570,365,550,358,545"/>
 </map>

@@ -1,3 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classrdml__graph_1_1homotopy_1_1HNode_1_1HPath.html" title="HPath This is a partial clone of HNode, without links to all nodes." alt="" coords="5,5,221,47"/>
+<area shape="rect" id="Node000000" href="$classrdml__graph_1_1gaussian__process_1_1ProbitBase_1_1ProbitBase.html" title="ProbitBase Abstract class for a probit for the user GP." alt="" coords="5,91,232,131"/>
+<area shape="rect" id="Node000001" href="$classrdml__graph_1_1gaussian__process_1_1AbsBoundProbit_1_1AbsBoundProbit.html" title="AbsBoundProbit This is almost directly Nick&#39;s code, for absolute bounded inputs." alt="" coords="282,5,497,60"/>
+<area shape="poly" id="edge44_Node000000_Node000001" title=" " alt="" coords="201,85,294,58,295,63,202,90"/>
+<area shape="rect" id="Node000002" href="$classrdml__graph_1_1gaussian__process_1_1OrdinalProbit_1_1OrdinalProbit.html" title="OrdinalProbit This is almost directly Nick&#39;s code, for Ordinal regression." alt="" coords="280,84,499,139"/>
+<area shape="poly" id="edge45_Node000000_Node000002" title=" " alt="" coords="245,109,280,109,280,114,245,114"/>
+<area shape="rect" id="Node000003" href="$classrdml__graph_1_1gaussian__process_1_1PreferenceProbit_1_1PreferenceProbit.html" title="PreferenceProbit A relative discrete probit Partially taken from Nick&#39;s code this calculates the prob..." alt="" coords="292,163,487,217"/>
+<area shape="poly" id="edge46_Node000000_Node000003" title=" " alt="" coords="202,133,295,160,294,165,201,138"/>
 </map>

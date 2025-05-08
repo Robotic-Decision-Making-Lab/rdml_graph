@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['featureplot_922',['FeaturePlot',['../namespaceFeaturePlot.html',1,'']]],
-  ['py_923',['py',['../namespaceFeatureNode_1_1py.html',1,'FeatureNode']]]
+  ['featurenode_3a_3apy_0',['py',['../namespaceFeatureNode_1_1py.html',1,'FeatureNode']]],
+  ['featureplot_1',['FeaturePlot',['../namespaceFeaturePlot.html',1,'']]]
 ];

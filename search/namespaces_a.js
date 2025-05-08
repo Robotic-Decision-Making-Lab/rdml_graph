@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ordinalgp_935',['OrdinalGP',['../namespaceOrdinalGP.html',1,'']]]
+  ['ordinalgp_0',['OrdinalGP',['../namespaceOrdinalGP.html',1,'']]]
 ];

@@ -1,4 +1,5 @@
 <map id="rdml_graph.information_gathering.StochasticOptimizer.StochasticOptimizer" name="rdml_graph.information_gathering.StochasticOptimizer.StochasticOptimizer">
-<area shape="rect" id="node1" title="Class for using stocastic optimization for updating a path." alt="" coords="5,80,235,136"/>
-<area shape="rect" id="node2" title=" " alt="" coords="89,5,151,32"/>
+<area shape="rect" id="Node000001" title="Class for using stocastic optimization for updating a path." alt="" coords="5,79,235,133"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="89,5,151,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,44,123,79,117,79,117,44"/>
 </map>

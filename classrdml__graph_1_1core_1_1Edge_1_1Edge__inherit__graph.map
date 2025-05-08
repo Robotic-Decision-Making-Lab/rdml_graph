@@ -1,8 +1,13 @@
 <map id="rdml_graph.core.Edge.Edge" name="rdml_graph.core.Edge.Edge">
-<area shape="rect" id="node1" title="Rather a directed edge, but called an edge for short." alt="" coords="116,78,316,105"/>
-<area shape="rect" id="node3" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1DecisionEdge.html" title=" " alt="" coords="364,37,612,79"/>
-<area shape="rect" id="node6" href="$classrdml__graph_1_1homotopy_1_1HEdge_1_1HEdge.html" title="Homotopy augumented edge." alt="" coords="381,103,595,144"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,78,68,105"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryEdge.html" title=" " alt="" coords="660,5,911,47"/>
-<area shape="rect" id="node5" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatEdge.html" title=" " alt="" coords="673,71,898,112"/>
+<area shape="rect" id="Node000001" title="Rather a directed edge, but called an edge for short." alt="" coords="116,77,316,102"/>
+<area shape="rect" id="Node000003" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1DecisionEdge.html" title=" " alt="" coords="364,37,612,77"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="329,73,363,69,364,75,330,79"/>
+<area shape="rect" id="Node000006" href="$classrdml__graph_1_1homotopy_1_1HEdge_1_1HEdge.html" title="Homotopy augumented edge." alt="" coords="381,101,595,141"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="330,100,381,106,380,111,329,105"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,77,68,102"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="82,87,116,87,116,92,82,92"/>
+<area shape="rect" id="Node000004" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryEdge.html" title=" " alt="" coords="660,5,911,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="625,40,660,36,660,41,626,45"/>
+<area shape="rect" id="Node000005" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatEdge.html" title=" " alt="" coords="673,69,898,109"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="626,70,673,75,672,80,626,75"/>
 </map>

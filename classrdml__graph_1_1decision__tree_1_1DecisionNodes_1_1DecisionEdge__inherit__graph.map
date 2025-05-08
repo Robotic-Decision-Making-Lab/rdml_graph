@@ -1,7 +1,11 @@
 <map id="rdml_graph.decision_tree.DecisionNodes.DecisionEdge" name="rdml_graph.decision_tree.DecisionNodes.DecisionEdge">
-<area shape="rect" id="node1" title=" " alt="" coords="364,39,612,80"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryEdge.html" title=" " alt="" coords="660,5,911,47"/>
-<area shape="rect" id="node5" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatEdge.html" title=" " alt="" coords="673,71,898,112"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1core_1_1Edge_1_1Edge.html" title="Rather a directed edge, but called an edge for short." alt="" coords="116,46,316,73"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,46,68,73"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="364,37,612,77"/>
+<area shape="rect" id="Node000004" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryEdge.html" title=" " alt="" coords="660,5,911,45"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="625,40,660,36,660,41,626,45"/>
+<area shape="rect" id="Node000005" href="$classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatEdge.html" title=" " alt="" coords="673,69,898,109"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="626,70,673,75,672,80,626,75"/>
+<area shape="rect" id="Node000002" href="$classrdml__graph_1_1core_1_1Edge_1_1Edge.html" title="Rather a directed edge, but called an edge for short." alt="" coords="116,45,316,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="330,55,364,55,364,60,330,60"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,45,68,70"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="82,55,116,55,116,60,82,60"/>
 </map>

@@ -1,8 +1,13 @@
 <map id="rdml_graph.gaussian_process.ActiveLearner.ActiveLearner" name="rdml_graph.gaussian_process.ActiveLearner.ActiveLearner">
-<area shape="rect" id="node1" title="Base Active Learning class." alt="" coords="5,123,223,179"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1DetLearner.html" title=" " alt="" coords="298,5,497,61"/>
-<area shape="rect" id="node3" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1RandomLearner.html" title=" " alt="" coords="282,85,513,141"/>
-<area shape="rect" id="node4" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1UCBLearner.html" title=" " alt="" coords="271,166,524,207"/>
-<area shape="rect" id="node5" href="$classrdml__graph_1_1gaussian__process_1_1MutualInformationLearner_1_1MutualInformationLearner.html" title=" " alt="" coords="275,232,519,288"/>
-<area shape="rect" id="node6" href="$classrdml__graph_1_1gaussian__process_1_1MutualUCBLearner_1_1MutualUCBLearner.html" title=" " alt="" coords="572,232,780,288"/>
+<area shape="rect" id="Node000001" title="Base Active Learning class." alt="" coords="5,120,223,175"/>
+<area shape="rect" id="Node000002" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1DetLearner.html" title=" " alt="" coords="298,5,497,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,111,270,69,301,58,303,63,272,74,179,116"/>
+<area shape="rect" id="Node000003" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1RandomLearner.html" title=" " alt="" coords="282,84,513,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="236,129,281,123,282,129,237,134"/>
+<area shape="rect" id="Node000004" href="$classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1UCBLearner.html" title=" " alt="" coords="271,163,524,203"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="237,160,271,165,270,170,236,166"/>
+<area shape="rect" id="Node000005" href="$classrdml__graph_1_1gaussian__process_1_1MutualInformationLearner_1_1MutualInformationLearner.html" title=" " alt="" coords="275,228,519,283"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="188,178,272,213,307,225,305,230,270,218,186,183"/>
+<area shape="rect" id="Node000006" href="$classrdml__graph_1_1gaussian__process_1_1MutualUCBLearner_1_1MutualUCBLearner.html" title=" " alt="" coords="572,228,780,283"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="533,253,572,253,572,258,533,258"/>
 </map>

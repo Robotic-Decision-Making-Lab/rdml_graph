@@ -1,5 +1,7 @@
 <map id="rdml_graph.homotopy.HomotopySignature.HomotopySignatureGoal" name="rdml_graph.homotopy.HomotopySignature.HomotopySignatureGoal">
-<area shape="rect" id="node1" title="Signature goal for homotopy." alt="" coords="5,169,253,211"/>
-<area shape="rect" id="node2" href="$classrdml__graph_1_1homotopy_1_1HGoalSignature_1_1HSignatureGoal.html" title="abstract class for an Hsignature goal" alt="" coords="25,80,233,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="98,5,161,32"/>
+<area shape="rect" id="Node000001" title="Signature goal for homotopy." alt="" coords="5,167,253,207"/>
+<area shape="rect" id="Node000002" href="$classrdml__graph_1_1homotopy_1_1HGoalSignature_1_1HSignatureGoal.html" title="abstract class for an Hsignature goal" alt="" coords="25,79,233,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="132,133,132,166,127,166,127,133"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="98,5,161,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="132,44,132,79,127,79,127,44"/>
 </map>

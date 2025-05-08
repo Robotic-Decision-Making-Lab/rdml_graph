@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['balancedexample_918',['BalancedExample',['../namespaceBalancedExample.html',1,'']]],
-  ['py_919',['py',['../namespaceBasicSamplingFunctions_1_1py.html',1,'BasicSamplingFunctions']]]
+  ['balancedexample_0',['BalancedExample',['../namespaceBalancedExample.html',1,'']]],
+  ['basicsamplingfunctions_3a_3apy_1',['py',['../namespaceBasicSamplingFunctions_1_1py.html',1,'BasicSamplingFunctions']]]
 ];
