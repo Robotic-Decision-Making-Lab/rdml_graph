@@ -82,6 +82,7 @@ def plot2DPath(path, color='red', line_style='solid', head_width=0.75, label='',
         line = plt.arrow(path[i-1][0], path[i-1][1], diff[0], diff[1], \
                 length_includes_head=True, \
                 head_width=head_width, color=color,\
+                linestyle=line_style,\
                 label=label)
 
     if radius is not None:

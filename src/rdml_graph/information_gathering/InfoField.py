@@ -48,7 +48,7 @@ def random_field2d(size, num_gauss=30, mean_height=0.2, mean_var=None):
 		mean_var = float(size[0]) * 0.5
 
 	gausses = []
-	mean = np.random.random((num_gauss, 2)) * np.array([size[0], size[1]], dtype=np.float)
+	mean = np.random.random((num_gauss, 2)) * np.array([size[0], size[1]], dtype=float)
 	height  = np.random.exponential(scale=mean_height, size=num_gauss)
 	var = np.random.exponential(scale=mean_var, size=(num_gauss, 2,2))
 
