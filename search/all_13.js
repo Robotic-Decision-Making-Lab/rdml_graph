@@ -1,19 +1,15 @@
 var searchData=
 [
   ['ucb_0',['ucb',['../namespaceGP2D.html#a769847de69f058bc55d67961f6a8ff9b',1,'GP2D.UCB'],['../namespaceUser2DGP.html#a26291c66351ff1310ddc892630ec4158',1,'User2DGP.UCB'],['../namespaceUserGPActive.html#a3d179be184a97fee5053fa92bd2807b0',1,'UserGPActive.UCB']]],
-  ['ucb_5fpred_1',['ucb_pred',['../namespaceUserGPActive.html#a5fed42558568d777bc220b111f0e7af4',1,'UserGPActive.ucb_pred'],['../namespaceUser2DGP.html#ad9eaca5e4dd51593a8be134d05c6cb60',1,'User2DGP.ucb_pred'],['../namespaceUserGPActive.html#a769f7f7bbec7f129eb483e8fa6f3a22e',1,'UserGPActive.UCB_pred'],['../namespaceUser2DGP.html#a58b5fff3891b0149f3b9b534bac25740',1,'User2DGP.UCB_pred']]],
-  ['ucb_5fselection_2',['ucb_selection',['../classrdml__graph_1_1gaussian__process_1_1GP_1_1GP.html#a89b99c9f4d2bec3bb503e7af5484ce15',1,'rdml_graph::gaussian_process::GP::GP']]],
-  ['ucblearner_3',['UCBLearner',['../classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1UCBLearner.html',1,'rdml_graph::gaussian_process::ActiveLearner']]],
-  ['ucbselection_4',['UCBSelection',['../namespacerdml__graph_1_1mcts_1_1MCTSHelper.html#a111ffeeb13427382762efb21c447efb5',1,'rdml_graph::mcts::MCTSHelper']]],
-  ['unpicked_5fchildren_5',['unpicked_children',['../classrdml__graph_1_1mcts_1_1MCTSTree_1_1MCTSTree.html#a6271d5a05f25c4cdac73e235d4a66e34',1,'rdml_graph::mcts::MCTSTree::MCTSTree']]],
-  ['url_6',['url',['../namespacesetup.html#afc13124aa5c0124e84e1d965e3f4b0fb',1,'setup']]],
-  ['use_5fhyper_5foptimization_7',['use_hyper_optimization',['../classrdml__graph_1_1gaussian__process_1_1PreferenceGP_1_1PreferenceGP.html#af5bcb14c5ca5bf61ff38d5cdd2e09ecd',1,'rdml_graph::gaussian_process::PreferenceGP::PreferenceGP']]],
-  ['user2dgp_8',['User2DGP',['../namespaceUser2DGP.html',1,'']]],
-  ['user2dgp_2epy_9',['User2DGP.py',['../User2DGP_8py.html',1,'']]],
-  ['user_5fgp_5factive_5ffunc_10',['user_gp_active_func',['../namespacetest__user__GP.html#a1e2f1ecaea4489f9c1f2bdd7e75c0a07',1,'test_user_GP']]],
-  ['usergp_11',['UserGP',['../namespaceUserGP.html',1,'']]],
-  ['usergp_2epy_12',['UserGP.py',['../UserGP_8py.html',1,'']]],
-  ['usergpactive_13',['UserGPActive',['../namespaceUserGPActive.html',1,'']]],
-  ['usergpactive_2epy_14',['UserGPActive.py',['../UserGPActive_8py.html',1,'']]],
-  ['utility_5ff_15',['utility_f',['../namespaceUser2DGP.html#a82d7dcf102827b1915f8a35e44f15178',1,'User2DGP.utility_f'],['../namespaceUserGPActive.html#a48ef838c816210e1d53c43128da2224b',1,'UserGPActive.utility_f']]]
+  ['ucb_5fpred_1',['ucb_pred',['../namespaceUserGPActive.html#a5fed42558568d777bc220b111f0e7af4',1,'UserGPActive.ucb_pred'],['../namespaceUser2DGP.html#a58b5fff3891b0149f3b9b534bac25740',1,'User2DGP.UCB_pred'],['../namespaceUserGPActive.html#a769f7f7bbec7f129eb483e8fa6f3a22e',1,'UserGPActive.UCB_pred'],['../namespaceUser2DGP.html#ad9eaca5e4dd51593a8be134d05c6cb60',1,'User2DGP.ucb_pred']]],
+  ['ucbselection_2',['UCBSelection',['../namespacerdml__graph_1_1mcts_1_1MCTSHelper.html#a111ffeeb13427382762efb21c447efb5',1,'rdml_graph::mcts::MCTSHelper']]],
+  ['unpicked_5fchildren_3',['unpicked_children',['../classrdml__graph_1_1mcts_1_1MCTSTree_1_1MCTSTree.html#a6271d5a05f25c4cdac73e235d4a66e34',1,'rdml_graph::mcts::MCTSTree::MCTSTree']]],
+  ['url_4',['url',['../namespacesetup.html#afc13124aa5c0124e84e1d965e3f4b0fb',1,'setup']]],
+  ['user2dgp_5',['User2DGP',['../namespaceUser2DGP.html',1,'']]],
+  ['user2dgp_2epy_6',['User2DGP.py',['../User2DGP_8py.html',1,'']]],
+  ['usergp_7',['UserGP',['../namespaceUserGP.html',1,'']]],
+  ['usergp_2epy_8',['UserGP.py',['../UserGP_8py.html',1,'']]],
+  ['usergpactive_9',['UserGPActive',['../namespaceUserGPActive.html',1,'']]],
+  ['usergpactive_2epy_10',['UserGPActive.py',['../UserGPActive_8py.html',1,'']]],
+  ['utility_5ff_11',['utility_f',['../namespaceUser2DGP.html#a82d7dcf102827b1915f8a35e44f15178',1,'User2DGP.utility_f'],['../namespaceUserGPActive.html#a48ef838c816210e1d53c43128da2224b',1,'UserGPActive.utility_f']]]
 ];

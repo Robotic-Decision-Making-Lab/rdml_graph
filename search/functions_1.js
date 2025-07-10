@@ -1,11 +1,8 @@
 var searchData=
 [
-  ['add_0',['add',['../classrdml__graph_1_1gaussian__process_1_1GP_1_1GP.html#a41f3bf9e7c1c9e5c90ad44caa2b10097',1,'rdml_graph.gaussian_process.GP.GP.add()'],['../classrdml__graph_1_1gaussian__process_1_1PreferenceGP_1_1PreferenceGP.html#a363a0e70cbb8b0c1adfdf1cc16f41532',1,'rdml_graph.gaussian_process.PreferenceGP.PreferenceGP.add()'],['../classrdml__graph_1_1mcts_1_1ParetoFront_1_1ParetoFront.html#a1bbb70f78b54f21c240316f3fffae3f9',1,'rdml_graph.mcts.ParetoFront.ParetoFront.add()']]],
-  ['add_5fprior_1',['add_prior',['../classrdml__graph_1_1gaussian__process_1_1PreferenceGP_1_1PreferenceGP.html#a8dabbcc30b84d54e3c815665d05fa14d',1,'rdml_graph::gaussian_process::PreferenceGP::PreferenceGP']]],
-  ['add_5fup_5fmat_2',['add_up_mat',['../classrdml__graph_1_1gaussian__process_1_1PreferenceProbit_1_1PreferenceProbit.html#a6a872f5aefc3a393e52cfd3bea81137c',1,'rdml_graph.gaussian_process.PreferenceProbit.PreferenceProbit.add_up_mat()'],['../namespacerdml__graph_1_1gaussian__process_1_1PreferenceProbit.html#a7d7f299f8ee665b610f0a035d425e6f6',1,'rdml_graph.gaussian_process.PreferenceProbit.add_up_mat()']]],
-  ['add_5fup_5fvec_3',['add_up_vec',['../classrdml__graph_1_1gaussian__process_1_1PreferenceProbit_1_1PreferenceProbit.html#a367415a266506c8c4e65b75307e04d1b',1,'rdml_graph.gaussian_process.PreferenceProbit.PreferenceProbit.add_up_vec()'],['../namespacerdml__graph_1_1gaussian__process_1_1PreferenceProbit.html#ad92c29b88d233fdb52e20c2fd3d82f92',1,'rdml_graph.gaussian_process.PreferenceProbit.add_up_vec()']]],
-  ['addconstraint_4',['addConstraint',['../classrdml__graph_1_1homotopy_1_1HomologySignature_1_1HomologySignatureGoal.html#ae34cc21a73670d2d40670d3f777a9ab5',1,'rdml_graph::homotopy::HomologySignature::HomologySignatureGoal']]],
-  ['addedge_5',['addEdge',['../classrdml__graph_1_1core_1_1Node_1_1Node.html#a83aee72c5a0ddba82aeb8cb23bbe0303',1,'rdml_graph::core::Node::Node']]],
-  ['applybudget_6',['applyBudget',['../namespacerdml__graph_1_1information__gathering_1_1Evaluator.html#ab97976f6a6d3957cde61130489fb78ee',1,'rdml_graph::information_gathering::Evaluator']]],
-  ['astar_7',['AStar',['../namespacerdml__graph_1_1core_1_1GraphSearch.html#a785b4c5611e0f0e8b191a8399b612a73',1,'rdml_graph::core::GraphSearch']]]
+  ['add_0',['add',['../classrdml__graph_1_1mcts_1_1ParetoFront_1_1ParetoFront.html#a1bbb70f78b54f21c240316f3fffae3f9',1,'rdml_graph::mcts::ParetoFront::ParetoFront']]],
+  ['addconstraint_1',['addConstraint',['../classrdml__graph_1_1homotopy_1_1HomologySignature_1_1HomologySignatureGoal.html#ae34cc21a73670d2d40670d3f777a9ab5',1,'rdml_graph::homotopy::HomologySignature::HomologySignatureGoal']]],
+  ['addedge_2',['addEdge',['../classrdml__graph_1_1core_1_1Node_1_1Node.html#a83aee72c5a0ddba82aeb8cb23bbe0303',1,'rdml_graph::core::Node::Node']]],
+  ['applybudget_3',['applyBudget',['../namespacerdml__graph_1_1information__gathering_1_1Evaluator.html#ab97976f6a6d3957cde61130489fb78ee',1,'rdml_graph::information_gathering::Evaluator']]],
+  ['astar_4',['AStar',['../namespacerdml__graph_1_1core_1_1GraphSearch.html#a785b4c5611e0f0e8b191a8399b612a73',1,'rdml_graph::core::GraphSearch']]]
 ];

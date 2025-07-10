@@ -9,8 +9,7 @@ var searchData=
   ['edgecolor_6',['edgecolor',['../namespaceGP2D.html#afef8f2bbb7ea7c80859b835b70b1fded',1,'GP2D.edgecolor'],['../namespaceUser2DGP.html#adc1824b6b10b0b708ddfb06473ef5d12',1,'User2DGP.edgecolor'],['../namespaceUserGPActive.html#ac43af300a2f94be92abd9d29b9bc8f80',1,'UserGPActive.edgecolor']]],
   ['end_7',['end',['../namespaceHomologyPRM.html#a12bdf9722cf732c0494167fee30237d8',1,'HomologyPRM.end'],['../namespaceTestParetoFront.html#a26cc2bdbb7d1141dca1c9027d7042ae0',1,'TestParetoFront.end']]],
   ['endn_8',['endn',['../namespaceHomologyFeaturePRM.html#a79f3514907b378585a7454e22e788718',1,'HomologyFeaturePRM.endN'],['../namespaceHomologyPRM.html#af9be713ada528f3899570480d5f90c26',1,'HomologyPRM.endN'],['../namespaceHomotopyPRM.html#a06297d5ff571f79b7127e00d58a9afee',1,'HomotopyPRM.endN']]],
-  ['eps_9',['eps',['../classrdml__graph_1_1gaussian__process_1_1OrdinalProbit_1_1OrdinalProbit.html#adb8c41c943983b8ca31307534b59342e',1,'rdml_graph::gaussian_process::OrdinalProbit::OrdinalProbit']]],
-  ['eval_10',['eval',['../namespaceTestEvaluator.html#a7f8def96eb174a1f1faf4bb8c009bc71',1,'TestEvaluator']]],
-  ['expected_5fval_11',['expected_val',['../classrdml__graph_1_1information__gathering_1_1MaskedEvaluator_1_1MaskedEvaluator.html#a97f09e42ba1342cef7fbf2542f918848',1,'rdml_graph::information_gathering::MaskedEvaluator::MaskedEvaluator']]],
-  ['extras_5frequire_12',['extras_require',['../namespacesetup.html#a5081a5a3f9d0dee597ab99a7fdc362df',1,'setup']]]
+  ['eval_9',['eval',['../namespaceTestEvaluator.html#a7f8def96eb174a1f1faf4bb8c009bc71',1,'TestEvaluator']]],
+  ['expected_5fval_10',['expected_val',['../classrdml__graph_1_1information__gathering_1_1MaskedEvaluator_1_1MaskedEvaluator.html#a97f09e42ba1342cef7fbf2542f918848',1,'rdml_graph::information_gathering::MaskedEvaluator::MaskedEvaluator']]],
+  ['extras_5frequire_11',['extras_require',['../namespacesetup.html#a5081a5a3f9d0dee597ab99a7fdc362df',1,'setup']]]
 ];

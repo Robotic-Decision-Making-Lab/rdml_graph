@@ -4,6 +4,5 @@ var searchData=
   ['ucb_5fpred_1',['ucb_pred',['../namespaceUser2DGP.html#a58b5fff3891b0149f3b9b534bac25740',1,'User2DGP.UCB_pred'],['../namespaceUserGPActive.html#a769f7f7bbec7f129eb483e8fa6f3a22e',1,'UserGPActive.UCB_pred'],['../namespaceUser2DGP.html#ad9eaca5e4dd51593a8be134d05c6cb60',1,'User2DGP.ucb_pred'],['../namespaceUserGPActive.html#a5fed42558568d777bc220b111f0e7af4',1,'UserGPActive.ucb_pred']]],
   ['unpicked_5fchildren_2',['unpicked_children',['../classrdml__graph_1_1mcts_1_1MCTSTree_1_1MCTSTree.html#a6271d5a05f25c4cdac73e235d4a66e34',1,'rdml_graph::mcts::MCTSTree::MCTSTree']]],
   ['url_3',['url',['../namespacesetup.html#afc13124aa5c0124e84e1d965e3f4b0fb',1,'setup']]],
-  ['use_5fhyper_5foptimization_4',['use_hyper_optimization',['../classrdml__graph_1_1gaussian__process_1_1PreferenceGP_1_1PreferenceGP.html#af5bcb14c5ca5bf61ff38d5cdd2e09ecd',1,'rdml_graph::gaussian_process::PreferenceGP::PreferenceGP']]],
-  ['utility_5ff_5',['utility_f',['../namespaceUser2DGP.html#a82d7dcf102827b1915f8a35e44f15178',1,'User2DGP.utility_f'],['../namespaceUserGPActive.html#a48ef838c816210e1d53c43128da2224b',1,'UserGPActive.utility_f']]]
+  ['utility_5ff_4',['utility_f',['../namespaceUser2DGP.html#a82d7dcf102827b1915f8a35e44f15178',1,'User2DGP.utility_f'],['../namespaceUserGPActive.html#a48ef838c816210e1d53c43128da2224b',1,'UserGPActive.utility_f']]]
 ];

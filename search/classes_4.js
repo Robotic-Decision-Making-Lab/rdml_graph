@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['featurenode_0',['FeatureNode',['../classrdml__graph_1_1homotopy_1_1FeatureNode_1_1FeatureNode.html',1,'rdml_graph::homotopy::FeatureNode']]],
-  ['floatdecision_1',['FloatDecision',['../classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatDecision.html',1,'rdml_graph::decision_tree::DecisionNodes']]],
-  ['floatedge_2',['FloatEdge',['../classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1FloatEdge.html',1,'rdml_graph::decision_tree::DecisionNodes']]]
+  ['geometricnode_0',['GeometricNode',['../classrdml__graph_1_1core_1_1Node_1_1GeometricNode.html',1,'rdml_graph::core::Node']]]
 ];

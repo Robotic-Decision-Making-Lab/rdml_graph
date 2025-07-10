@@ -8,6 +8,5 @@ var searchData=
   ['homologysignature_2epy_5',['HomologySignature.py',['../HomologySignature_8py.html',1,'']]],
   ['homotopyprm_2epy_6',['HomotopyPRM.py',['../HomotopyPRM_8py.html',1,'']]],
   ['homotopysignature_2epy_7',['HomotopySignature.py',['../HomotopySignature_8py.html',1,'']]],
-  ['hsignature_2epy_8',['HSignature.py',['../HSignature_8py.html',1,'']]],
-  ['humanchoicemodel_2epy_9',['HumanChoiceModel.py',['../HumanChoiceModel_8py.html',1,'']]]
+  ['hsignature_2epy_8',['HSignature.py',['../HSignature_8py.html',1,'']]]
 ];

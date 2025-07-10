@@ -43,6 +43,5 @@ var searchData=
   ['hsignature_2epy_40',['HSignature.py',['../HSignature_8py.html',1,'']]],
   ['hsignature_3a_3apy_41',['py',['../namespaceHSignature_1_1py.html',1,'HSignature']]],
   ['hsignaturegoal_42',['HSignatureGoal',['../classrdml__graph_1_1homotopy_1_1HGoalSignature_1_1HSignatureGoal.html',1,'rdml_graph::homotopy::HGoalSignature']]],
-  ['hsigngoal_43',['hSignGoal',['../namespaceTestHomologyGraph.html#a03b6836a36cbb712b62a0bb6f35e353f',1,'TestHomologyGraph']]],
-  ['humanchoicemodel_2epy_44',['HumanChoiceModel.py',['../HumanChoiceModel_8py.html',1,'']]]
+  ['hsigngoal_43',['hSignGoal',['../namespaceTestHomologyGraph.html#a03b6836a36cbb712b62a0bb6f35e353f',1,'TestHomologyGraph']]]
 ];

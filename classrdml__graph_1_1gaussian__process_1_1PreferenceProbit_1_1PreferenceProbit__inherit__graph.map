@@ -1,5 +1,0 @@
-<map id="rdml_graph.gaussian_process.PreferenceProbit.PreferenceProbit" name="rdml_graph.gaussian_process.PreferenceProbit.PreferenceProbit">
-<area shape="rect" id="Node000001" title="PreferenceProbit A relative discrete probit Partially taken from Nick&#39;s code this calculates the prob..." alt="" coords="21,93,216,148"/>
-<area shape="rect" id="Node000002" href="$classrdml__graph_1_1gaussian__process_1_1ProbitBase_1_1ProbitBase.html" title="ProbitBase Abstract class for a probit for the user GP." alt="" coords="5,5,232,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="121,59,121,93,116,93,116,59"/>
-</map>

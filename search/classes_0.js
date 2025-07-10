@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['absboundprobit_0',['AbsBoundProbit',['../classrdml__graph_1_1gaussian__process_1_1AbsBoundProbit_1_1AbsBoundProbit.html',1,'rdml_graph::gaussian_process::AbsBoundProbit']]],
-  ['activelearner_1',['ActiveLearner',['../classrdml__graph_1_1gaussian__process_1_1ActiveLearner_1_1ActiveLearner.html',1,'rdml_graph::gaussian_process::ActiveLearner']]]
+  ['categorydecision_0',['CategoryDecision',['../classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryDecision.html',1,'rdml_graph::decision_tree::DecisionNodes']]],
+  ['categoryedge_1',['CategoryEdge',['../classrdml__graph_1_1decision__tree_1_1DecisionNodes_1_1CategoryEdge.html',1,'rdml_graph::decision_tree::DecisionNodes']]]
 ];
