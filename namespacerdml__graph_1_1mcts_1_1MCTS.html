@@ -81,13 +81,13 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a06908afd5fac31e487eb0841d5a4cc2d" id="r_a06908afd5fac31e487eb0841d5a4cc2d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacerdml__graph_1_1mcts_1_1MCTS.html#a06908afd5fac31e487eb0841d5a4cc2d">MCTS</a> (start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, actor_number=0, multi_obj_dim=1, output_tree=False, get_all_seq=False, iter_up_progress=5, progress_func=None)</td></tr>
-<tr class="memdesc:a06908afd5fac31e487eb0841d5a4cc2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">MCTS The main entry function to the MCTS algorithm.  <br /></td></tr>
-<tr class="separator:a06908afd5fac31e487eb0841d5a4cc2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a919c131b21173bf248026af1410a6855" id="r_a919c131b21173bf248026af1410a6855"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacerdml__graph_1_1mcts_1_1MCTS.html#a919c131b21173bf248026af1410a6855">MCTS</a> (start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, actor_number=0, multi_obj_dim=1, output_tree=False, get_all_seq=False, iter_up_progress=5, progress_func=None, keepEdges=False, keepNodes=True)</td></tr>
+<tr class="memdesc:a919c131b21173bf248026af1410a6855"><td class="mdescLeft">&#160;</td><td class="mdescRight">MCTS The main entry function to the MCTS algorithm.  <br /></td></tr>
+<tr class="separator:a919c131b21173bf248026af1410a6855"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a06908afd5fac31e487eb0841d5a4cc2d" name="a06908afd5fac31e487eb0841d5a4cc2d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06908afd5fac31e487eb0841d5a4cc2d">&#9670;&#160;</a></span>MCTS()</h2>
+<a id="a919c131b21173bf248026af1410a6855" name="a919c131b21173bf248026af1410a6855"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a919c131b21173bf248026af1410a6855">&#9670;&#160;</a></span>MCTS()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -174,7 +174,19 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>progress_func</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>progress_func</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>keepEdges</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>keepNodes</em> = <code>True</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -199,7 +211,9 @@ Functions</h2></td></tr>
     <tr><td class="paramname">output_tree</td><td>- [opt (False)] sets whether to output the root of the full mcts tree </td></tr>
     <tr><td class="paramname">get_all_seq</td><td>- [opt] sets whether to output every reward sequence </td></tr>
     <tr><td class="paramname">iter_up_progress</td><td>- [opt] the number of iterations to update the MCTS code </td></tr>
-    <tr><td class="paramname">progress_func</td><td>- [opt] the function to call to update on the current progress.</td></tr>
+    <tr><td class="paramname">progress_func</td><td>- [opt] the function to call to update on the current progress. </td></tr>
+    <tr><td class="paramname">keepEdges</td><td>- [opt] if true, keep the edges in the path default is true. </td></tr>
+    <tr><td class="paramname">keepNodes</td><td>- [opt] if true, keep the nodes in the path default is false.</td></tr>
   </table>
   </dd>
 </dl>

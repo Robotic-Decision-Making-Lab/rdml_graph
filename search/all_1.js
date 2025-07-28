@@ -12,7 +12,7 @@ var searchData=
   ['angle_9',['angle',['../namespaceTestRayInstersection.html#ac087cbd17b3bd0e48d6b77cd3f5f7119',1,'TestRayInstersection.angle'],['../namespaceTestHomologyGraph.html#a22d72697c94a2f10c8717b781a03dacc',1,'TestHomologyGraph.angle']]],
   ['ans_10',['ans',['../namespaceBalancedExample.html#aeb75dab4656f178b4a15ffa0caf04a21',1,'BalancedExample']]],
   ['applybudget_11',['applyBudget',['../namespacerdml__graph_1_1information__gathering_1_1Evaluator.html#ab97976f6a6d3957cde61130489fb78ee',1,'rdml_graph::information_gathering::Evaluator']]],
-  ['astar_12',['AStar',['../namespacerdml__graph_1_1core_1_1GraphSearch.html#a785b4c5611e0f0e8b191a8399b612a73',1,'rdml_graph::core::GraphSearch']]],
+  ['astar_12',['AStar',['../namespacerdml__graph_1_1core_1_1GraphSearch.html#a4a4885b170a5ceb66baf347deea6f67c',1,'rdml_graph::core::GraphSearch']]],
   ['attribute_5ffunc_13',['attribute_func',['../namespaceTestDecisionTree.html#a49d3f1a30ef1a1f5b20157002a968a2d',1,'TestDecisionTree.attribute_func'],['../namespacetest__shap__calc.html#a0469b4e4c6ad79aeb5a76f9c9d1ddf62',1,'test_shap_calc.attribute_func']]],
   ['author_14',['author',['../namespacesetup.html#a3a57a4772d418a06835249cbade0d86a',1,'setup']]],
   ['author_5femail_15',['author_email',['../namespacesetup.html#a5b08034343aa2be607722a8b315f3625',1,'setup']]],
