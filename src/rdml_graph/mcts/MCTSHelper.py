@@ -81,12 +81,33 @@ def paretoUCBSelection(current, budget, data):
 # @param treeState - the current state of the rollout function
 # @param budget - the budget of the sequence
 # @param data - a generic structure to store data for a rollout.
+# @param keepEdges - [opt] if true, keep the edges in the path.
+# @param keepNodes - [opt] if true, keep the nodes in the path.
 #
 # @return sequence of states. of roll out.
-def randomRollout(treeState, budget, data=None):
-    sequence = treeState.getPath()
+def randomRollout(treeState, budget, data=None, keepEdges=False, keepNodes=True):
+    current = treeState
+    remainingBudget = budget - treeState.rCost
 
-    current = treeState.state
+    while True:
+        succ = current.successor(budget)
+
+        if len(succ) <= 0:
+            break
+
+        childIdx = np.random.randint(0, len(succ))
+        child = succ[childIdx]
+
+        current = child
+
+    # return the path of the current state.
+    return current.getPath(keepEdges=keepEdges, keepNodes=keepNodes)
+
+    ## this is an older version that does not work with MCTSTree for
+    # the sequence.
+    # This should make the random rollout slightly slower, but the MCTS faster.
+    # overall.
+    '''current = treeState.state
     remainingBudget = budget - treeState.rCost
 
     while remainingBudget > 0:
@@ -99,13 +120,13 @@ def randomRollout(treeState, budget, data=None):
         edgeCost = succ[childIdx][1]
 
         #if remainingBudget > edgeCost:
-        sequence += [child]
+        #sequence += [child]
         remainingBudget -= edgeCost
         current = child
         #else:
         #    break
-    return sequence
-
+    return current.getPath(keepEdges=keepEdges, keepNodes=keepNodes)
+    '''
 
     '''succ = treeState.successor()
     if len(succ) == 0:
@@ -131,7 +152,9 @@ def randomRollout(treeState, budget, data=None):
 # @param bestSeq - the sequence with highest reward
 # @param bestR - the best seen reward
 # @param data - generic data possibly useful for the best reward.
-def bestAvgNext(root, bestSeq, bestR, data=None):
+# @param keepEdges - [opt] if true, keep the edges in the path.
+# @param keepNodes - [opt] if true, keep the nodes in the path.
+def bestAvgNext(root, bestSeq, bestR, data=None, keepEdges=False, keepNodes=True):
     best = -np.inf
     bestIdx = -1
 
@@ -142,11 +165,11 @@ def bestAvgNext(root, bestSeq, bestR, data=None):
             bestIdx = i
 
     if bestIdx != -1:
-        return root.children[bestIdx].getPath(), root.children[bestIdx].reward()
+        return root.children[bestIdx].getPath(keepEdges=keepEdges, keepNodes=keepNodes), root.children[bestIdx].reward()
     else:
-        return root.getPath(), root.reward()
+        return root.getPath(keepEdges=keepEdges, keepNodes=keepNodes), root.reward()
 
-def mostSimulationsSingle(root, bestSeq, bestR, data=None):
+def mostSimulationsSingle(root, bestSeq, bestR, data=None, keepEdges=False, keepNodes=True):
     best = -np.inf
     bestIdx = -1
     for i in range(len(root.children)):
@@ -156,15 +179,15 @@ def mostSimulationsSingle(root, bestSeq, bestR, data=None):
             bestIdx = i
 
     if bestIdx != -1:
-        return root.children[bestIdx].getPath(), root.children[bestIdx].reward()
+        return root.children[bestIdx].getPath(keepEdges=keepEdges, keepNodes=keepNodes), root.children[bestIdx].reward()
     else:
-        return root.getPath(), root.reward()
+        return root.getPath(keepEdges=keepEdges, keepNodes=keepNodes), root.reward()
 
 
-def mostSimulations(root, bestSeq, bestR, data=None):
+def mostSimulations(root, bestSeq, bestR, data=None, keepEdges=False, keepNodes=True):
     # base case
     if len(root.children) < 1:
-        return root.getPath(), root.reward()
+        return root.getPath(keepEdges=keepEdges, keepNodes=keepNodes), root.reward()
 
     best = -np.inf
     bestIdx = -1
@@ -175,10 +198,10 @@ def mostSimulations(root, bestSeq, bestR, data=None):
             bestIdx = i
 
     if bestIdx != -1:
-        #return root.children[bestIdx].getPath(), root.children[bestIdx].reward()
-        return mostSimulations(root.children[bestIdx], bestSeq, bestR, data)
+        # recursively call mostSimulations on the best child
+        return mostSimulations(root.children[bestIdx], bestSeq, bestR, data, keepEdges=keepEdges, keepNodes=keepNodes)
     else:
-        return root.getPath(), root.reward()
+        return root.getPath(keepEdges=keepEdges, keepNodes=keepNodes), root.reward()
 
 ## bestReward
 # This function selects the best seen leaf
@@ -186,7 +209,9 @@ def mostSimulations(root, bestSeq, bestR, data=None):
 # @param bestSeq - the sequence with highest reward
 # @param bestR - the best seen reward
 # @param data - generic data possibly useful for the best reward.
-def bestAvgReward(root, bestSeq, bestR, data=None):
+# @param keepEdges - [opt] if true, keep the edges in the path.
+# @param keepNodes - [opt] if true, keep the nodes in the path.
+def bestAvgReward(root, bestSeq, bestR, data=None, keepEdges=False, keepNodes=True):
     best = -np.inf
     bestIdx = -1
 
@@ -197,9 +222,9 @@ def bestAvgReward(root, bestSeq, bestR, data=None):
             bestIdx = i
 
     if bestIdx != -1:
-        return bestAvgReward(root.children[bestIdx], bestSeq, bestR, data)
+        return bestAvgReward(root.children[bestIdx], bestSeq, bestR, data, keepEdges=keepEdges, keepNodes=keepNodes)
     else:
-        return root.getPath(), root.reward()
+        return root.getPath(keepEdges=keepEdges, keepNodes=keepNodes), root.reward()
 
 ## highestReward
 # This function selects the best seen leaf. (Should not be selected for multiple agents)

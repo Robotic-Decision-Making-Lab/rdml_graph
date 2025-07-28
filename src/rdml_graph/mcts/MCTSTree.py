@@ -34,8 +34,13 @@ import numpy as np
 # The search tree for MCTS
 class MCTSTree(SearchState):
     ## Constructor
-    def __init__(self, state, rCost, parent, actor_number=0):
-        super(MCTSTree, self).__init__(state, rCost=rCost, hCost=0, parent=parent)
+    # @param state - the state of the MCTS tree
+    # @param rCost - the real cost to the state
+    # @param parent - the parent MCTSTree
+    # @param actor_number - the actor number of the MCTSTree
+    # @param parent_edge_id - the id of the edge that this tree is a child
+    def __init__(self, state, rCost, parent, actor_number=0, parent_e_id=None):
+        super(MCTSTree, self).__init__(state, rCost=rCost, hCost=0, parent=parent, parent_e_id=parent_e_id)
 
         self.unpicked_children = []
         self.children = []
@@ -106,10 +111,10 @@ class MCTSTree(SearchState):
         if one_after_budget and self.rCost > budget:
             return result
 
-        for s in succ:
+        for i, s in enumerate(succ):
             cost = self.rCost + s[1]
             if cost <= budget or one_after_budget:
-                n = MCTSTree(s[0], cost, self)
+                n = MCTSTree(s[0], cost, self, parent_e_id=i)
                 result.append(n)
                 self.e.append(Edge(self, n, s[1]))
                 if len(s) == 3:

@@ -27,6 +27,7 @@
 
 import tqdm
 import numpy as np
+from inspect import getfullargspec
 from rdml_graph.mcts import MCTSTree
 from rdml_graph.mcts import UCBSelection, randomRollout, bestAvgReward
 from rdml_graph.mcts.ParetoFront import ParetoFront
@@ -50,6 +51,8 @@ import pdb
 # @param get_all_seq - [opt] sets whether to output every reward sequence
 # @param iter_up_progress - [opt] the number of iterations to update the MCTS code
 # @param progress_func - [opt] the function to call to update on the current progress.
+# @param keepEdges - [opt] if true, keep the edges in the path default is true.
+# @param keepNodes - [opt] if true, keep the nodes in the path default is false.
 #
 # @return - solution, reward, opt[data]
 #           solution - list of states of best path (including start state)
@@ -58,7 +61,7 @@ import pdb
 def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelection, \
             rolloutFunc=randomRollout, solutionFunc=bestAvgReward, data=None, \
             actor_number=0, multi_obj_dim=1, output_tree=False, get_all_seq=False, \
-            iter_up_progress=5, progress_func=None):
+            iter_up_progress=5, progress_func=None, keepEdges=False, keepNodes=True):
     # Set the root of the search tree.
     root = MCTSTree(start, 0, None)
     root.unpicked_children = root.successor(budget)
@@ -75,6 +78,12 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
     else:
         bestReward = -np.inf
         bestSeq = None
+
+    # check if the rollout function has the arguments for keep edges and keep nodes.
+    rollout_has_keep_edges = 'keepEdges' in getfullargspec(rolloutFunc).args
+
+    # check if the solution function has the arguments for keepEdges
+    solution_has_keep_edges = 'keepEdges' in getfullargspec(solutionFunc).args
 
     # Main loop of MCTS
     for i in tqdm.tqdm(range(max_iterations)):
@@ -106,7 +115,13 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
 
             ######## ROLLOUT
             # perform rollout to the end of a possible sequence.
-            sequence = rolloutFunc(current, budget, data)
+            # check if the rollout function has the arguments for keep edges and keep nodes.
+
+
+            if rollout_has_keep_edges:
+                sequence = rolloutFunc(current, budget, data, keepEdges=keepEdges, keepNodes=keepNodes)
+            else:
+                sequence = rolloutFunc(current, budget, data)
             rolloutReward, rewardActorNum = rewardFunc(sequence, budget, data)
             if get_all_seq:
                 all_sequences[i] = (sequence, rolloutReward, rewardActorNum)
@@ -132,7 +147,10 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
 
     if all_values:
         bestSeq, bestReward = [], 0
-        solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
+        if solution_has_keep_edges:
+            solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data, keepEdges=keepEdges, keepNodes=keepNodes)
+        else:
+            solutionSeq, solutionReward = solutionFunc(root, bestSeq, bestReward, data)
         other['solutionSeq'] = solutionSeq
         other['solutionReward'] = solutionReward
     if output_tree:
@@ -148,6 +166,11 @@ def MCTS(   start, max_iterations, rewardFunc, budget=1.0, selection=UCBSelectio
         front_rewards, front_paths = optimal.get()
         return front_paths, front_rewards, other
     else:
-        solution, reward = solutionFunc(root, bestSeq, bestReward, data)
+
+        if solution_has_keep_edges:
+            solution, reward = solutionFunc(root, bestSeq, bestReward, data, keepEdges=keepEdges, keepNodes=keepNodes)
+        else:
+            # single-objective return
+            solution, reward = solutionFunc(root, bestSeq, bestReward, data)
         return solution, reward, other
 # End MCTS

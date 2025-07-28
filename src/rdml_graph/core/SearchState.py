@@ -37,7 +37,7 @@ class SearchState(TreeNode):
     # @param hCost - the huerestic cost to the goal from this state
     # @param parent - the parent SearchState
     # @param id - the unique id of the object.
-    def __init__(self, state, rCost=0, hCost=0, parent=None, id=None):
+    def __init__(self, state, rCost=0, hCost=0, parent=None, id=None, parent_e_id=None):
         super(SearchState, self).__init__(SearchState.__search_state_id_num_global__, parent)
 
         # init code for id handling.
@@ -51,6 +51,7 @@ class SearchState(TreeNode):
         self.rCost = rCost # real cost
         self.hCost = hCost # estimated cost
         self.state = state # The actual state
+        self.parent_e_id = parent_e_id  # The id of the edge that this state is a child of
         # self.parent = parent # Pointer to parent node of state for finding full path
         self.invertCmp = False # allows inverting invert comparison (say for max heap)
 
@@ -66,8 +67,8 @@ class SearchState(TreeNode):
     def successor(self):
         # consider how to handle the estimated hCost
         succ = self.state.successor()
-        states = [SearchState(s[0], rCost=self.rCost+s[1], parent=self)  \
-                    for s in succ]
+        states = [SearchState(s[0], rCost=self.rCost+s[1], parent=self, parent_e_id=i)  \
+                    for i, s in enumerate(succ)]
         self.e = [Edge(self, s, suc[1]) for s, suc in zip(states, succ)]
         self.calcSucc = True
         return states
@@ -91,11 +92,23 @@ class SearchState(TreeNode):
     ## getPath
     # This function works its way to up the search tree to the root node
     # to return the list of all states in path.
-    def getPath(self):
+    def getPath(self, keepEdges=False, keepNodes=True):
         if self.parent is None:
-            return [self.state]
+            if keepNodes:
+                return [self.state]
+            else:
+                return []
 
-        return self.parent.getPath() + [self.state]
+        if keepEdges and keepNodes:
+            return self.parent.getPath(keepEdges=True) + \
+                    [self.parent.state.e[self.parent_e_id], self.state]
+        elif keepEdges:
+            return self.parent.getPath(keepEdges=True, keepNodes=False) + \
+                    [self.parent.state.e[self.parent_e_id]]
+        elif keepNodes:
+            return self.parent.getPath() + [self.state]
+        else:
+            raise ValueError("Cannot keep neither edges nor nodes in path, please select one or both of them.")
 
     ################################ Operator overloads
 

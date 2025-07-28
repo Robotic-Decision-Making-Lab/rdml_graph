@@ -71,12 +71,14 @@ def pass_all(n, data, goal):
 # @param data - a potential set of input data for huerestics and goal states.
 # @param goal - a potential set of goal data (REQUIRED by default)
 # @param out_tree - if true, output tree, otherwise do not output a tree.
+# @param keepEdges - [opt] if true, keep the edges in the path.
+# @param keepNodes - [opt] if true, keep the nodes in the path.
 #
 # @returns - list, cost
 #   an optimal list states to the goal state. - if no path return empty list and infinte cost.
 # [first state, ---, goal state]
 def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None, \
-            output_tree=False):
+            output_tree=False, keepEdges=False, keepNodes=True):
     startState = SearchState(start, hCost=h(start, data, goal), id=0)
     frontier = [startState]
     explored = set()
@@ -96,9 +98,11 @@ def AStar(start, g=graph_goal_check, h = default_h, data = None, goal=None, \
             # check if the current state is in the goal state.
             if g(cur.state, data, goal):
                 if output_tree:
-                    return cur.getPath(), cur.rCost, startState
+                    return cur.getPath(keepEdges=keepEdges, keepNodes=keepNodes), \
+                                    cur.rCost, startState
                 else:
-                    return cur.getPath(), cur.rCost
+                    return cur.getPath(keepEdges=keepEdges, keepNodes=keepNodes), \
+                                    cur.rCost
 
             # add state to set of explored states
             explored.add(cur.state)
@@ -181,9 +185,11 @@ def DFS():
 #                 g(n, data, goal)
 # @param data - input data for the goal function if required.
 # @param goal - any goal data required by g function.
+# @param keepEdges - [opt] if true, keep the edges in the path.
+# @param keepNodes - [opt] if true, keep the nodes in the path.
 #
 # @return - list of structs of [(path, cost),...] or [([n1,n2,n3,...], cost), ...]
-def BFS(start, budget=float('inf'), g=pass_all, data=None, goal=None):
+def BFS(start, budget=float('inf'), g=pass_all, data=None, goal=None, keepEdges=False, keepNodes=True):
     startState = SearchState(start)
     #frontier = queue.Queue()
     #frontier.put(startState)
@@ -215,4 +221,4 @@ def BFS(start, budget=float('inf'), g=pass_all, data=None, goal=None):
                 if anyExplored == True and g(cur.state, data, goal):
                     endStates.append(cur)
 
-    return [(s.getPath(), s.rCost) for s in endStates]
+    return [(s.getPath(keepEdges=keepEdges, keepNodes=keepNodes), s.rCost) for s in endStates]

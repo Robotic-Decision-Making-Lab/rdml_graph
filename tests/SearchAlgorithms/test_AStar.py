@@ -41,4 +41,27 @@ def test_AStar():
     for i in range(len(path)):
         assert correctSolution[i] == path[i].id, 'ID incorrect path id:'+ str(path[i].id) + ', solId:'+str(correctSolution[i])
 
-   
+
+    # check if edges being returned is correct
+    path, cost = gr.AStar(n, goal=n6, output_tree=False, keepEdges=True, keepNodes=False)
+
+    assert len(path) == 3
+    assert path[0].p.id == 0
+    assert path[0].c.id == 2
+    assert path[1].c.id == 4
+    assert path[2].c.id == 6
+
+    # check if nodes and edges being returned is correct
+    path, cost = gr.AStar(n, goal=n6, output_tree=False, keepEdges=True, keepNodes=True)
+
+    assert len(path) == 7
+    assert path[0].id == 0
+    assert path[1].p.id == 0
+    assert path[1].c.id == 2
+    assert path[2].id == 2
+    assert path[3].p.id == 2
+    assert path[3].c.id == 4
+    assert path[4].id == 4
+    assert path[5].p.id == 4
+    assert path[5].c.id == 6
+    assert path[6].id == 6
