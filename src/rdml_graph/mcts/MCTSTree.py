@@ -45,9 +45,10 @@ class MCTSTree(SearchState):
         self.unpicked_children = []
         self.children = []
         self.best_reward = -np.inf
-        self.sum_reward = 0
+        self.sum_reward = 0.0
         self.num_updates = 0
         self.actor_number = actor_number
+        self.succ_called = False
 
     ## reward
     # reward is an average of all total rewards propagated through the tree.
@@ -105,11 +106,15 @@ class MCTSTree(SearchState):
     #
     # @return - list of MCTSTree objects.
     def successor(self, budget=np.inf, one_after_budget=True):
+        if self.succ_called:
+            return [e.c for e in self.e]
+        
         result = []
         self.e = []
-        succ = self.state.successor()
         if one_after_budget and self.rCost > budget:
             return result
+
+        succ = self.state.successor()
 
         for i, s in enumerate(succ):
             cost = self.rCost + s[1]
@@ -120,5 +125,5 @@ class MCTSTree(SearchState):
                 if len(s) == 3:
                     result[-1].actor_number = s[2]
 
-
+        self.succ_called = True
         return result
