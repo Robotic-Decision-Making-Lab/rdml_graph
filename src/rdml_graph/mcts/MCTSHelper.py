@@ -49,6 +49,8 @@ def UCBSelection(current, budget, data):
             bestChild = child
     return bestChild
 
+
+
 ## UCBSelection
 # Upper confidence bound selection for pareto fronts.
 # Developed from a paper that I am too lazy to find cite to right now.
@@ -57,21 +59,24 @@ def UCBSelection(current, budget, data):
 # @param data - generic data, if needed.
 def paretoUCBSelection(current, budget, data):
     D = current.sum_reward.shape[0]
-    #optimal = ParetoFront(D, len(current.children))
 
-    UCB = [child.reward() +  \
-            np.sqrt((4 * np.log(current.num_updates)) / (2 * child.num_updates)) \
-            for child in current.children]
-    # for child in current.children:
-    #     UCB = child.reward() +  \
-    #         np.sqrt((4 * np.log(current.num_updates)) / (2 * child.num_updates))
-        #optimal.check_and_add(UCB, child)
-    pareto_idx = get_pareto(np.array(UCB))
+    # get the needed values from the child nodes
+    child_num_updates = np.array([child.num_updates for child in current.children])
+    child_sum_reward = np.array([child.sum_reward for child in current.children])
+    
+    # calcuate the UCB values for each child
+    exploration = np.sqrt((4 * np.log(current.num_updates)) / (2 * child_num_updates))
+    UCB = (child_sum_reward / child_num_updates[:,np.newaxis]) + exploration[:, np.newaxis]
+
+    # get the pareto front of the UCB values
+    pareto_idx = get_pareto(UCB)
     rand_idx = np.random.randint(0, len(pareto_idx))
 
+    # select a random child from the pareto front
     child = current.children[pareto_idx[rand_idx]]
-    #rew, child = optimal.get_random()
     return child
+
+
 
 
 ############## rollout functions

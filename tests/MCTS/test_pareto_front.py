@@ -27,10 +27,6 @@ def test_pareto_class():
 
 
 def test_pareto_function():
-    front = gr.ParetoFront(3, alloc_size=10)
-
-
-
     rewards = np.array([[3,4,5], [2, 3,4], [5,2,1], [3,4,6], [3, 2, 1], [2, 7,2]])
 
     pr_idxs = gr.get_pareto(rewards)
@@ -39,6 +35,32 @@ def test_pareto_function():
     for i in range(len(ans)):
         assert pr_idxs[i] == ans[i]
 
+def test_pareto_function2():
+    rewards = np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4]])
+
+    pr_idxs = gr.get_pareto(rewards)
+
+    ans = [4]
+    for i in range(len(ans)):
+        assert pr_idxs[i] == ans[i]
+
+def test_pareto_function3():
+    rewards = np.array([[6, 0, 2], [1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4]])
+
+    pr_idxs = gr.get_pareto(rewards)
+
+    ans = [0, 4]
+    for i in range(len(ans)):
+        assert pr_idxs[i] == ans[i]
+
+def test_pareto_function4():
+    rewards = np.array([[6, 0, 2], [1, 1, 1], [5, 2, 5], [3, 3, 3], [4, 4, 4]])
+
+    pr_idxs = gr.get_pareto(rewards)
+
+    ans = [0, 2, 4]
+    for i in range(len(ans)):
+        assert pr_idxs[i] == ans[i]
 
 def test_pareto_function_with_realloc():
     front = gr.ParetoFront(3, alloc_size=2)
