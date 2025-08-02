@@ -135,7 +135,7 @@ class ParetoFront:
 
 
 try:
-    import numba
+    from numba import jit
 
     # same function as below, but written with numba for speed.
     # also written using copilot, and uh it seems to work.
