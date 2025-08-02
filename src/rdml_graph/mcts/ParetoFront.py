@@ -23,7 +23,6 @@
 
 import numpy as np
 import copy
-from numba import jit
 import pdb
 
 class ParetoFront:
